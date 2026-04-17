@@ -139,18 +139,21 @@ td{padding:7px 13px;text-align:right;border-bottom:1px solid var(--border-soft);
 td.cp{font-family:var(--font);font-size:11.5px;font-weight:700;text-align:left;padding-left:10px;background:#fff;}
 td.cd{font-family:var(--font);font-size:12.5px;text-align:left;padding-left:14px;background:#fff;}
 
-/* Product accent — gentle pastel row shading, identifies each product */
-.a-hl td,.a-hl td.cp,.a-hl td.cd{background:#fffdf2;}
-.a-hp td,.a-hp td.cp,.a-hp td.cd{background:#f5f9ff;}
-.a-ot td,.a-ot td.cp,.a-ot td.cd{background:#faf7ff;}
+/* Product accent — row shading, identifies each product */
+.a-hl td,.a-hl td.cp,.a-hl td.cd{background:#fff7d1;}
+.a-hp td,.a-hp td.cp,.a-hp td.cd{background:#e4eeff;}
+.a-ot td,.a-ot td.cp,.a-ot td.cd{background:#ece2ff;}
 
 /* Hover — consistent across all cells */
 tbody tr:hover td,tbody tr:hover td.cp,tbody tr:hover td.cd{background:#fffbe8;}
 
 .cc{cursor:pointer;} .cc:hover{text-decoration:underline;text-underline-offset:2px;}
 
-/* Product sub-total row */
-.r-sub td,.r-sub td.cp,.r-sub td.cd{font-weight:700!important;border-top:1.5px solid var(--border)!important;border-bottom:1.5px solid var(--border)!important;background:#fafbfc;}
+/* Product sub-total row — same shade as product rows */
+.r-sub td,.r-sub td.cp,.r-sub td.cd{font-weight:700!important;border-top:1.5px solid var(--border)!important;border-bottom:1.5px solid var(--border)!important;}
+.r-sub.a-hl td,.r-sub.a-hl td.cp,.r-sub.a-hl td.cd{background:#fff7d1;}
+.r-sub.a-hp td,.r-sub.a-hp td.cp,.r-sub.a-hp td.cd{background:#e4eeff;}
+.r-sub.a-ot td,.r-sub.a-ot td.cp,.r-sub.a-ot td.cd{background:#ece2ff;}
 tbody tr.r-sub:hover td,tbody tr.r-sub:hover td.cp,tbody tr.r-sub:hover td.cd{background:#fff6d6;}
 
 /* Grand total row */
@@ -159,9 +162,9 @@ tbody tr.r-grand:hover td,tbody tr.r-grand:hover td.cp,tbody tr.r-grand:hover td
 
 /* Child rows — inherit product accent, slightly darker tint for contrast */
 .c-row td,.c-row td.cp,.c-row td.cd{font-size:12px;border-bottom:1px solid #eef1f4;}
-.c-row.a-hl td,.c-row.a-hl td.cp,.c-row.a-hl td.cd{background:#fff8d9;}
-.c-row.a-hp td,.c-row.a-hp td.cp,.c-row.a-hp td.cd{background:#e8f0ff;}
-.c-row.a-ot td,.c-row.a-ot td.cp,.c-row.a-ot td.cd{background:#f0e9ff;}
+.c-row.a-hl td,.c-row.a-hl td.cp,.c-row.a-hl td.cd{background:#ffefae;}
+.c-row.a-hp td,.c-row.a-hp td.cp,.c-row.a-hp td.cd{background:#d1deff;}
+.c-row.a-ot td,.c-row.a-ot td.cp,.c-row.a-ot td.cd{background:#ddcdff;}
 .c-row td.cd{padding-left:34px;color:var(--text-2);font-style:italic;}
 tbody tr.c-row:hover td,tbody tr.c-row:hover td.cp,tbody tr.c-row:hover td.cd{background:#fff6d6;}
 
@@ -241,6 +244,18 @@ tbody tr:hover td.cy{background:#fff6d6;}
 .sb-link:hover{background:rgba(255,255,255,0.09);color:#fff;}
 .sb-link-count{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.45);background:rgba(255,255,255,0.08);padding:2px 7px;border-radius:10px;}
 
+/* Flux panel (wraps controls + table so it flexes alongside SORA view) */
+#fluxPanel{flex:1;display:flex;flex-direction:column;min-height:0;}
+#fluxPanel.hidden{display:none;}
+
+/* View tabs (above dashboard controls) */
+.view-tabs{display:flex;align-items:center;gap:6px;padding:6px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow);flex-shrink:0;margin-bottom:10px;}
+.view-tab{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:var(--r);cursor:pointer;background:transparent;border:1.5px solid transparent;font-family:var(--font);font-size:12px;font-weight:700;color:var(--text-2);transition:all 0.12s;user-select:none;}
+.view-tab:hover{background:var(--surface-2);color:var(--text-1);}
+.view-tab.on{background:var(--black);border-color:var(--black);color:#fff;}
+.view-tab-kbd{font-family:var(--mono);font-size:9px;color:var(--text-3);background:var(--border-soft);border:1px solid var(--border);border-radius:3px;padding:0 4px;font-weight:600;}
+.view-tab.on .view-tab-kbd{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.6);}
+
 /* Dashboard controls bar */
 .dash-ctrl{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow);flex-shrink:0;margin-bottom:10px;flex-wrap:wrap;}
 .dash-grp{display:flex;align-items:center;gap:6px;}
@@ -303,8 +318,8 @@ tbody tr:hover td.cy{background:#fff6d6;}
 .mm-month select{padding:6px 11px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--font);font-size:12px;color:var(--text-1);background:#fff;outline:none;cursor:pointer;min-width:130px;}
 .mm-month select:focus{border-color:var(--yellow-dk);}
 .mm-month .mm-note{font-size:11px;color:var(--text-3);margin-left:auto;}
-.mm-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-.mm-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:12px;}
+.mm-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:14px;}
+.mm-card:last-child{margin-bottom:0;}
 .mm-card-hd{font-size:11px;font-weight:700;color:var(--text-1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
 .mm-card-hd .mm-dot{width:7px;height:7px;border-radius:50%;}
 .mm-field{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
@@ -314,6 +329,23 @@ tbody tr:hover td.cy{background:#fff6d6;}
 .mm-field input:focus{border-color:var(--yellow-dk);}
 .mm-field .mm-suffix{font-size:11px;color:var(--text-3);width:20px;}
 .mm-empty{padding:32px;text-align:center;color:var(--text-3);font-size:12px;}
+
+/* Manual adjustments matrix (products × fields) */
+.mm-matrix{width:100%;border-collapse:separate;border-spacing:0;}
+.mm-matrix th,.mm-matrix td{padding:8px 10px;border-bottom:1px solid var(--border);}
+.mm-matrix thead th{background:var(--surface);font-family:var(--font);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);text-align:center;border-bottom:1.5px solid var(--border);}
+.mm-matrix thead th:first-child{text-align:left;}
+.mm-matrix thead th .mm-col-hd{display:inline-flex;align-items:center;gap:6px;justify-content:center;color:var(--text-1);font-size:11px;}
+.mm-matrix thead th .mm-col-hd .mm-dot{width:8px;height:8px;border-radius:50%;}
+.mm-matrix tbody td.mm-row-lbl{font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-2);text-align:left;white-space:nowrap;}
+.mm-matrix tbody td.mm-cell{text-align:center;}
+.mm-matrix tbody td.mm-cell input{width:100%;max-width:150px;padding:5px 9px;border:1.5px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:11.5px;color:var(--text-1);background:#fff;outline:none;text-align:right;}
+.mm-matrix tbody td.mm-cell input:focus{border-color:var(--yellow-dk);}
+.mm-matrix tbody tr:last-child td{border-bottom:none;}
+
+/* Manual button indicator dot */
+.manual-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:4px;box-shadow:0 0 0 2px rgba(239,68,68,0.15);animation:pulseDot 1.8s ease-in-out infinite;}
+@keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:0.55;}}
 .hidden{display:none!important;}
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
 </style>
@@ -341,85 +373,78 @@ tbody tr:hover td.cy{background:#fff6d6;}
 </div>
 
 <div class="app">
-  <aside class="sidebar">
-    <div class="sb-modules">
-      <div class="sb-module active" data-tab="flux" onclick="switchTab('flux')"><span class="sb-module-left"><span class="sb-module-ico"></span>EIR FLUX</span><span class="sb-module-kbd">[</span></div>
-      <div class="sb-module" data-tab="sora" onclick="switchTab('sora')"><span class="sb-module-left"><span class="sb-module-ico"></span>SORA</span><span class="sb-module-kbd">]</span></div>
-    </div>
-  </aside>
-
   <main class="main">
     <div class="table-area" id="fluxView">
       <div class="toolbar">
         <div style="display:flex;align-items:center;">
-          <span class="tb-title">EIR Flux</span>
+          <span class="tb-title" id="viewTitle">EIR Flux</span>
         </div>
       </div>
-      <div class="dash-ctrl" id="dashCtrl" style="display:none">
-        <div class="dash-grp">
-          <span class="dash-lbl">Products</span>
-          <div id="pills" style="display:flex;gap:5px;">
-            <div class="dash-pill on" data-p="HL" onclick="toggleProd('HL',this)"><span class="dash-pill-dot" style="background:var(--hl)"></span><span>HL</span></div>
-            <div class="dash-pill on" data-p="HP" onclick="toggleProd('HP',this)"><span class="dash-pill-dot" style="background:var(--hp)"></span><span>HP</span></div>
-            <div class="dash-pill on" data-p="Others" onclick="toggleProd('Others',this)"><span class="dash-pill-dot" style="background:var(--ot)"></span><span>Others</span></div>
+      <div class="view-tabs" id="viewTabs">
+        <div class="view-tab on" data-tab="flux" onclick="switchTab('flux')"><span>EIR Flux</span><span class="view-tab-kbd">[</span></div>
+        <div class="view-tab" data-tab="sora" onclick="switchTab('sora')"><span>SORA Graph</span><span class="view-tab-kbd">]</span></div>
+      </div>
+      <div id="fluxPanel">
+        <div class="dash-ctrl" id="dashCtrl" style="display:none">
+          <div class="dash-grp">
+            <span class="dash-lbl">Products</span>
+            <div id="pills" style="display:flex;gap:5px;">
+              <div class="dash-pill on" data-p="HL" onclick="toggleProd('HL',this)"><span class="dash-pill-dot" style="background:var(--hl)"></span><span>HL</span></div>
+              <div class="dash-pill on" data-p="HP" onclick="toggleProd('HP',this)"><span class="dash-pill-dot" style="background:var(--hp)"></span><span>HP</span></div>
+              <div class="dash-pill on" data-p="Others" onclick="toggleProd('Others',this)"><span class="dash-pill-dot" style="background:var(--ot)"></span><span>Others</span></div>
+            </div>
+          </div>
+          <div class="dash-grp">
+            <span class="dash-lbl">Units</span>
+            <span class="dash-unit-lbl on" id="lbl-exact">Exact (S$)</span>
+            <label class="switch"><input type="checkbox" id="unitToggle" onchange="updateDashboardView()"><span class="slider"></span></label>
+            <span class="dash-unit-lbl" id="lbl-millions">Millions</span>
+          </div>
+          <div class="dash-grp">
+            <span class="dash-lbl">Range</span>
+            <select class="dash-range-sel" id="rangeFrom" onchange="updateRange()" title="First month shown"></select>
+            <span class="dash-range-arrow">→</span>
+            <select class="dash-range-sel" id="rangeTo" onchange="updateRange()" title="Last month shown"></select>
+            <button class="dash-btn" onclick="resetRange()" title="Reset to last 6 months" style="padding:4px 8px">Reset</button>
+          </div>
+          <div class="dash-grp" style="margin-left:auto">
+            <button class="dash-btn" onclick="openManualModal()" title="Manual Adjustments (U)" id="btnManual"><span>✎</span> Manual<span class="dash-kbd">U</span><span class="manual-dot hidden" id="manualDot" title="Unfilled manual values"></span></button>
+            <button class="dash-btn" onclick="toggleAll()" id="btnToggleAll" title="Expand All (X)"><span>⊞</span> Expand All<span class="dash-kbd">X</span></button>
+            <button class="dash-btn" onclick="copyTable()" title="Copy Table (C)"><span>⎘</span> Copy<span class="dash-kbd">C</span></button>
+            <button class="dash-btn" onclick="exportFluxToExcel()" title="Export Excel (E)"><span>↓</span> Excel<span class="dash-kbd">E</span></button>
           </div>
         </div>
-        <div class="dash-grp">
-          <span class="dash-lbl">Units</span>
-          <span class="dash-unit-lbl on" id="lbl-exact">Exact (S$)</span>
-          <label class="switch"><input type="checkbox" id="unitToggle" onchange="updateDashboardView()"><span class="slider"></span></label>
-          <span class="dash-unit-lbl" id="lbl-millions">Millions</span>
-        </div>
-        <div class="dash-grp">
-          <span class="dash-lbl">Range</span>
-          <select class="dash-range-sel" id="rangeFrom" onchange="updateRange()" title="First month shown"></select>
-          <span class="dash-range-arrow">→</span>
-          <select class="dash-range-sel" id="rangeTo" onchange="updateRange()" title="Last month shown"></select>
-          <button class="dash-btn" onclick="resetRange()" title="Reset to last 6 months" style="padding:4px 8px">Reset</button>
-        </div>
-        <div class="dash-grp" style="margin-left:auto">
-          <button class="dash-btn" onclick="openManualModal()" title="Manual Adjustments (U)"><span>✎</span> Manual<span class="dash-kbd">U</span></button>
-          <button class="dash-btn" onclick="toggleAll()" id="btnToggleAll" title="Expand All (X)"><span>⊞</span> Expand All<span class="dash-kbd">X</span></button>
-          <button class="dash-btn" onclick="copyTable()" title="Copy Table (C)"><span>⎘</span> Copy<span class="dash-kbd">C</span></button>
-          <button class="dash-btn" onclick="exportFluxToExcel()" title="Export Excel (E)"><span>↓</span> Excel<span class="dash-kbd">E</span></button>
+        <div class="t-card" id="tCard">
+          <div class="empty" id="emptyState">
+            <div class="empty-ico">📊</div>
+            <h3>No data loaded</h3>
+            <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV. Press <strong>U</strong> or click <strong>Manual</strong> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage. Use <strong>[</strong> and <strong>]</strong> to toggle between EIR Flux and SORA tabs.</p>
+          </div>
+          <div class="t-scroll hidden" id="tScroll">
+            <table id="pnlTable">
+              <thead><tr id="tHead"></tr></thead>
+              <tbody id="tBody"></tbody>
+            </table>
+          </div>
         </div>
       </div>
-      <div class="t-card" id="tCard">
-        <div class="empty" id="emptyState">
-          <div class="empty-ico">📊</div>
-          <h3>No data loaded</h3>
-          <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV. Press <strong>U</strong> or click <strong>Manual</strong> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage. Use <strong>[</strong> and <strong>]</strong> to toggle between EIR Flux and SORA tabs.</p>
+      <div class="sora-view hidden" id="soraView" style="padding:0;">
+        <div class="sora-hero">
+          <div class="sora-hero-hd">
+            <div>
+              <div class="sora-hero-ttl">1M SORA Trend</div>
+              <div class="sora-hero-sub">Used (applied in flux) vs Actual (market)</div>
+            </div>
+          </div>
+          <div class="sora-hero-chart" id="soraCapture"><canvas id="soraChart"></canvas></div>
         </div>
-        <div class="t-scroll hidden" id="tScroll">
-          <table id="pnlTable">
-            <thead><tr id="tHead"></tr></thead>
-            <tbody id="tBody"></tbody>
+        <div class="sora-table-card" id="soraTableCard">
+          <h3>SORA values by month</h3>
+          <table class="sora-table">
+            <thead><tr><th>Month</th><th>Used (%)</th><th>Actual (%)</th><th>Δ (Actual − Used)</th></tr></thead>
+            <tbody id="soraTbody"></tbody>
           </table>
         </div>
-      </div>
-    </div>
-    <div class="sora-view hidden" id="soraView">
-      <div class="toolbar">
-        <div style="display:flex;align-items:center;">
-          <span class="tb-title">SORA</span>
-          <span class="tb-sub">1M SORA Used vs Actual across all stored months</span>
-        </div>
-      </div>
-      <div class="sora-hero">
-        <div class="sora-hero-hd">
-          <div>
-            <div class="sora-hero-ttl">1M SORA Trend</div>
-            <div class="sora-hero-sub">Used (applied in flux) vs Actual (market)</div>
-          </div>
-        </div>
-        <div class="sora-hero-chart" id="soraCapture"><canvas id="soraChart"></canvas></div>
-      </div>
-      <div class="sora-table-card" id="soraTableCard">
-        <h3>SORA values by month</h3>
-        <table class="sora-table">
-          <thead><tr><th>Month</th><th>Used (%)</th><th>Actual (%)</th><th>Δ (Actual − Used)</th></tr></thead>
-          <tbody id="soraTbody"></tbody>
-        </table>
       </div>
     </div>
   </main>
@@ -442,30 +467,43 @@ tbody tr:hover td.cy{background:#fff6d6;}
       </div>
       <div id="mmEmpty" class="mm-empty hidden">No stored account months yet. Load an account CSV first.</div>
       <div id="mmForm">
-        <div class="mm-card" style="margin-bottom:14px">
+        <div class="mm-card">
           <div class="mm-card-hd">1M SORA</div>
           <div class="mm-field"><label>1M SORA — Used</label><input type="number" step="any" id="mm-sora-used"><span class="mm-suffix">%</span></div>
           <div class="mm-field"><label>1M SORA — Actual</label><input type="number" step="any" id="mm-sora-actual"><span class="mm-suffix">%</span></div>
         </div>
-        <div class="mm-grid">
-          <div class="mm-card">
-            <div class="mm-card-hd"><span class="mm-dot" style="background:var(--hl)"></span>HL</div>
-            <div class="mm-field"><label>Change in SORA</label><input type="number" step="any" id="mm-HL-sora"></div>
-            <div class="mm-field"><label>Change in AEL</label><input type="number" step="any" id="mm-HL-ael"></div>
-            <div class="mm-field"><label>P&amp;L override</label><input type="number" step="any" id="mm-HL-pnl"></div>
-          </div>
-          <div class="mm-card">
-            <div class="mm-card-hd"><span class="mm-dot" style="background:var(--hp)"></span>HP</div>
-            <div class="mm-field"><label>Change in SORA</label><input type="number" step="any" id="mm-HP-sora"></div>
-            <div class="mm-field"><label>Change in AEL</label><input type="number" step="any" id="mm-HP-ael"></div>
-            <div class="mm-field"><label>P&amp;L override</label><input type="number" step="any" id="mm-HP-pnl"></div>
-          </div>
-          <div class="mm-card" style="grid-column:span 2">
-            <div class="mm-card-hd"><span class="mm-dot" style="background:var(--ot)"></span>Others</div>
-            <div class="mm-field"><label>Change in SORA</label><input type="number" step="any" id="mm-Others-sora"></div>
-            <div class="mm-field"><label>Change in AEL</label><input type="number" step="any" id="mm-Others-ael"></div>
-            <div class="mm-field"><label>P&amp;L override</label><input type="number" step="any" id="mm-Others-pnl"></div>
-          </div>
+        <div class="mm-card">
+          <div class="mm-card-hd">Per-product adjustments</div>
+          <table class="mm-matrix">
+            <thead>
+              <tr>
+                <th></th>
+                <th><span class="mm-col-hd"><span class="mm-dot" style="background:var(--hl)"></span>HL</span></th>
+                <th><span class="mm-col-hd"><span class="mm-dot" style="background:var(--hp)"></span>HP</span></th>
+                <th><span class="mm-col-hd"><span class="mm-dot" style="background:var(--ot)"></span>Others</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mm-row-lbl">Change in SORA</td>
+                <td class="mm-cell"><input type="number" step="any" id="mm-HL-sora"></td>
+                <td class="mm-cell"><input type="number" step="any" id="mm-HP-sora"></td>
+                <td class="mm-cell"><input type="number" step="any" id="mm-Others-sora"></td>
+              </tr>
+              <tr>
+                <td class="mm-row-lbl">Change in AEL</td>
+                <td class="mm-cell"><input type="number" step="any" id="mm-HL-ael"></td>
+                <td class="mm-cell"><input type="number" step="any" id="mm-HP-ael"></td>
+                <td class="mm-cell"><input type="number" step="any" id="mm-Others-ael"></td>
+              </tr>
+              <tr>
+                <td class="mm-row-lbl">P&amp;L override</td>
+                <td class="mm-cell"><input type="number" step="any" id="mm-HL-pnl"></td>
+                <td class="mm-cell"><input type="number" step="any" id="mm-HP-pnl"></td>
+                <td class="mm-cell"><input type="number" step="any" id="mm-Others-pnl"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -587,9 +625,10 @@ window.updateRange=function(){
 window.resetRange=function(){_userRange=null;updateDashboardView();_syncRangeSelects();};
 window.switchTab=function(tab){
   _currentTab=tab;
-  document.querySelectorAll('.sb-module').forEach(el=>el.classList.toggle('active',el.dataset.tab===tab));
-  $('fluxView').classList.toggle('hidden',tab!=='flux');
+  document.querySelectorAll('.view-tab').forEach(el=>el.classList.toggle('on',el.dataset.tab===tab));
+  $('fluxPanel').classList.toggle('hidden',tab!=='flux');
   $('soraView').classList.toggle('hidden',tab!=='sora');
+  const vt=$('viewTitle');if(vt)vt.textContent=tab==='sora'?'SORA Graph':'EIR Flux';
   if(tab==='sora'){renderSoraChart();renderSoraTable();}
 };
 function sYtd(row){if(!row)return 0;let s=0;_ytdMo.forEach(m=>s+=(row[m]||0));return s;}
@@ -612,13 +651,13 @@ window.addEventListener('keydown',e=>{
   if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
   if(e.key==='[')switchTab('flux');
   if(e.key===']')switchTab('sora');
+  if(e.key==='r'||e.key==='R'){e.preventDefault();$('navFile').click();}
+  if(e.key==='u'||e.key==='U')openManualModal();
   if(_currentTab!=='flux')return;
   if(e.key==='x'||e.key==='X')toggleAll();
   if(e.key==='c'||e.key==='C')copyTable();
   if(e.key==='e'||e.key==='E')exportFluxToExcel();
-  if(e.key==='r'||e.key==='R'){e.preventDefault();$('navFile').click();}
   if(e.key==='m'||e.key==='M'){$('unitToggle').checked=!$('unitToggle').checked;updateDashboardView();}
-  if(e.key==='u'||e.key==='U')openManualModal();
   if(e.key==='1')_toggleByName('HL');if(e.key==='2')_toggleByName('HP');if(e.key==='3')_toggleByName('Others');
 });
 function _toggleByName(n){const p=document.querySelector(`.dash-pill[data-p="${n}"]`);if(p)toggleProd(n,p);}
@@ -707,7 +746,9 @@ async function rebuildFromStore(){
     $('ldOv').classList.add('hidden');
     $('emptyState').classList.remove('hidden');$('tScroll').classList.add('hidden');
     $('dashCtrl').style.display='none';
-    gPnl={};gMonths=[];window.globalDates=[];_ldr=null;_userRange=null;return;
+    gPnl={};gMonths=[];window.globalDates=[];_ldr=null;_userRange=null;
+    if(typeof updateManualIndicator==='function')updateManualIndicator();
+    return;
   }
   $('progressText').textContent='Crunching numbers…';
   await new Promise(r=>setTimeout(()=>{processData(accountData,Array.from(datesSet));r();},30));
@@ -765,6 +806,7 @@ window.deleteStoredManual=async function(key){
   delete window.parsedManualDataGlobal[key];
   await renderStoredMonthsPanel();
   updateDashboardView();renderSoraChart();renderSoraTable();
+  updateManualIndicator();
   showToast('Removed manual '+key);
 };
 window.clearAllStored=async function(){
@@ -821,8 +863,27 @@ window.saveManualEntry=async function(){
   window.parsedManualDataGlobal[key]=data;
   await renderStoredMonthsPanel();
   updateDashboardView();renderSoraChart();renderSoraTable();
+  updateManualIndicator();
   showToast('Saved '+DU.fmtMY(date)+' ✓ (use ↓ Manual JSON to export all months)');
 };
+
+// Manual-button indicator: lights up when any loaded month has missing manual fields
+function updateManualIndicator(){
+  const dot=$('manualDot'),btn=$('btnManual');if(!dot||!btn)return;
+  const dates=Array.from(new Set(window.globalDates||[])).filter(Boolean);
+  if(!dates.length){dot.classList.add('hidden');btn.title='Manual Adjustments (U)';return;}
+  const required=[['1M SORA - USED'],['1M SORA - ACTUAL'],['HL','Change in SORA'],['HL','Change in AEL'],['HP','Change in SORA'],['HP','Change in AEL'],['Others','Change in SORA'],['Others','Change in AEL']];
+  let missing=0;
+  dates.forEach(d=>{
+    const key=manualKeyForDate(d);const data=(window.parsedManualDataGlobal&&window.parsedManualDataGlobal[key])||{};
+    required.forEach(path=>{
+      const v=path.length===1?data[path[0]]:(data[path[0]]&&data[path[0]][path[1]]);
+      if(v===undefined||v===null||v==='')missing++;
+    });
+  });
+  if(missing>0){dot.classList.remove('hidden');btn.title=`Manual Adjustments (U) — ${missing} unfilled value${missing>1?'s':''}`;}
+  else{dot.classList.add('hidden');btn.title='Manual Adjustments (U) — all filled';}
+}
 window.exportManualJson=async function(opts){
   const rows=await IDB.getAll(IDB.manStore);
   if(!rows.length){if(!opts||!opts.silent)showToast('No manual entries to export.');return;}
@@ -878,6 +939,7 @@ function processData(accountData,dates){
   $('ldOv').classList.add('hidden');
   _syncRangeSelects();
   updateDashboardView();renderSoraChart();renderSoraTable();
+  updateManualIndicator();
   $('dashCtrl').style.display='';
 }
 
