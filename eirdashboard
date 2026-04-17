@@ -40,6 +40,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-1);height:100
 .nav-kbd{font-size:9.5px;color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:2px 7px;font-family:var(--mono);}
 .nav-load{display:flex;align-items:center;gap:6px;background:var(--yellow);color:var(--black);border:none;border-radius:6px;padding:6px 13px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;}
 .nav-load:hover{background:var(--yellow-dk);transform:translateY(-1px);}
+.nav-cache{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:5px 11px;font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.nav-cache:hover{background:rgba(255,255,255,0.14);color:#fff;}
+.nav-cache-count{font-family:var(--mono);font-size:10px;color:var(--yellow);background:rgba(253,207,11,0.14);padding:1px 6px;border-radius:9px;}
 #navFile{display:none;}
 
 /* APP SHELL */
@@ -262,6 +265,27 @@ tbody tr:hover td.cy{background:#fff6d6;}
 .sm-clear{background:var(--surface);border:1.5px solid var(--border);color:var(--text-2);font-family:var(--font);font-size:11.5px;font-weight:600;padding:6px 13px;border-radius:6px;cursor:pointer;transition:all 0.12s;}
 .sm-clear:hover{background:#fef2f2;color:#b91c1c;border-color:#fecaca;}
 .sm-empty{padding:36px;text-align:center;color:var(--text-3);font-size:12px;}
+.sm-sec-lbl{font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);padding:10px 0 4px;}
+.sm-row.sm-manual{background:#fffbe8;border-color:#fde68a;}
+
+/* Manual entry modal */
+.mm-body{padding:14px 18px;overflow-y:auto;flex:1;}
+.mm-month{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.mm-month label{font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:0.5px;}
+.mm-month select{padding:6px 11px;border:1.5px solid var(--border);border-radius:6px;font-family:var(--font);font-size:12px;color:var(--text-1);background:#fff;outline:none;cursor:pointer;min-width:130px;}
+.mm-month select:focus{border-color:var(--yellow-dk);}
+.mm-month .mm-note{font-size:11px;color:var(--text-3);margin-left:auto;}
+.mm-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.mm-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:12px;}
+.mm-card-hd{font-size:11px;font-weight:700;color:var(--text-1);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.mm-card-hd .mm-dot{width:7px;height:7px;border-radius:50%;}
+.mm-field{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.mm-field:last-child{margin-bottom:0;}
+.mm-field label{flex:1;font-size:11.5px;color:var(--text-2);}
+.mm-field input{width:140px;padding:5px 9px;border:1.5px solid var(--border);border-radius:5px;font-family:var(--mono);font-size:11.5px;color:var(--text-1);background:#fff;outline:none;text-align:right;}
+.mm-field input:focus{border-color:var(--yellow-dk);}
+.mm-field .mm-suffix{font-size:11px;color:var(--text-3);width:20px;}
+.mm-empty{padding:32px;text-align:center;color:var(--text-3);font-size:12px;}
 .hidden{display:none!important;}
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
 </style>
@@ -273,8 +297,9 @@ tbody tr:hover td.cy{background:#fff6d6;}
     <div class="nav-title">EIR Dashboard</div>
   </div>
   <div class="nav-right">
+    <button class="nav-cache hidden" id="navCache" onclick="openStoredMonthsModal()" title="View cached files">🗂 View cached files <span class="nav-cache-count" id="navCacheCount">0</span></button>
     <label class="nav-load" for="navFile" title="Load Data (R)">📂 Load Data</label>
-    <input type="file" id="navFile" accept=".csv" multiple>
+    <input type="file" id="navFile" accept=".csv,.json" multiple>
   </div>
 </nav>
 
@@ -292,30 +317,22 @@ tbody tr:hover td.cy{background:#fff6d6;}
     <div class="sb-modules">
       <div class="sb-module active" data-module="flux"><span class="sb-module-ico"></span>EIR FLUX</div>
     </div>
-    <div class="sb-sec" id="storedSec" style="display:none">
-      <div class="sb-lbl">Stored Months</div>
-      <button class="sb-link" onclick="openStoredMonthsModal()">
-        <span>View stored months</span>
-        <span class="sb-link-count" id="storedCount">0</span>
-      </button>
-    </div>
   </aside>
 
   <main class="main">
     <div class="table-area">
       <div class="toolbar">
         <div style="display:flex;align-items:center;">
-          <span class="tb-title">EIR P&L Flux Analysis</span>
-          <span class="tb-sub" id="tbSub"></span>
+          <span class="tb-title">EIR Flux</span>
         </div>
       </div>
       <div class="dash-ctrl" id="dashCtrl" style="display:none">
         <div class="dash-grp">
           <span class="dash-lbl">Products</span>
           <div id="pills" style="display:flex;gap:5px;">
-            <div class="dash-pill on" data-p="HL" onclick="toggleProd('HL',this)"><span class="dash-pill-dot" style="background:var(--hl)"></span><span>HL</span><span class="dash-pill-tot" id="pt-HL">—</span></div>
-            <div class="dash-pill on" data-p="HP" onclick="toggleProd('HP',this)"><span class="dash-pill-dot" style="background:var(--hp)"></span><span>HP</span><span class="dash-pill-tot" id="pt-HP">—</span></div>
-            <div class="dash-pill on" data-p="Others" onclick="toggleProd('Others',this)"><span class="dash-pill-dot" style="background:var(--ot)"></span><span>Others</span><span class="dash-pill-tot" id="pt-Ot">—</span></div>
+            <div class="dash-pill on" data-p="HL" onclick="toggleProd('HL',this)"><span class="dash-pill-dot" style="background:var(--hl)"></span><span>HL</span></div>
+            <div class="dash-pill on" data-p="HP" onclick="toggleProd('HP',this)"><span class="dash-pill-dot" style="background:var(--hp)"></span><span>HP</span></div>
+            <div class="dash-pill on" data-p="Others" onclick="toggleProd('Others',this)"><span class="dash-pill-dot" style="background:var(--ot)"></span><span>Others</span></div>
           </div>
         </div>
         <div class="dash-grp">
@@ -338,7 +355,7 @@ tbody tr:hover td.cy{background:#fff6d6;}
         <div class="empty" id="emptyState">
           <div class="empty-ico">📊</div>
           <h3>No data loaded</h3>
-          <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV and manual adjustment CSV. Files are stored by reporting month (FIC_MIS_DATE); next month, just load the new file to top up.</p>
+          <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV. Press <strong>U</strong> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage and export as JSON.</p>
         </div>
         <div class="t-scroll hidden" id="tScroll">
           <table id="pnlTable">
@@ -351,18 +368,66 @@ tbody tr:hover td.cy{background:#fff6d6;}
   </main>
 </div>
 
-<div class="m-ov" id="storedModal">
-  <div class="m-box" style="max-width:540px">
+<div class="m-ov" id="manualModal">
+  <div class="m-box" style="max-width:720px">
     <div class="m-hd">
-      <h2>Stored Months</h2>
+      <h2>Manual Adjustments</h2>
       <div class="m-acts">
+        <button class="m-btn" onclick="saveManualEntry()" title="Save (S)">💾 Save <span style="font-family:var(--mono);font-size:9px;opacity:0.65;margin-left:3px">S</span></button>
+        <button class="m-cl" onclick="closeManualModal()">✕</button>
+      </div>
+    </div>
+    <div class="mm-body" id="mmBody">
+      <div class="mm-month">
+        <label for="mmMonth">Month</label>
+        <select id="mmMonth" onchange="loadManualFormForMonth(this.value)"></select>
+        <span class="mm-note">Only months with stored account data can be edited.</span>
+      </div>
+      <div id="mmEmpty" class="mm-empty hidden">No stored account months yet. Load an account CSV first.</div>
+      <div id="mmForm">
+        <div class="mm-card" style="margin-bottom:14px">
+          <div class="mm-card-hd">1M SORA</div>
+          <div class="mm-field"><label>1M SORA — Used</label><input type="number" step="any" id="mm-sora-used"><span class="mm-suffix">%</span></div>
+          <div class="mm-field"><label>1M SORA — Actual</label><input type="number" step="any" id="mm-sora-actual"><span class="mm-suffix">%</span></div>
+        </div>
+        <div class="mm-grid">
+          <div class="mm-card">
+            <div class="mm-card-hd"><span class="mm-dot" style="background:var(--hl)"></span>HL</div>
+            <div class="mm-field"><label>Change in SORA</label><input type="number" step="any" id="mm-HL-sora"></div>
+            <div class="mm-field"><label>Change in AEL</label><input type="number" step="any" id="mm-HL-ael"></div>
+            <div class="mm-field"><label>P&amp;L override</label><input type="number" step="any" id="mm-HL-pnl"></div>
+          </div>
+          <div class="mm-card">
+            <div class="mm-card-hd"><span class="mm-dot" style="background:var(--hp)"></span>HP</div>
+            <div class="mm-field"><label>Change in SORA</label><input type="number" step="any" id="mm-HP-sora"></div>
+            <div class="mm-field"><label>Change in AEL</label><input type="number" step="any" id="mm-HP-ael"></div>
+            <div class="mm-field"><label>P&amp;L override</label><input type="number" step="any" id="mm-HP-pnl"></div>
+          </div>
+          <div class="mm-card" style="grid-column:span 2">
+            <div class="mm-card-hd"><span class="mm-dot" style="background:var(--ot)"></span>Others</div>
+            <div class="mm-field"><label>Change in SORA</label><input type="number" step="any" id="mm-Others-sora"></div>
+            <div class="mm-field"><label>Change in AEL</label><input type="number" step="any" id="mm-Others-ael"></div>
+            <div class="mm-field"><label>P&amp;L override</label><input type="number" step="any" id="mm-Others-pnl"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="m-ov" id="storedModal">
+  <div class="m-box" style="max-width:580px">
+    <div class="m-hd">
+      <h2>Cached Files</h2>
+      <div class="m-acts">
+        <button class="m-btn" onclick="exportManualJson()" title="Export manual entries as JSON">↓ Manual JSON</button>
         <button class="m-cl" onclick="closeStoredMonthsModal()">✕</button>
       </div>
     </div>
     <div id="smList" class="sm-list"></div>
     <div class="sm-ft">
       <span id="smSummary" style="font-size:11.5px;color:var(--text-3)"></span>
-      <button class="sm-clear" onclick="clearAllStored()">Clear All Stored Data</button>
+      <button class="sm-clear" onclick="clearAllStored()">Clear All Cached Data</button>
     </div>
   </div>
 </div>
@@ -453,6 +518,11 @@ function rz(p,k){return _zc[p+'|'+k]??true;}
 
 // Keyboard shortcuts
 window.addEventListener('keydown',e=>{
+  if($('manualModal').classList.contains('open')){
+    if(e.key==='Escape')closeManualModal();
+    else if(e.key==='s'||e.key==='S'){e.preventDefault();saveManualEntry();}
+    return;
+  }
   if($('storedModal').classList.contains('open')){if(e.key==='Escape')closeStoredMonthsModal();return;}
   if($('modal').classList.contains('open')){if(e.key==='Escape')closeModal();else if(e.key==='ArrowLeft')changePage(-1);else if(e.key==='ArrowRight')changePage(1);return;}
   if(e.target.tagName==='INPUT')return;
@@ -461,6 +531,7 @@ window.addEventListener('keydown',e=>{
   if(e.key==='e'||e.key==='E')exportFluxToExcel();
   if(e.key==='r'||e.key==='R'){e.preventDefault();$('navFile').click();}
   if(e.key==='m'||e.key==='M'){$('unitToggle').checked=!$('unitToggle').checked;updateDashboardView();}
+  if(e.key==='u'||e.key==='U')openManualModal();
   if(e.key==='1')_toggleByName('HL');if(e.key==='2')_toggleByName('HP');if(e.key==='3')_toggleByName('Others');
 });
 function _toggleByName(n){const p=document.querySelector(`.dash-pill[data-p="${n}"]`);if(p)toggleProd(n,p);}
@@ -473,13 +544,16 @@ window.toggleProd=function(p,el){
   updateDashboardView();
 };
 
-// File loading — group by FIC_MIS_DATE, persist per-month to IndexedDB, rebuild from store
+// File loading — group by FIC_MIS_DATE, persist per-month to IndexedDB, rebuild from store.
+// Accepts account-row CSVs (header ACCOUNT_NUMBER) and manual-adjustment JSON files ({months:{KEY:{...}}}).
 $('navFile').addEventListener('change',async function(e){
   const files=Array.from(e.target.files);if(!files.length)return;
   $('ldOv').classList.remove('hidden');$('emptyState').classList.add('hidden');
   const accBuckets={},manBuckets={};
-  let bytesProcessed=0;const totalBytes=files.reduce((s,f)=>s+f.size,0);
-  await Promise.all(files.map(file=>new Promise(resolve=>{
+  const csvFiles=files.filter(f=>!/\.json$/i.test(f.name));
+  const jsonFiles=files.filter(f=>/\.json$/i.test(f.name));
+  let bytesProcessed=0;const totalBytes=csvFiles.reduce((s,f)=>s+f.size,0)||1;
+  await Promise.all(csvFiles.map(file=>new Promise(resolve=>{
     let lastCursor=0;
     Papa.parse(file,{header:true,skipEmptyLines:true,
       chunk(results){
@@ -496,23 +570,21 @@ $('navFile').addEventListener('change',async function(e){
             if(!accBuckets[date])accBuckets[date]=[];
             accBuckets[date].push({acc,product:prod,lcy:parseFloat(row.LCY_EIR_ADJ_AMT)||0,alloc:parseFloat(row.ALLOCATED_COST)||0,repriceDate:row.REPRICE_DATE,rYear:rY,rMonth:rM,aelMaturityDate:row.AEL_MATURITY_DATE,eirRate:row.N_IFRS9_EFF_INTEREST_RATE,baseRt:parseFloat(row.BASE_RT)||0,bal:parseFloat(row.LEDGER_BALANCE_AMT)||0});
           });
-        } else if(results.meta.fields.includes('FIELD')&&results.meta.fields.includes('VALUE')){
-          results.data.forEach(row=>{
-            const rd=row.DATE,field=row.FIELD,prod=row.PRODUCT,vs=row.VALUE,val=parseFloat(vs)||0;if(!rd||!field)return;
-            const parts=rd.split('-');let mKey=rd.toUpperCase();if(parts.length===3)mKey=(parts[1]+parts[2]).toUpperCase();
-            const cf=String(field).trim();if(!manBuckets[mKey])manBuckets[mKey]={};
-            if(cf==='1M SORA - USED'||cf==='1M SORA - ACTUAL'){manBuckets[mKey][cf]=vs;return;}
-            if(!prod)return;let cp=String(prod).trim();
-            if(cp==='SG_Housing'||cp==='HL')cp='HL';else if(cp==='SG_HirePurchase'||cp==='HP')cp='HP';else cp='Others';
-            if(!manBuckets[mKey][cp])manBuckets[mKey][cp]={};
-            manBuckets[mKey][cp][cf]=val;
-          });
         }
       },
       complete(){resolve();},
       error(){resolve();}
     });
   })));
+  for(const file of jsonFiles){
+    try{
+      const txt=await file.text();const obj=JSON.parse(txt);
+      const months=obj&&obj.months?obj.months:obj;
+      if(months&&typeof months==='object'){
+        Object.entries(months).forEach(([k,v])=>{if(v&&typeof v==='object')manBuckets[String(k).toUpperCase()]=v;});
+      }
+    }catch(err){console.error('Bad manual JSON',file.name,err);showToast('Skipped invalid JSON: '+file.name);}
+  }
   $('navFile').value='';
   $('progressText').textContent='Saving to browser storage…';$('progressBar').style.width='100%';
   const savedAcc=Object.keys(accBuckets),savedMan=Object.keys(manBuckets);
@@ -548,7 +620,7 @@ async function rebuildFromStore(){
     $('ldOv').classList.add('hidden');
     $('emptyState').classList.remove('hidden');$('tScroll').classList.add('hidden');
     $('soraSec').classList.add('hidden');$('dashCtrl').style.display='none';
-    gPnl={};gMonths=[];_ldr=null;return;
+    gPnl={};gMonths=[];window.globalDates=[];_ldr=null;return;
   }
   $('progressText').textContent='Crunching numbers…';
   await new Promise(r=>setTimeout(()=>{processData(accountData,Array.from(datesSet));r();},30));
@@ -556,24 +628,40 @@ async function rebuildFromStore(){
 }
 
 async function renderStoredMonthsPanel(){
-  const sec=$('storedSec'),countEl=$('storedCount');if(!sec)return;
-  const rows=await IDB.getAll(IDB.accStore);
-  if(!rows.length){sec.style.display='none';if(countEl)countEl.textContent='0';if($('storedModal').classList.contains('open'))renderStoredMonthsModal(rows);return;}
-  sec.style.display='';
-  if(countEl)countEl.textContent=rows.length.toString();
-  if($('storedModal').classList.contains('open'))renderStoredMonthsModal(rows);
+  const btn=$('navCache'),countEl=$('navCacheCount');
+  const[accRows,manRows]=await Promise.all([IDB.getAll(IDB.accStore),IDB.getAll(IDB.manStore)]);
+  const total=accRows.length+manRows.length;
+  if(btn){if(total)btn.classList.remove('hidden');else btn.classList.add('hidden');}
+  if(countEl)countEl.textContent=total.toString();
+  if($('storedModal').classList.contains('open'))renderStoredMonthsModal(accRows,manRows);
 }
-function renderStoredMonthsModal(rows){
+function renderStoredMonthsModal(accRows,manRows){
   const list=$('smList'),sum=$('smSummary');if(!list)return;
-  if(!rows||!rows.length){list.innerHTML='<div class="sm-empty">No months stored yet. Use <strong>Load Data</strong> to add one.</div>';if(sum)sum.textContent='';return;}
-  rows.sort((a,b)=>{const da=DU.parse(a.date),db=DU.parse(b.date);return(da?.getTime()||0)-(db?.getTime()||0);});
-  list.innerHTML=rows.map(r=>`<div class="sm-row"><span class="sm-name">${DU.fmtMY(r.date)}</span><span class="sm-cnt">${(r.rows?.length||0).toLocaleString()} accounts</span><button class="sm-del" onclick="deleteStoredMonth('${r.date}')" title="Delete ${DU.fmtMY(r.date)}">Remove</button></div>`).join('');
-  const total=rows.reduce((s,r)=>s+(r.rows?.length||0),0);
-  if(sum)sum.textContent=`${rows.length} month${rows.length>1?'s':''} · ${total.toLocaleString()} accounts`;
+  if((!accRows||!accRows.length)&&(!manRows||!manRows.length)){list.innerHTML='<div class="sm-empty">Nothing cached yet. Use <strong>Load Data</strong> or press <strong>U</strong> to add manual adjustments.</div>';if(sum)sum.textContent='';return;}
+  const parts=[];
+  if(accRows&&accRows.length){
+    accRows.sort((a,b)=>{const da=DU.parse(a.date),db=DU.parse(b.date);return(da?.getTime()||0)-(db?.getTime()||0);});
+    parts.push('<div class="sm-sec-lbl">Account months (CSV)</div>');
+    parts.push(accRows.map(r=>`<div class="sm-row"><span class="sm-name">${DU.fmtMY(r.date)}</span><span class="sm-cnt">${(r.rows?.length||0).toLocaleString()} accounts</span><button class="sm-del" onclick="deleteStoredMonth('${r.date}')" title="Delete ${DU.fmtMY(r.date)}">Remove</button></div>`).join(''));
+  }
+  if(manRows&&manRows.length){
+    manRows.sort((a,b)=>String(a.key).localeCompare(String(b.key)));
+    parts.push('<div class="sm-sec-lbl">Manual adjustments (JSON)</div>');
+    parts.push(manRows.map(r=>{
+      const d=r.data||{};const fields=[];
+      if(d['1M SORA - USED']!==undefined||d['1M SORA - ACTUAL']!==undefined)fields.push('SORA');
+      ['HL','HP','Others'].forEach(p=>{if(d[p]&&Object.keys(d[p]).length)fields.push(p);});
+      const legacy=/^[A-Z]{3}\d{4}$/.test(String(r.key))?' <span style="color:#b91c1c;font-size:10px">(legacy CSV)</span>':'';
+      return`<div class="sm-row sm-manual"><span class="sm-name">${r.key}${legacy}</span><span class="sm-cnt">${fields.join(', ')||'(empty)'}</span><button class="sm-del" onclick="deleteStoredManual('${r.key.replace(/'/g,"\\'")}')" title="Delete ${r.key}">Remove</button></div>`;
+    }).join(''));
+  }
+  list.innerHTML=parts.join('');
+  const totalAcc=(accRows||[]).reduce((s,r)=>s+(r.rows?.length||0),0);
+  if(sum)sum.textContent=`${accRows?.length||0} account month${(accRows?.length||0)!==1?'s':''} · ${totalAcc.toLocaleString()} accounts · ${manRows?.length||0} manual entr${(manRows?.length||0)!==1?'ies':'y'}`;
 }
 window.openStoredMonthsModal=async function(){
-  const rows=await IDB.getAll(IDB.accStore);
-  renderStoredMonthsModal(rows);
+  const[accRows,manRows]=await Promise.all([IDB.getAll(IDB.accStore),IDB.getAll(IDB.manStore)]);
+  renderStoredMonthsModal(accRows,manRows);
   $('storedModal').classList.add('open');
 };
 window.closeStoredMonthsModal=function(){$('storedModal').classList.remove('open');};
@@ -584,13 +672,81 @@ window.deleteStoredMonth=async function(date){
   await rebuildFromStore();
   showToast('Removed '+DU.fmtMY(date));
 };
+window.deleteStoredManual=async function(key){
+  if(!confirm('Remove manual adjustments for '+key+'?'))return;
+  await IDB.del(IDB.manStore,key);
+  delete window.parsedManualDataGlobal[key];
+  await renderStoredMonthsPanel();
+  updateDashboardView();renderSoraChart();
+  showToast('Removed manual '+key);
+};
 window.clearAllStored=async function(){
-  if(!confirm('Clear ALL stored months? This cannot be undone.'))return;
+  if(!confirm('Clear ALL cached months (account + manual)? This cannot be undone.'))return;
   $('ldOv').classList.remove('hidden');$('progressText').textContent='Clearing…';$('progressBar').style.width='60%';
   await IDB.clearAll();
   await rebuildFromStore();
   closeStoredMonthsModal();
-  showToast('All stored data cleared.');
+  showToast('All cached data cleared.');
+};
+
+// Manual adjustments popup — U to open, S to save. Saves JSON to IDB + downloads a consolidated file.
+function manualKeyForDate(date){return DU.fmtMY(date);}
+window.openManualModal=function(){
+  const sel=$('mmMonth');const dates=Array.from(new Set(window.globalDates||[])).filter(Boolean);
+  if(!dates.length){$('mmEmpty').classList.remove('hidden');$('mmForm').classList.add('hidden');sel.innerHTML='';sel.disabled=true;}
+  else{
+    $('mmEmpty').classList.add('hidden');$('mmForm').classList.remove('hidden');sel.disabled=false;
+    dates.sort((a,b)=>DU.parse(a)-DU.parse(b));
+    sel.innerHTML=dates.map(d=>`<option value="${d}">${DU.fmtMY(d)}</option>`).join('');
+    sel.value=dates[dates.length-1];
+    loadManualFormForMonth(sel.value);
+  }
+  $('manualModal').classList.add('open');
+};
+window.closeManualModal=function(){$('manualModal').classList.remove('open');};
+window.loadManualFormForMonth=function(date){
+  const key=manualKeyForDate(date);const data=(window.parsedManualDataGlobal&&window.parsedManualDataGlobal[key])||{};
+  const g=id=>$('mm-'+id);const pick=v=>v===undefined||v===null||v===''?'':v;
+  g('sora-used').value=pick(data['1M SORA - USED']);
+  g('sora-actual').value=pick(data['1M SORA - ACTUAL']);
+  ['HL','HP','Others'].forEach(p=>{
+    const pd=data[p]||{};
+    g(p+'-sora').value=pick(pd['Change in SORA']);
+    g(p+'-ael').value=pick(pd['Change in AEL']);
+    g(p+'-pnl').value=pick(pd['P&L']);
+  });
+};
+window.saveManualEntry=async function(){
+  const date=$('mmMonth').value;if(!date){showToast('Select a month first.');return;}
+  const key=manualKeyForDate(date);const data={};
+  const num=v=>{v=String(v??'').trim();if(v==='')return undefined;const n=parseFloat(v);return isNaN(n)?undefined:n;};
+  const sU=$('mm-sora-used').value.trim(),sA=$('mm-sora-actual').value.trim();
+  if(sU!=='')data['1M SORA - USED']=sU;
+  if(sA!=='')data['1M SORA - ACTUAL']=sA;
+  ['HL','HP','Others'].forEach(p=>{
+    const entry={};const s=num($('mm-'+p+'-sora').value),a=num($('mm-'+p+'-ael').value),pnl=num($('mm-'+p+'-pnl').value);
+    if(s!==undefined)entry['Change in SORA']=s;
+    if(a!==undefined)entry['Change in AEL']=a;
+    if(pnl!==undefined)entry['P&L']=pnl;
+    if(Object.keys(entry).length)data[p]=entry;
+  });
+  try{await IDB.putMan(key,data);}catch(err){console.error(err);showToast('Save failed: '+err.message);return;}
+  window.parsedManualDataGlobal[key]=data;
+  await renderStoredMonthsPanel();
+  updateDashboardView();renderSoraChart();
+  await exportManualJson({silent:true});
+  showToast('Saved '+DU.fmtMY(date)+' ✓ (JSON downloaded)');
+};
+window.exportManualJson=async function(opts){
+  const rows=await IDB.getAll(IDB.manStore);
+  if(!rows.length){if(!opts||!opts.silent)showToast('No manual entries to export.');return;}
+  const months={};rows.forEach(r=>{months[r.key]=r.data;});
+  const out={generatedAt:new Date().toISOString(),months};
+  const blob=new Blob([JSON.stringify(out,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='EIR_Manual_Adjustments.json';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  if(!opts||!opts.silent)showToast('Manual JSON downloaded ✓');
 };
 
 // Auto-load from IndexedDB on page open
@@ -637,7 +793,6 @@ function processData(accountData,dates){
   updateDashboardView();renderSoraChart();
   $('soraSec').classList.remove('hidden');
   $('dashCtrl').style.display='';
-  $('tbSub').textContent=_dMo.length+' months · click any value to drill down';
 }
 
 function gdv(v){if(!v)return 0;return isMil?Math.round(v/100000)/10:v;}
@@ -666,15 +821,8 @@ window.updateDashboardView=function(){
     });
   });
   _reMo();_ldr=dr;
-  _upPills(dr);
   renderDashboard(dr,_dMo,_sel);
 };
-
-function _upPills(dr){
-  const lm=_dMo[_dMo.length-1];if(!lm)return;
-  const pairs=[['HL','pt-HL'],['HP','pt-HP'],['Others','pt-Ot']];
-  pairs.forEach(([p,id])=>{const el=$(id);if(!el)return;const v=dr[p]?.['Total']?.[lm]??null;if(v===null){el.textContent='—';return;}const s=Math.abs(v).toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1});el.textContent=v<0?`(${s})`:s;el.className='dash-pill-tot '+(v>=0?'pos-d':'neg-d');});
-}
 
 // Heat map
 
