@@ -225,6 +225,18 @@ tbody tr:hover td.cy{background:#fff5cc!important;}
 /* TOAST */
 .toast{position:fixed;bottom:22px;right:22px;background:var(--black);color:#fff;padding:10px 16px;border-radius:7px;font-size:12px;font-weight:500;box-shadow:0 6px 20px rgba(0,0,0,0.2);border-left:4px solid var(--yellow);z-index:9999;transform:translateY(60px);opacity:0;transition:all .27s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
+
+/* Stored months panel */
+.stored-list{display:flex;flex-direction:column;gap:4px;max-height:180px;overflow-y:auto;}
+.stored-list::-webkit-scrollbar{width:3px;}
+.stored-list::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px;}
+.stored-item{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:6px;font-size:11px;}
+.stored-item .sm-name{font-weight:600;color:rgba(255,255,255,0.75);flex:1;}
+.stored-item .sm-cnt{font-family:var(--mono);font-size:9.5px;color:rgba(255,255,255,0.35);}
+.stored-del{background:none;border:none;color:rgba(255,255,255,0.35);cursor:pointer;padding:0 4px;font-size:14px;line-height:1;border-radius:3px;}
+.stored-del:hover{color:#f87171;background:rgba(248,113,113,0.12);}
+.stored-clear{margin-top:8px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);color:rgba(255,255,255,0.55);font-family:var(--font);font-size:10.5px;font-weight:600;padding:6px 10px;border-radius:var(--r);cursor:pointer;transition:all 0.12s;width:100%;}
+.stored-clear:hover{background:rgba(248,113,113,0.15);color:#f87171;border-color:rgba(248,113,113,0.25);}
 .hidden{display:none!important;}
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
 </style>
@@ -266,6 +278,11 @@ tbody tr:hover td.cy{background:#fff5cc!important;}
         <div class="pill on" data-p="Others" onclick="toggleProd('Others',this)"><div class="pill-dot" style="background:var(--ot)"></div><span class="pill-name">Others</span><span class="pill-tot" id="pt-Ot">—</span><span class="pill-ck">✓</span></div>
       </div>
     </div>
+    <div class="sb-sec" id="storedSec" style="display:none">
+      <div class="sb-lbl">Stored Months</div>
+      <div id="storedList" class="stored-list"></div>
+      <button class="stored-clear" onclick="clearAllStored()">Clear All Stored Data</button>
+    </div>
     <div class="sb-sec">
       <div class="sb-lbl">Units</div>
       <div class="unit-row">
@@ -299,7 +316,7 @@ tbody tr:hover td.cy{background:#fff5cc!important;}
         <div class="empty" id="emptyState">
           <div class="empty-ico">📊</div>
           <h3>No data loaded</h3>
-          <p>Click <strong>Load Data</strong> in the top-right and select both the account CSV and manual adjustment CSV files.</p>
+          <p>Click <strong>Load Data</strong> in the top-right and select this month's account CSV and manual adjustment CSV. Files are stored by reporting month (FIC_MIS_DATE); next month, just load the new file to top up.</p>
         </div>
         <div class="t-scroll hidden" id="tScroll">
           <table id="pnlTable">
@@ -353,6 +370,16 @@ const DU={months:{"JAN":0,"FEB":1,"MAR":2,"APR":3,"MAY":4,"JUN":5,"JUL":6,"AUG":
   fmtMY(s){const d=this.parse(s);if(!d)return s;return this.mn[d.getMonth()].toUpperCase()+d.getFullYear().toString().substring(2);}
 };
 
+// IndexedDB: persist per-month account rows & manual-adj data so users top up one month at a time
+const IDB={name:'eirdashboard_v1',version:1,accStore:'accountMonths',manStore:'manualMonths',_p:null,
+  open(){if(this._p)return this._p;this._p=new Promise((res,rej)=>{const r=indexedDB.open(this.name,this.version);r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(this.accStore))db.createObjectStore(this.accStore,{keyPath:'date'});if(!db.objectStoreNames.contains(this.manStore))db.createObjectStore(this.manStore,{keyPath:'key'});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});return this._p;},
+  async putAcc(date,rows){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction(this.accStore,'readwrite');tx.objectStore(this.accStore).put({date,rows,savedAt:Date.now()});tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});},
+  async putMan(key,data){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction(this.manStore,'readwrite');tx.objectStore(this.manStore).put({key,data,savedAt:Date.now()});tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});},
+  async getAll(store){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const r=tx.objectStore(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error);});},
+  async del(store,key){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).delete(key);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});},
+  async clearAll(){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction([this.accStore,this.manStore],'readwrite');tx.objectStore(this.accStore).clear();tx.objectStore(this.manStore).clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
+};
+
 const DC={
   'New originations':    {h:['ACCOUNT_NUMBER','LEDGER_BALANCE_AMT','EIR BS','ALLOCATED_COST','EIR P&L'],k:['acc','bal','lcy','alloc','pnl'],f:['t','n','n','n','n']},
   'Current reprice':     {h:['ACCOUNT_NUMBER','REPRICE_DATE','LEDGER_BALANCE_AMT','Prev EIR BS','Curr EIR BS','EIR P&L'],k:['acc','repDate','bal','prevLcy','currLcy','pnl'],f:['t','d','n','n','n','n']},
@@ -399,13 +426,13 @@ window.toggleProd=function(p,el){
   const i=_sel.indexOf(p);if(i>=0){if(_sel.length===1)return;_sel.splice(i,1);el.classList.remove('on');}else{_sel.push(p);el.classList.add('on');}updateDashboardView();
 };
 
-// File loading
-$('navFile').addEventListener('change',function(e){
+// File loading — group by FIC_MIS_DATE, persist per-month to IndexedDB, rebuild from store
+$('navFile').addEventListener('change',async function(e){
   const files=Array.from(e.target.files);if(!files.length)return;
   $('ldOv').classList.remove('hidden');$('emptyState').classList.add('hidden');
-  const accountData=new Map(),datesSet=new Set();window.parsedManualDataGlobal={};
-  let filesDone=0,bytesProcessed=0;const totalBytes=files.reduce((s,f)=>s+f.size,0);
-  files.forEach(file=>{
+  const accBuckets={},manBuckets={};
+  let bytesProcessed=0;const totalBytes=files.reduce((s,f)=>s+f.size,0);
+  await Promise.all(files.map(file=>new Promise(resolve=>{
     let lastCursor=0;
     Papa.parse(file,{header:true,skipEmptyLines:true,
       chunk(results){
@@ -416,29 +443,107 @@ $('navFile').addEventListener('change',function(e){
         if(results.meta.fields.includes('ACCOUNT_NUMBER')){
           results.data.forEach(row=>{
             const acc=row.ACCOUNT_NUMBER,date=row.FIC_MIS_DATE;if(!acc||!date)return;
-            datesSet.add(date);if(!accountData.has(acc))accountData.set(acc,{product:'Others',data:{}});
-            const ai=accountData.get(acc);
-            if(row.V_AEL_GROUP_ID==='SG_Housing')ai.product='HL';else if(row.V_AEL_GROUP_ID==='SG_HirePurchase')ai.product='HP';
+            let prod='Others';
+            if(row.V_AEL_GROUP_ID==='SG_Housing')prod='HL';else if(row.V_AEL_GROUP_ID==='SG_HirePurchase')prod='HP';
             let rY=null,rM=null;if(row.REPRICE_DATE){const rd=DU.parse(row.REPRICE_DATE);if(rd){rY=rd.getFullYear();rM=rd.getMonth();}}
-            ai.data[date]={lcy:parseFloat(row.LCY_EIR_ADJ_AMT)||0,alloc:parseFloat(row.ALLOCATED_COST)||0,repriceDate:row.REPRICE_DATE,rYear:rY,rMonth:rM,aelMaturityDate:row.AEL_MATURITY_DATE,eirRate:row.N_IFRS9_EFF_INTEREST_RATE,baseRt:parseFloat(row.BASE_RT)||0,bal:parseFloat(row.LEDGER_BALANCE_AMT)||0};
+            if(!accBuckets[date])accBuckets[date]=[];
+            accBuckets[date].push({acc,product:prod,lcy:parseFloat(row.LCY_EIR_ADJ_AMT)||0,alloc:parseFloat(row.ALLOCATED_COST)||0,repriceDate:row.REPRICE_DATE,rYear:rY,rMonth:rM,aelMaturityDate:row.AEL_MATURITY_DATE,eirRate:row.N_IFRS9_EFF_INTEREST_RATE,baseRt:parseFloat(row.BASE_RT)||0,bal:parseFloat(row.LEDGER_BALANCE_AMT)||0});
           });
         } else if(results.meta.fields.includes('FIELD')&&results.meta.fields.includes('VALUE')){
           results.data.forEach(row=>{
             const rd=row.DATE,field=row.FIELD,prod=row.PRODUCT,vs=row.VALUE,val=parseFloat(vs)||0;if(!rd||!field)return;
             const parts=rd.split('-');let mKey=rd.toUpperCase();if(parts.length===3)mKey=(parts[1]+parts[2]).toUpperCase();
-            const cf=String(field).trim();if(!window.parsedManualDataGlobal[mKey])window.parsedManualDataGlobal[mKey]={};
-            if(cf==='1M SORA - USED'||cf==='1M SORA - ACTUAL'){window.parsedManualDataGlobal[mKey][cf]=vs;return;}
+            const cf=String(field).trim();if(!manBuckets[mKey])manBuckets[mKey]={};
+            if(cf==='1M SORA - USED'||cf==='1M SORA - ACTUAL'){manBuckets[mKey][cf]=vs;return;}
             if(!prod)return;let cp=String(prod).trim();
             if(cp==='SG_Housing'||cp==='HL')cp='HL';else if(cp==='SG_HirePurchase'||cp==='HP')cp='HP';else cp='Others';
-            if(!window.parsedManualDataGlobal[mKey][cp])window.parsedManualDataGlobal[mKey][cp]={};
-            window.parsedManualDataGlobal[mKey][cp][cf]=val;
+            if(!manBuckets[mKey][cp])manBuckets[mKey][cp]={};
+            manBuckets[mKey][cp][cf]=val;
           });
         }
       },
-      complete(){filesDone++;if(filesDone===files.length){$('progressBar').style.width='100%';$('progressText').textContent='Crunching numbers…';window.globalAccountData=accountData;setTimeout(()=>processData(accountData,Array.from(datesSet)),50);}}
+      complete(){resolve();},
+      error(){resolve();}
     });
-  });
+  })));
+  $('navFile').value='';
+  $('progressText').textContent='Saving to browser storage…';$('progressBar').style.width='100%';
+  const savedAcc=Object.keys(accBuckets),savedMan=Object.keys(manBuckets);
+  try{
+    for(const[date,rows]of Object.entries(accBuckets))await IDB.putAcc(date,rows);
+    for(const[key,data]of Object.entries(manBuckets))await IDB.putMan(key,data);
+  }catch(err){console.error(err);showToast('Save failed: '+err.message);}
+  await rebuildFromStore();
+  if(savedAcc.length||savedMan.length){
+    const parts=[];if(savedAcc.length)parts.push(savedAcc.length+' account month'+(savedAcc.length>1?'s':''));if(savedMan.length)parts.push(savedMan.length+' manual month'+(savedMan.length>1?'s':''));
+    showToast('Saved '+parts.join(' + ')+' ✓');
+  }
 });
+
+async function rebuildFromStore(){
+  const[accRows,manRows]=await Promise.all([IDB.getAll(IDB.accStore),IDB.getAll(IDB.manStore)]);
+  const accountData=new Map();const datesSet=new Set();
+  for(const entry of accRows){
+    datesSet.add(entry.date);
+    for(const row of entry.rows){
+      if(!accountData.has(row.acc))accountData.set(row.acc,{product:row.product||'Others',data:{}});
+      const ai=accountData.get(row.acc);
+      if(row.product&&row.product!=='Others')ai.product=row.product;
+      ai.data[entry.date]={lcy:row.lcy,alloc:row.alloc,repriceDate:row.repriceDate,rYear:row.rYear,rMonth:row.rMonth,aelMaturityDate:row.aelMaturityDate,eirRate:row.eirRate,baseRt:row.baseRt,bal:row.bal};
+    }
+  }
+  window.parsedManualDataGlobal={};
+  for(const m of manRows)window.parsedManualDataGlobal[m.key]=m.data;
+  window.globalAccountData=accountData;
+  Object.keys(_mc).forEach(k=>delete _mc[k]);
+  await renderStoredMonthsPanel();
+  if(!accountData.size){
+    $('ldOv').classList.add('hidden');
+    $('emptyState').classList.remove('hidden');$('tScroll').classList.add('hidden');
+    $('navPeriod').style.display='none';$('soraSec').classList.add('hidden');$('kpiSec').style.display='none';
+    gPnl={};gMonths=[];_ldr=null;return;
+  }
+  $('progressText').textContent='Crunching numbers…';
+  await new Promise(r=>setTimeout(()=>{processData(accountData,Array.from(datesSet));r();},30));
+  if(datesSet.size<2)showToast('Only '+datesSet.size+' month stored — upload the prior month to enable flux comparison.');
+}
+
+async function renderStoredMonthsPanel(){
+  const sec=$('storedSec'),list=$('storedList');if(!sec||!list)return;
+  const rows=await IDB.getAll(IDB.accStore);
+  if(!rows.length){sec.style.display='none';list.innerHTML='';return;}
+  sec.style.display='';
+  rows.sort((a,b)=>{const da=DU.parse(a.date),db=DU.parse(b.date);return(da?.getTime()||0)-(db?.getTime()||0);});
+  list.innerHTML=rows.map(r=>`<div class="stored-item"><span class="sm-name">${DU.fmtMY(r.date)}</span><span class="sm-cnt">${(r.rows?.length||0).toLocaleString()}</span><button class="stored-del" onclick="deleteStoredMonth('${r.date}')" title="Delete ${DU.fmtMY(r.date)}">×</button></div>`).join('');
+}
+window.deleteStoredMonth=async function(date){
+  if(!confirm('Remove stored data for '+DU.fmtMY(date)+'?'))return;
+  $('ldOv').classList.remove('hidden');$('progressText').textContent='Removing month…';$('progressBar').style.width='60%';
+  await IDB.del(IDB.accStore,date);
+  await rebuildFromStore();
+  showToast('Removed '+DU.fmtMY(date));
+};
+window.clearAllStored=async function(){
+  if(!confirm('Clear ALL stored months? This cannot be undone.'))return;
+  $('ldOv').classList.remove('hidden');$('progressText').textContent='Clearing…';$('progressBar').style.width='60%';
+  await IDB.clearAll();
+  await rebuildFromStore();
+  showToast('All stored data cleared.');
+};
+
+// Auto-load from IndexedDB on page open
+(async()=>{
+  try{
+    const rows=await IDB.getAll(IDB.accStore);
+    if(rows.length){
+      $('ldOv').classList.remove('hidden');$('emptyState').classList.add('hidden');
+      $('progressText').textContent='Loading stored months…';$('progressBar').style.width='40%';
+      await rebuildFromStore();
+    }else{
+      await renderStoredMonthsPanel();
+    }
+  }catch(err){console.error('IDB init failed',err);}
+})();
 
 function processData(accountData,dates){
   dates.sort((a,b)=>DU.parse(a)-DU.parse(b));window.globalDates=dates;
