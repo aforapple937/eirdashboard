@@ -515,7 +515,6 @@ tbody tr:hover td.cy{background:#fff6d6;}
     <div class="m-hd">
       <h2>Cached Files</h2>
       <div class="m-acts">
-        <button class="m-btn" onclick="exportManualJson()" title="Export manual entries as JSON">↓ Manual JSON</button>
         <button class="m-cl" onclick="closeStoredMonthsModal()">✕</button>
       </div>
     </div>
@@ -864,7 +863,8 @@ window.saveManualEntry=async function(){
   await renderStoredMonthsPanel();
   updateDashboardView();renderSoraChart();renderSoraTable();
   updateManualIndicator();
-  showToast('Saved '+DU.fmtMY(date)+' ✓ (use ↓ Manual JSON to export all months)');
+  showToast('Saved '+DU.fmtMY(date)+' ✓');
+  exportManualJson({silent:true});
 };
 
 // Manual-button indicator: lights up when any loaded month has missing manual fields
