@@ -757,7 +757,8 @@ async function rebuildFromStore(){
 async function renderStoredMonthsPanel(){
   const btn=$('navCache'),countEl=$('navCacheCount');
   const[accRows,manRows]=await Promise.all([IDB.getAll(IDB.accStore),IDB.getAll(IDB.manStore)]);
-  const total=accRows.length+manRows.length;
+  const manCount=manRows.length?1:0;
+  const total=accRows.length+manCount;
   if(btn){if(total)btn.classList.remove('hidden');else btn.classList.add('hidden');}
   if(countEl)countEl.textContent=total.toString();
   if($('storedModal').classList.contains('open'))renderStoredMonthsModal(accRows,manRows);
@@ -784,7 +785,8 @@ function renderStoredMonthsModal(accRows,manRows){
   }
   list.innerHTML=parts.join('');
   const totalAcc=(accRows||[]).reduce((s,r)=>s+(r.rows?.length||0),0);
-  if(sum)sum.textContent=`${accRows?.length||0} account month${(accRows?.length||0)!==1?'s':''} · ${totalAcc.toLocaleString()} accounts · ${manRows?.length||0} manual entr${(manRows?.length||0)!==1?'ies':'y'}`;
+  const manCount=manRows?.length?1:0;
+  if(sum)sum.textContent=`${accRows?.length||0} account month${(accRows?.length||0)!==1?'s':''} · ${totalAcc.toLocaleString()} accounts · ${manCount} manual entr${manCount!==1?'ies':'y'}`;
 }
 window.openStoredMonthsModal=async function(){
   const[accRows,manRows]=await Promise.all([IDB.getAll(IDB.accStore),IDB.getAll(IDB.manStore)]);
