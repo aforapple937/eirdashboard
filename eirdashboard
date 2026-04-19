@@ -557,24 +557,28 @@ tbody tr:hover td.cy{background:#fff6d6;}
 <script>
 /* ═══ EIR DASHBOARD REDESIGN — full business logic preserved ═══ */
 const $=id=>document.getElementById(id);
-function showToast(m){const t=$('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+let _toastT=null;
+function showToast(m){const t=$('toast');t.textContent=m;t.classList.add('show');if(_toastT)clearTimeout(_toastT);_toastT=setTimeout(()=>{t.classList.remove('show');_toastT=null;},3000);}
 
-// DateUtils (memoised)
-const DU={months:{"JAN":0,"FEB":1,"MAR":2,"APR":3,"MAY":4,"JUN":5,"JUL":6,"AUG":7,"SEP":8,"OCT":9,"NOV":10,"DEC":11},mn:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],_c:{},
+// DateUtils (memoised). mKey returns a canonical MMMYY key used to join monthly data with manual-adj records.
+const DU={months:{"JAN":0,"FEB":1,"MAR":2,"APR":3,"MAY":4,"JUN":5,"JUL":6,"AUG":7,"SEP":8,"OCT":9,"NOV":10,"DEC":11},mn:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],_c:{},_mk:{},
   parse(s){if(!s)return null;if(this._c[s]!==undefined)return this._c[s];let r=null;if(s.length>=9){const d=s.substring(0,2),mo=s.substring(2,5).toUpperCase(),y=s.substring(5,9);if(!isNaN(d)&&this.months[mo]!==undefined&&!isNaN(y))r=new Date(parseInt(y),this.months[mo],parseInt(d));}if(!r){const f=new Date(s);r=isNaN(f.getTime())?null:f;}this._c[s]=r;return r;},
   fmtM(s){if(!s)return'-';const d=this.parse(s);if(!d)return s;return String(d.getDate()).padStart(2,'0')+this.mn[d.getMonth()]+d.getFullYear();},
   diff(a,b){const x=this.parse(a),y=this.parse(b);if(!x||!y)return 0;return Math.round((y.getFullYear()-x.getFullYear())*12+(y.getMonth()-x.getMonth()));},
-  fmtMY(s){const d=this.parse(s);if(!d)return s;return this.mn[d.getMonth()].toUpperCase()+d.getFullYear().toString().substring(2);}
+  fmtMY(s){const d=this.parse(s);if(!d)return s;return this.mn[d.getMonth()].toUpperCase()+d.getFullYear().toString().substring(2);},
+  mKey(s){if(!s)return'';if(this._mk[s]!==undefined)return this._mk[s];const m=String(s).match(/[A-Z]{3}\d{4}/i);return this._mk[s]=m?(m[0].substring(0,3)+m[0].substring(5,7)).toUpperCase():String(s).toUpperCase();}
 };
 
-// IndexedDB: persist per-month account rows & manual-adj data so users top up one month at a time
+// IndexedDB: persist per-month account rows & manual-adj data so users top up one month at a time.
+// _tx centralises the open+transaction+promise boilerplate so each method is a one-liner.
 const IDB={name:'eirdashboard_v1',version:1,accStore:'accountMonths',manStore:'manualMonths',_p:null,
   open(){if(this._p)return this._p;this._p=new Promise((res,rej)=>{const r=indexedDB.open(this.name,this.version);r.onupgradeneeded=e=>{const db=e.target.result;if(!db.objectStoreNames.contains(this.accStore))db.createObjectStore(this.accStore,{keyPath:'date'});if(!db.objectStoreNames.contains(this.manStore))db.createObjectStore(this.manStore,{keyPath:'key'});};r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);});return this._p;},
-  async putAcc(date,rows){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction(this.accStore,'readwrite');tx.objectStore(this.accStore).put({date,rows,savedAt:Date.now()});tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});},
-  async putMan(key,data){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction(this.manStore,'readwrite');tx.objectStore(this.manStore).put({key,data,savedAt:Date.now()});tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});},
-  async getAll(store){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction(store,'readonly');const r=tx.objectStore(store).getAll();r.onsuccess=()=>res(r.result||[]);r.onerror=()=>rej(r.error);});},
-  async del(store,key){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction(store,'readwrite');tx.objectStore(store).delete(key);tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});},
-  async clearAll(){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction([this.accStore,this.manStore],'readwrite');tx.objectStore(this.accStore).clear();tx.objectStore(this.manStore).clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(tx.error);});}
+  async _tx(stores,mode,fn){const db=await this.open();return new Promise((res,rej)=>{const tx=db.transaction(stores,mode);const out={v:undefined};fn(s=>tx.objectStore(s),out);tx.oncomplete=()=>res(out.v);tx.onerror=()=>rej(tx.error);tx.onabort=()=>rej(tx.error);});},
+  putAcc(date,rows){return this._tx(this.accStore,'readwrite',s=>s(this.accStore).put({date,rows,savedAt:Date.now()}));},
+  putMan(key,data){return this._tx(this.manStore,'readwrite',s=>s(this.manStore).put({key,data,savedAt:Date.now()}));},
+  getAll(store){return this._tx(store,'readonly',(s,o)=>{const r=s(store).getAll();r.onsuccess=()=>{o.v=r.result||[];};});},
+  del(store,key){return this._tx(store,'readwrite',s=>s(store).delete(key));},
+  clearAll(){return this._tx([this.accStore,this.manStore],'readwrite',s=>{s(this.accStore).clear();s(this.manStore).clear();});}
 };
 
 const DC={
@@ -589,12 +593,20 @@ const DC={
 };
 const METRICS=['New originations','New Count','New Balance','Current reprice','Reprice Curr Count','Reprice Curr Bal','Future reprice','Reprice Fut Count','Reprice Fut Bal','Repriced Total','AEL maturity changed','EIR changed','Other BAU','BAU Total','Closed accounts','Closed Count','Closed Balance','Total'];
 
+// Shared constants — single source of truth for product order and row accent classes.
+const PRODUCTS=['HL','HP','Others'];
+const PROD_ACCENT={HL:'a-hl',HP:'a-hp',Others:'a-ot'};
+
 // State
 let gPnl={},gMonths=[],isMil=false,isExpanded=false,soraCi=null,_userRange=null,_currentTab='flux';
 window.parsedManualDataGlobal={};window.globalAccountData=null;window.globalDates=[];window.modalIndex={};
 window.modalRecords=[];window.modalFilteredRecords=[];window.modalCurrentPage=1;window.modalRecordsPerPage=100;window.modalCurrentDriver='';window.modalSortAsc=false;
-let _sel=['HL','HP','Others'],_dMo=[],_ytdMo=[],_zc={};
-const _mc={};let _ldr=null;
+let _sel=PRODUCTS.slice(),_dMo=[],_ytdMo=[],_zc={},_zcVer=-1,_ldrVer=0,_ytdVer=0;
+const _ytdCache=new WeakMap();
+// _mc: modal-detail LRU (bounded so long sessions can't leak memory as users drill in).
+const _MC_CAP=32,_mc=new Map();let _ldr=null;
+function _mcGet(k){if(!_mc.has(k))return undefined;const v=_mc.get(k);_mc.delete(k);_mc.set(k,v);return v;}
+function _mcSet(k,v){if(_mc.has(k))_mc.delete(k);_mc.set(k,v);while(_mc.size>_MC_CAP)_mc.delete(_mc.keys().next().value);}
 
 function _reMo(){
   if(_userRange&&gMonths.includes(_userRange.from)&&gMonths.includes(_userRange.to)){
@@ -604,14 +616,19 @@ function _reMo(){
   }else{
     _dMo=gMonths.length>6?gMonths.slice(-6):gMonths;
   }
-  if(!_dMo.length){_ytdMo=[];return;}
+  if(!_dMo.length){_ytdMo=[];_ytdVer++;return;}
   const ly=(DU.parse(_dMo[_dMo.length-1])||{getFullYear:()=>0}).getFullYear();
   _ytdMo=gMonths.filter(m=>{const d=DU.parse(m);return d&&d.getFullYear()===ly;});
+  _ytdVer++;
 }
+let _rangeOptsSig='';
 function _syncRangeSelects(){
   const fr=$('rangeFrom'),to=$('rangeTo');if(!fr||!to||!gMonths.length)return;
-  const opts=gMonths.map(m=>`<option value="${m}">${DU.fmtMY(m)}</option>`).join('');
-  fr.innerHTML=opts;to.innerHTML=opts;
+  const sig=gMonths.join('|');
+  if(sig!==_rangeOptsSig){
+    const opts=gMonths.map(m=>`<option value="${m}">${DU.fmtMY(m)}</option>`).join('');
+    fr.innerHTML=opts;to.innerHTML=opts;_rangeOptsSig=sig;
+  }
   const first=_dMo[0]||gMonths[0],last=_dMo[_dMo.length-1]||gMonths[gMonths.length-1];
   fr.value=first;to.value=last;
 }
@@ -630,11 +647,22 @@ window.switchTab=function(tab){
   const vt=$('viewTitle');if(vt)vt.textContent=tab==='sora'?'SORA Graph':'EIR Flux';
   if(tab==='sora'){renderSoraChart();renderSoraTable();}
 };
-function sYtd(row){if(!row)return 0;let s=0;_ytdMo.forEach(m=>s+=(row[m]||0));return s;}
-function _bZc(pr,prods){
+// sYtd — memoised per row object; invalidates when _ytdMo changes (_ytdVer bumped in _reMo).
+function sYtd(row){
+  if(!row)return 0;
+  const c=_ytdCache.get(row);
+  if(c&&c.v===_ytdVer)return c.s;
+  let s=0;for(let i=0;i<_ytdMo.length;i++)s+=(row[_ytdMo[i]]||0);
+  _ytdCache.set(row,{v:_ytdVer,s});
+  return s;
+}
+// _bZc — zero-column cache. Recomputed only when the derived _ldr changes (_ldrVer bumped on recompute).
+const _AK=[...METRICS,'Change in SORA','Manual adj: Change in AEL','Repriced Total','BAU Total'];
+function _bZc(pr){
+  if(_zcVer===_ldrVer)return;
   _zc={};const mo=gMonths;const ck=r=>!r||mo.every(m=>Math.abs(r[m]||0)<0.005);
-  const ak=[...METRICS,'Change in SORA','Manual adj: Change in AEL','Repriced Total','BAU Total'];
-  prods.forEach(p=>ak.forEach(k=>{_zc[p+'|'+k]=ck(pr[p]?.[k]);}));
+  PRODUCTS.forEach(p=>_AK.forEach(k=>{_zc[p+'|'+k]=ck(pr[p]?.[k]);}));
+  _zcVer=_ldrVer;
 }
 function rz(p,k){return _zc[p+'|'+k]??true;}
 
@@ -660,7 +688,7 @@ window.addEventListener('keydown',e=>{
   if(e.key==='1')_toggleByName('HL');if(e.key==='2')_toggleByName('HP');if(e.key==='3')_toggleByName('Others');
 });
 function _toggleByName(n){const p=document.querySelector(`.dash-pill[data-p="${n}"]`);if(p)toggleProd(n,p);}
-const PROD_ORDER=['HL','HP','Others'];
+const PROD_ORDER=PRODUCTS;
 window.toggleProd=function(p,el){
   const i=_sel.indexOf(p);
   if(i>=0){if(_sel.length===1)return;_sel.splice(i,1);el.classList.remove('on');}
@@ -739,7 +767,7 @@ async function rebuildFromStore(){
   window.parsedManualDataGlobal={};
   for(const m of manRows)window.parsedManualDataGlobal[m.key]=m.data;
   window.globalAccountData=accountData;
-  Object.keys(_mc).forEach(k=>delete _mc[k]);
+  _mc.clear();
   await renderStoredMonthsPanel();
   if(!accountData.size){
     $('ldOv').classList.add('hidden');
@@ -778,7 +806,7 @@ function renderStoredMonthsModal(accRows,manRows){
     manRows.forEach(r=>{
       const d=r.data||{};
       if(d['1M SORA - USED']!==undefined||d['1M SORA - ACTUAL']!==undefined)fieldSet.add('SORA');
-      ['HL','HP','Others'].forEach(p=>{if(d[p]&&Object.keys(d[p]).length)fieldSet.add(p);});
+      PRODUCTS.forEach(p=>{if(d[p]&&Object.keys(d[p]).length)fieldSet.add(p);});
     });
     const fields=Array.from(fieldSet).join(', ')||'(empty)';
     parts.push(`<div class="sm-row sm-manual"><span class="sm-name">Manual</span><span class="sm-cnt">${fields}</span><button class="sm-del" onclick="deleteAllStoredManual()" title="Delete all manual adjustments">Remove</button></div>`);
@@ -794,45 +822,37 @@ window.openStoredMonthsModal=async function(){
   $('storedModal').classList.add('open');
 };
 window.closeStoredMonthsModal=function(){$('storedModal').classList.remove('open');};
-window.deleteStoredMonth=async function(date){
-  if(!confirm('Remove stored data for '+DU.fmtMY(date)+'?'))return;
-  $('ldOv').classList.remove('hidden');$('progressText').textContent='Removing month…';$('progressBar').style.width='60%';
-  await IDB.del(IDB.accStore,date);
-  await rebuildFromStore();
-  showToast('Removed '+DU.fmtMY(date));
+// Shared confirm→mutate→refresh pipeline used by all delete/clear actions.
+async function _confirmAndAct(prompt,mutate,doneMsg,opts){
+  if(!confirm(prompt))return;
+  if(opts&&opts.progress){$('ldOv').classList.remove('hidden');$('progressText').textContent=opts.progress;$('progressBar').style.width='60%';}
+  await mutate();
+  if(opts&&opts.rebuild){await rebuildFromStore();}
+  else{
+    await renderStoredMonthsPanel();
+    updateDashboardView();renderSoraChart();renderSoraTable();
+    updateManualIndicator();
+  }
+  if(opts&&opts.closeModal)closeStoredMonthsModal();
+  showToast(doneMsg);
+}
+window.deleteStoredMonth=function(date){
+  return _confirmAndAct('Remove stored data for '+DU.fmtMY(date)+'?',()=>IDB.del(IDB.accStore,date),'Removed '+DU.fmtMY(date),{progress:'Removing month…',rebuild:true});
 };
-window.deleteStoredManual=async function(key){
-  if(!confirm('Remove manual adjustments for '+key+'?'))return;
-  await IDB.del(IDB.manStore,key);
-  delete window.parsedManualDataGlobal[key];
-  await renderStoredMonthsPanel();
-  updateDashboardView();renderSoraChart();renderSoraTable();
-  updateManualIndicator();
-  showToast('Removed manual '+key);
+window.deleteStoredManual=function(key){
+  return _confirmAndAct('Remove manual adjustments for '+key+'?',async()=>{await IDB.del(IDB.manStore,key);delete window.parsedManualDataGlobal[key];},'Removed manual '+key);
 };
-window.deleteAllStoredManual=async function(){
-  if(!confirm('Remove ALL manual adjustments? This cannot be undone.'))return;
-  const rows=await IDB.getAll(IDB.manStore);
-  await Promise.all(rows.map(r=>IDB.del(IDB.manStore,r.key)));
-  window.parsedManualDataGlobal={};
-  await renderStoredMonthsPanel();
-  updateDashboardView();renderSoraChart();renderSoraTable();
-  updateManualIndicator();
-  showToast('Removed all manual adjustments');
+window.deleteAllStoredManual=function(){
+  return _confirmAndAct('Remove ALL manual adjustments? This cannot be undone.',async()=>{const rows=await IDB.getAll(IDB.manStore);await Promise.all(rows.map(r=>IDB.del(IDB.manStore,r.key)));window.parsedManualDataGlobal={};},'Removed all manual adjustments');
 };
-window.clearAllStored=async function(){
-  if(!confirm('Clear ALL cached months (account + manual)? This cannot be undone.'))return;
-  $('ldOv').classList.remove('hidden');$('progressText').textContent='Clearing…';$('progressBar').style.width='60%';
-  await IDB.clearAll();
-  await rebuildFromStore();
-  closeStoredMonthsModal();
-  showToast('All cached data cleared.');
+window.clearAllStored=function(){
+  return _confirmAndAct('Clear ALL cached months (account + manual)? This cannot be undone.',()=>IDB.clearAll(),'All cached data cleared.',{progress:'Clearing…',rebuild:true,closeModal:true});
 };
 
 // Manual adjustments popup — U to open, S to save. Saves JSON to IDB + downloads a consolidated file.
 function manualKeyForDate(date){return DU.fmtMY(date);}
 window.openManualModal=function(){
-  const sel=$('mmMonth');const dates=Array.from(new Set(window.globalDates||[])).filter(Boolean);
+  const sel=$('mmMonth');const dates=(window.globalDates||[]).filter(Boolean);
   if(!dates.length){$('mmEmpty').classList.remove('hidden');$('mmForm').classList.add('hidden');sel.innerHTML='';sel.disabled=true;}
   else{
     $('mmEmpty').classList.add('hidden');$('mmForm').classList.remove('hidden');sel.disabled=false;
@@ -849,7 +869,7 @@ window.loadManualFormForMonth=function(date){
   const g=id=>$('mm-'+id);const pick=v=>v===undefined||v===null||v===''?'':v;
   g('sora-used').value=pick(data['1M SORA - USED']);
   g('sora-actual').value=pick(data['1M SORA - ACTUAL']);
-  ['HL','HP','Others'].forEach(p=>{
+  PRODUCTS.forEach(p=>{
     const pd=data[p]||{};
     g(p+'-sora').value=pick(pd['Change in SORA']);
     g(p+'-ael').value=pick(pd['Change in AEL']);
@@ -863,7 +883,7 @@ window.saveManualEntry=async function(){
   const sU=$('mm-sora-used').value.trim(),sA=$('mm-sora-actual').value.trim();
   if(sU!=='')data['1M SORA - USED']=sU;
   if(sA!=='')data['1M SORA - ACTUAL']=sA;
-  ['HL','HP','Others'].forEach(p=>{
+  PRODUCTS.forEach(p=>{
     const entry={};const s=num($('mm-'+p+'-sora').value),a=num($('mm-'+p+'-ael').value),pnl=num($('mm-'+p+'-pnl').value);
     if(s!==undefined)entry['Change in SORA']=s;
     if(a!==undefined)entry['Change in AEL']=a;
@@ -882,7 +902,7 @@ window.saveManualEntry=async function(){
 // Manual-button indicator: lights up when any loaded month has missing manual fields
 function updateManualIndicator(){
   const dot=$('manualDot'),btn=$('btnManual');if(!dot||!btn)return;
-  const dates=Array.from(new Set(window.globalDates||[])).filter(Boolean);
+  const dates=(window.globalDates||[]).filter(Boolean);
   if(!dates.length){dot.classList.add('hidden');btn.title='Manual Adjustments (U)';return;}
   const required=[['1M SORA - USED'],['1M SORA - ACTUAL'],['HL','Change in SORA'],['HL','Change in AEL'],['HP','Change in SORA'],['HP','Change in AEL'],['Others','Change in SORA'],['Others','Change in AEL']];
   let missing=0;
@@ -924,7 +944,7 @@ window.exportManualJson=async function(opts){
 
 function processData(accountData,dates){
   dates.sort((a,b)=>DU.parse(a)-DU.parse(b));window.globalDates=dates;
-  const rm=dates.slice(1),prods=['HL','HP','Others'];const pr={};window.modalIndex={};
+  const rm=dates.slice(1),prods=PRODUCTS;const pr={};window.modalIndex={};
   prods.forEach(p=>{pr[p]={};window.modalIndex[p]={};METRICS.forEach(m=>{pr[p][m]={};rm.forEach(mo=>pr[p][m][mo]=0);});rm.forEach(m=>window.modalIndex[p][m]={});});
   function idx(p,mo,dr,ac){if(!window.modalIndex[p][mo][dr])window.modalIndex[p][mo][dr]=[];window.modalIndex[p][mo][dr].push(ac);}
   for(let i=1;i<dates.length;i++){
@@ -957,30 +977,46 @@ function processData(accountData,dates){
 
 function gdv(v){if(!v)return 0;return isMil?Math.round(v/100000)/10:v;}
 
+// Hoist inner metric keys so the per-month loop stays tight.
+const _DERIVED_KEYS=['Total','Change in SORA','New originations','Current reprice','Future reprice','Repriced Total','AEL maturity changed','EIR changed','Other BAU','BAU Total','Closed accounts','Manual adj: Change in AEL','New Balance','Reprice Curr Bal','Reprice Fut Bal','Closed Balance'];
+const _PASSTHROUGH_KEYS=['New Count','Reprice Curr Count','Reprice Fut Count','Closed Count'];
+function _setUnitLabels(){const x=isMil;$('lbl-exact').className='dash-unit-lbl'+(x?'':' on');$('lbl-millions').className='dash-unit-lbl'+(x?' on':'');}
+
 window.updateDashboardView=function(){
-  isMil=$('unitToggle').checked;
-  $('lbl-exact').className='dash-unit-lbl'+(isMil?'':' on');
-  $('lbl-millions').className='dash-unit-lbl'+(isMil?' on':'');
+  isMil=$('unitToggle').checked;_setUnitLabels();
   if(!gMonths.length)return;
-  const dr={'Grand Total':{}};gMonths.forEach(m=>dr['Grand Total'][m]=0);
-  _sel.forEach(p=>{
-    dr[p]={};gMonths.forEach(m=>{
-      const match=m.match(/[A-Z]{3}\d{4}/i);const mKey=match?(match[0].substring(0,3)+match[0].substring(5,7)).toUpperCase():m.toUpperCase();
+  const dr={'Grand Total':{}},manual=window.parsedManualDataGlobal||{};
+  const BS=1000000;
+  for(let mi=0;mi<gMonths.length;mi++)dr['Grand Total'][gMonths[mi]]=0;
+  for(let pi=0;pi<_sel.length;pi++){
+    const p=_sel[pi],gp=gPnl[p];if(!gp)continue;
+    const prodRow={};dr[p]=prodRow;
+    // Pre-allocate per-metric objects once per product.
+    for(let ki=0;ki<_DERIVED_KEYS.length;ki++)prodRow[_DERIVED_KEYS[ki]]={};
+    // Share pass-through references (counts don't change with unit scaling).
+    for(let ki=0;ki<_PASSTHROUGH_KEYS.length;ki++)prodRow[_PASSTHROUGH_KEYS[ki]]=gp[_PASSTHROUGH_KEYS[ki]];
+    const gNew=gp['New originations'],gRC=gp['Current reprice'],gRF=gp['Future reprice'],gA=gp['AEL maturity changed'],gE=gp['EIR changed'],gCl=gp['Closed accounts'],gT=gp['Total'],gNB=gp['New Balance'],gRCB=gp['Reprice Curr Bal'],gRFB=gp['Reprice Fut Bal'],gClB=gp['Closed Balance'];
+    for(let mi=0;mi<gMonths.length;mi++){
+      const m=gMonths[mi],mKey=DU.mKey(m);
       let ms=0,ma=0,mp=undefined;
-      if(window.parsedManualDataGlobal?.[mKey]?.[p]){ms=window.parsedManualDataGlobal[mKey][p]['Change in SORA']||0;ma=window.parsedManualDataGlobal[mKey][p]['Change in AEL']||0;if(window.parsedManualDataGlobal[mKey][p]['P&L']!==undefined)mp=window.parsedManualDataGlobal[mKey][p]['P&L'];}
-      const eN=gPnl[p]['New originations'][m]||0,eRC=gPnl[p]['Current reprice'][m]||0,eRF=gPnl[p]['Future reprice'][m]||0,eA=gPnl[p]['AEL maturity changed'][m]||0,eE=gPnl[p]['EIR changed'][m]||0,eCl=gPnl[p]['Closed accounts'][m]||0;
-      const dN=gdv(eN),dRC=gdv(eRC),dRF=gdv(eRF),dA=gdv(eA),dE=gdv(eE),dCl=gdv(eCl),dS=gdv(ms),dMA=gdv(ma),dEA=dE-dS,dRT=dRC+dRF;
-      const dT=mp!==undefined?gdv(mp)+dMA:gdv(gPnl[p]['Total'][m]||0)+dMA;
+      const mdp=manual[mKey]&&manual[mKey][p];
+      if(mdp){ms=mdp['Change in SORA']||0;ma=mdp['Change in AEL']||0;if(mdp['P&L']!==undefined)mp=mdp['P&L'];}
+      const dN=gdv(gNew[m]||0),dRC=gdv(gRC[m]||0),dRF=gdv(gRF[m]||0),dA=gdv(gA[m]||0),dE=gdv(gE[m]||0),dCl=gdv(gCl[m]||0);
+      const dS=gdv(ms),dMA=gdv(ma),dEA=dE-dS,dRT=dRC+dRF;
+      const dT=(mp!==undefined?gdv(mp):gdv(gT[m]||0))+dMA;
       const dOB=dT-dS-dN-dRT-dA-dEA-dCl-dMA,dBT=dA+dEA+dOB;
-      const set=(k,v)=>{if(!dr[p][k])dr[p][k]={};dr[p][k][m]=v;};
-      set('Total',dT);set('Change in SORA',dS);set('New originations',dN);set('Current reprice',dRC);set('Future reprice',dRF);set('Repriced Total',dRT);set('AEL maturity changed',dA);set('EIR changed',dEA);set('Other BAU',dOB);set('BAU Total',dBT);set('Closed accounts',dCl);set('Manual adj: Change in AEL',dMA);
-      const bs=1000000;dr[p]['New Count']=gPnl[p]['New Count'];set('New Balance',(gPnl[p]['New Balance'][m]||0)/bs);
-      dr[p]['Reprice Curr Count']=gPnl[p]['Reprice Curr Count'];dr[p]['Reprice Fut Count']=gPnl[p]['Reprice Fut Count'];dr[p]['Closed Count']=gPnl[p]['Closed Count'];
-      set('Reprice Curr Bal',(gPnl[p]['Reprice Curr Bal'][m]||0)/bs);set('Reprice Fut Bal',(gPnl[p]['Reprice Fut Bal'][m]||0)/bs);set('Closed Balance',(gPnl[p]['Closed Balance'][m]||0)/bs);
+      prodRow['Total'][m]=dT;prodRow['Change in SORA'][m]=dS;prodRow['New originations'][m]=dN;
+      prodRow['Current reprice'][m]=dRC;prodRow['Future reprice'][m]=dRF;prodRow['Repriced Total'][m]=dRT;
+      prodRow['AEL maturity changed'][m]=dA;prodRow['EIR changed'][m]=dEA;prodRow['Other BAU'][m]=dOB;
+      prodRow['BAU Total'][m]=dBT;prodRow['Closed accounts'][m]=dCl;prodRow['Manual adj: Change in AEL'][m]=dMA;
+      prodRow['New Balance'][m]=(gNB[m]||0)/BS;
+      prodRow['Reprice Curr Bal'][m]=(gRCB[m]||0)/BS;
+      prodRow['Reprice Fut Bal'][m]=(gRFB[m]||0)/BS;
+      prodRow['Closed Balance'][m]=(gClB[m]||0)/BS;
       dr['Grand Total'][m]+=dT;
-    });
-  });
-  _reMo();_ldr=dr;
+    }
+  }
+  _reMo();_ldr=dr;_ldrVer++;
   renderDashboard(dr,_dMo,_sel);
 };
 
@@ -1012,9 +1048,10 @@ window.toggleStats=function(btn,cls){const els=document.querySelectorAll('.'+cls
 window.toggleAll=function(){
   isExpanded=!isExpanded;
   $('btnToggleAll').innerHTML=(isExpanded?'<span>⊟</span> Collapse All':'<span>⊞</span> Expand All')+'<span class="dash-kbd">X</span>';
-  document.querySelectorAll('.c-row').forEach(r=>r.classList.toggle('hidden',!isExpanded));
-  document.querySelectorAll('.cs').forEach(d=>d.classList.toggle('hidden',!isExpanded));
-  document.querySelectorAll('.eb,.st').forEach(b=>b.textContent=isExpanded?'−':'+');
+  // Scope queries to tbody so we don't scan the whole document (modal, sora view, etc.)
+  const tb=$('tBody');if(!tb)return;
+  tb.querySelectorAll('.c-row,.cs').forEach(r=>r.classList.toggle('hidden',!isExpanded));
+  tb.querySelectorAll('.eb,.st').forEach(b=>b.textContent=isExpanded?'−':'+');
 };
 
 // Copy / Export
@@ -1035,11 +1072,18 @@ window.exportFluxToExcel=function(){
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'EIR Flux');XLSX.writeFile(wb,`EIR_Flux_${DU.fmtMY(lm)}.xlsx`);showToast('Exported ✓');
 };
 
-// SORA Chart — rendered into the SORA tab; shows every stored month
+// SORA Chart — rendered into the SORA tab; shows every stored month.
+// globalDates is already sorted by processData, so no re-sort needed; mKey is memoised.
+function _parseSoraVal(v){if(v===undefined||v==='')return null;const n=parseFloat(String(v).replace(/[^0-9.-]/g,''));return isNaN(n)?null:n;}
 function _soraSeries(){
-  const months=(window.globalDates&&window.globalDates.length?window.globalDates:gMonths).slice().sort((a,b)=>DU.parse(a)-DU.parse(b));
-  const labs=[],dU=[],dA=[];
-  months.forEach(m=>{labs.push(DU.fmtMY(m));const match=m.match(/[A-Z]{3}\d{4}/i);const mKey=match?(match[0].substring(0,3)+match[0].substring(5,7)).toUpperCase():m.toUpperCase();let u=null,a=null;if(window.parsedManualDataGlobal&&window.parsedManualDataGlobal[mKey]){const su=window.parsedManualDataGlobal[mKey]['1M SORA - USED'],sa=window.parsedManualDataGlobal[mKey]['1M SORA - ACTUAL'];if(su!==undefined&&su!=='')u=parseFloat(String(su).replace(/[^0-9.-]/g,''));if(sa!==undefined&&sa!=='')a=parseFloat(String(sa).replace(/[^0-9.-]/g,''));}dU.push(isNaN(u)?null:u);dA.push(isNaN(a)?null:a);});
+  const months=window.globalDates&&window.globalDates.length?window.globalDates:gMonths;
+  const labs=[],dU=[],dA=[],manual=window.parsedManualDataGlobal||{};
+  for(let i=0;i<months.length;i++){
+    const m=months[i];labs.push(DU.fmtMY(m));
+    const md=manual[DU.mKey(m)];
+    dU.push(md?_parseSoraVal(md['1M SORA - USED']):null);
+    dA.push(md?_parseSoraVal(md['1M SORA - ACTUAL']):null);
+  }
   return{months,labs,dU,dA};
 }
 window.renderSoraTable=function(){
@@ -1050,8 +1094,10 @@ window.renderSoraTable=function(){
   const deltaCell=(u,a)=>{if(u===null||a===null||isNaN(u)||isNaN(a))return'<td>—</td>';const d=a-u;const cls=d>=0?'pos-d':'neg-d';const sign=d>=0?'+':'−';return`<td class="${cls}">${sign}${Math.abs(d).toFixed(4)}%</td>`;};
   tb.innerHTML=labs.map((l,i)=>`<tr><td>${l}</td><td>${fmt(dU[i])}</td><td>${fmt(dA[i])}</td>${deltaCell(dU[i],dA[i])}</tr>`).join('');
 };
+let _chartPluginReady=false;
+function _ensureChartPlugin(){if(_chartPluginReady||typeof Chart==='undefined'||typeof ChartDataLabels==='undefined')return;Chart.register(ChartDataLabels);_chartPluginReady=true;}
 window.renderSoraChart=function(){
-  Chart.register(ChartDataLabels);const cEl=$('soraChart');if(!cEl)return;const ctx=cEl.getContext('2d');
+  _ensureChartPlugin();const cEl=$('soraChart');if(!cEl)return;const ctx=cEl.getContext('2d');
   const{labs,dU,dA}=_soraSeries();
   if(soraCi)soraCi.destroy();
   soraCi=new Chart(ctx,{type:'line',data:{labels:labs,datasets:[{label:'Used',data:dU,borderColor:'#FDCF0B',backgroundColor:'rgba(253,207,11,0.08)',borderWidth:2.5,pointBackgroundColor:'#fff',pointBorderColor:'#FDCF0B',pointBorderWidth:2,pointRadius:5,fill:false,tension:0.35,spanGaps:true},{label:'Actual',data:dA,borderColor:'rgba(255,255,255,0.6)',backgroundColor:'rgba(0,0,0,0)',borderWidth:2.5,pointBackgroundColor:'#111',pointBorderColor:'rgba(255,255,255,0.7)',pointBorderWidth:2,pointRadius:5,fill:false,tension:0.35,spanGaps:true}]},
@@ -1085,10 +1131,11 @@ window.showDetails=function(prod,drv,mo){
   $('mTbody').innerHTML=`<tr><td colspan="10" style="text-align:center;padding:28px;color:var(--text-3)">Loading…</td></tr>`;
   setTimeout(()=>{
     const ck=`${prod}|${drv}|${mo}`;
-    if(!_mc[ck]){
+    let recsCached=_mcGet(ck);
+    if(!recsCached){
       const pm=window.globalDates[window.globalDates.indexOf(mo)-1];
       const accs=window.modalIndex[prod][mo][drv]||[];
-      _mc[ck]=accs.map(acc=>{
+      recsCached=accs.map(acc=>{
         const ai=window.globalAccountData.get(acc);const cu=ai.data[mo],pv=pm?ai.data[pm]:null;
         let pv2=0;if(cu&&pv)pv2=cu.lcy-pv.lcy;else if(cu&&!pv)pv2=cu.lcy-cu.alloc;else if(!cu&&pv)pv2=-pv.lcy;
         const r={acc,pnl:pv2};
@@ -1097,8 +1144,9 @@ window.showDetails=function(prod,drv,mo){
         if(cu&&pv){if(drv==='AEL maturity changed')r.diffMonths=DU.diff(pv.aelMaturityDate,cu.aelMaturityDate);else if(drv==='EIR changed'){const pR=parseFloat(pv.eirRate)||0,cR=parseFloat(cu.eirRate)||0,pB=parseFloat(pv.baseRt)||0,cB=parseFloat(cu.baseRt)||0;r.diffEir=cR-pR;r.diffBase=cB-pB;}}
         return r;
       });
+      _mcSet(ck,recsCached);
     }
-    window.modalRecords=_mc[ck];window.modalFilteredRecords=[..._mc[ck]];window.modalCurrentDriver=drv;window.modalCurrentPage=1;window.modalSortAsc=false;$('btnSort').textContent='↓ Sort by P&L';
+    window.modalRecords=recsCached;window.modalFilteredRecords=recsCached;window.modalCurrentDriver=drv;window.modalCurrentPage=1;window.modalSortAsc=false;$('btnSort').textContent='↓ Sort by P&L';
     const recs=window.modalRecords;const tPnl=recs.reduce((s,r)=>s+r.pnl,0);
     const pf=tPnl<0?`(${Math.abs(tPnl).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})})`:tPnl.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
     $('msAcc').textContent=recs.length.toLocaleString();$('msPnl').textContent=pf;$('msPnl').className='ms-val '+(tPnl>=0?'pos-d':'neg-d');$('mSum').style.display='flex';
@@ -1120,73 +1168,82 @@ function renderDashboard(pr,mos,sel){
   if(!sel.length){tbody.innerHTML=`<tr><td colspan="${mos.length+4}" style="text-align:center;padding:32px;color:var(--text-3)">No products selected.</td></tr>`;$('tScroll').classList.remove('hidden');$('emptyState').classList.add('hidden');return;}
   $('tScroll').classList.remove('hidden');$('emptyState').classList.add('hidden');
 
-  _bZc(pr,sel);
+  _bZc(pr);
   const sp='<td class="csp"></td>';const frag=document.createDocumentFragment();
-  const ac={'HL':'a-hl','HP':'a-hp','Others':'a-ot'};
 
-  let _cp='';
-  function crow(key,label,grp,drv,isF,isL){
-    if(rz(_cp,key))return null;
-    const a=ac[_cp]||'a-ot';const tr=document.createElement('tr');
+  // Helpers shared by all product row builders below.
+  const _statsFrag=(cls,count,bal)=>`<div class="${cls} hidden cs">Count: ${count.toLocaleString()}<br>Bal: ${bal.toFixed(1)}m</div>`;
+  const _plainRow=(prod,a,prodLbl,label,rowKey)=>{const tr=document.createElement('tr');tr.className=a;
+    tr.innerHTML=[`<td class="cp"><b>${prodLbl}</b></td><td class="cd">${label}</td>`]
+      .concat(mos.map(m=>c(pr[prod][rowKey][m]))).concat([sp,yc(sYtd(pr[prod][rowKey]))]).join('');
+    return tr;};
+  // One helper handles New/Repriced/Closed "stats" rows — all share the "YTD count+bal, inline stats frag" shape.
+  const _statsRow=(prod,a,di,prodLbl,label,rowKey,driver,clsKey,countFn,balFn,extraIcon)=>{
+    const cls=`st-${clsKey}-${di}`;
+    let yC=0,yB=0;for(let i=0;i<_ytdMo.length;i++){yC+=countFn(_ytdMo[i]);yB+=balFn(_ytdMo[i]);}
+    const ySh=_statsFrag(cls,yC,yB);
+    const lbl=`${label} ${extraIcon||''}<span class="st" onclick="toggleStats(this,'${cls}')" title="Stats">+</span>`;
+    const tr=document.createElement('tr');tr.className=a;
+    tr.innerHTML=[`<td class="cp"><b>${prodLbl}</b></td><td class="cd">${lbl}</td>`]
+      .concat(mos.map(m=>cs(pr[prod][rowKey][m],_statsFrag(cls,countFn(m),balFn(m)),prod,driver,m)))
+      .concat([sp,ycs(sYtd(pr[prod][rowKey]),ySh)]).join('');
+    return tr;
+  };
+  const _childRow=(prod,a,key,label,grp,drv,isF,isL)=>{
+    if(rz(prod,key))return null;
+    const tr=document.createElement('tr');
     tr.className=`child-of-${grp} hidden c-row ${a}${isF?' c-1st':''}${isL?' c-lst':''}`;
     tr.innerHTML=[`<td class="cp"></td><td class="cd">${label}</td>`]
-      .concat(mos.map(m=>c(pr[_cp][key][m],{prod:_cp,drv,mo:m})))
-      .concat([sp,yc(sYtd(pr[_cp][key]))]).join('');
+      .concat(mos.map(m=>c(pr[prod][key][m],{prod,drv,mo:m})))
+      .concat([sp,yc(sYtd(pr[prod][key]))]).join('');
     return tr;
-  }
+  };
 
-  sel.forEach((prod,idx)=>{
+  sel.forEach(prod=>{
     if(rz(prod,'Total'))return;
-    _cp=prod;const a=ac[prod]||'a-ot';const di=prod.replace(/\s+/g,'-');
-    function mkRow(inner){const tr=document.createElement('tr');tr.className=a;tr.innerHTML=inner;return tr;}
+    const a=PROD_ACCENT[prod]||'a-ot';const di=prod.replace(/\s+/g,'-');
+    const zSora=rz(prod,'Change in SORA'),zNew=rz(prod,'New originations'),zRpT=rz(prod,'Repriced Total');
 
     // SORA
-    if(!rz(prod,'Change in SORA')){
-      frag.appendChild(mkRow([`<td class="cp"><b>${prod}</b></td><td class="cd">Change in SORA</td>`].concat(mos.map(m=>c(pr[prod]['Change in SORA'][m]))).concat([sp,yc(sYtd(pr[prod]['Change in SORA']))]).join('')));
-    }
+    if(!zSora){frag.appendChild(_plainRow(prod,a,prod,'Change in SORA','Change in SORA'));}
     // New originations
-    if(!rz(prod,'New originations')){
-      const sp2=rz(prod,'Change in SORA')?prod:'';let yC=0,yB=0;_ytdMo.forEach(m=>{yC+=(pr[prod]['New Count'][m]||0);yB+=(pr[prod]['New Balance'][m]||0);});
-      const ySh=`<div class="st-no-${di} hidden cs">Count: ${yC.toLocaleString()}<br>Bal: ${yB.toFixed(1)}m</div>`;
-      frag.appendChild(mkRow([`<td class="cp"><b>${sp2}</b></td><td class="cd">New originations <span class="st" onclick="toggleStats(this,'st-no-${di}')" title="Stats">+</span></td>`]
-        .concat(mos.map(m=>{const sh=`<div class="st-no-${di} hidden cs">Count: ${(pr[prod]['New Count'][m]||0).toLocaleString()}<br>Bal: ${(pr[prod]['New Balance'][m]||0).toFixed(1)}m</div>`;return cs(pr[prod]['New originations'][m],sh,prod,'New originations',m);}))
-        .concat([sp,ycs(sYtd(pr[prod]['New originations']),ySh)]).join('')));
+    if(!zNew){
+      const pLbl=zSora?prod:'';
+      const nc=m=>pr[prod]['New Count'][m]||0,nb=m=>pr[prod]['New Balance'][m]||0;
+      frag.appendChild(_statsRow(prod,a,di,pLbl,'New originations','New originations','New originations','no',nc,nb));
     }
     // Repriced accounts
-    if(!rz(prod,'Repriced Total')){
-      const sp2=(rz(prod,'New originations')&&rz(prod,'Change in SORA'))?prod:'';const isHL=prod==='HL';
-      let yC=0,yB=0;_ytdMo.forEach(m=>{yC+=isHL?(pr[prod]['Reprice Curr Count'][m]||0):((pr[prod]['Reprice Curr Count'][m]||0)+(pr[prod]['Reprice Fut Count'][m]||0));yB+=isHL?(pr[prod]['Reprice Curr Bal'][m]||0):((pr[prod]['Reprice Curr Bal'][m]||0)+(pr[prod]['Reprice Fut Bal'][m]||0));});
-      const ySh=`<div class="st-rp-${di} hidden cs">Count: ${yC.toLocaleString()}<br>Bal: ${yB.toFixed(1)}m</div>`;
-      frag.appendChild(mkRow([`<td class="cp"><b>${sp2}</b></td><td class="cd">Repriced accounts <span class="eb" id="btn-reprice-${di}" onclick="toggleGroup('reprice-${di}')" title="Expand">+</span> <span class="st" onclick="toggleStats(this,'st-rp-${di}')" title="Stats">+</span></td>`]
-        .concat(mos.map(m=>{const cnt=isHL?(pr[prod]['Reprice Curr Count'][m]||0):((pr[prod]['Reprice Curr Count'][m]||0)+(pr[prod]['Reprice Fut Count'][m]||0));const bal=isHL?(pr[prod]['Reprice Curr Bal'][m]||0):((pr[prod]['Reprice Curr Bal'][m]||0)+(pr[prod]['Reprice Fut Bal'][m]||0));const sh=`<div class="st-rp-${di} hidden cs">Count: ${cnt.toLocaleString()}<br>Bal: ${bal.toFixed(1)}m</div>`;return cs(pr[prod]['Repriced Total'][m],sh,prod,'Repriced accounts',m);}))
-        .concat([sp,ycs(sYtd(pr[prod]['Repriced Total']),ySh)]).join('')));
-      [crow('Current reprice','Current reprice',`reprice-${di}`,'Current reprice',true,rz(prod,'Future reprice')),
-       crow('Future reprice','Future reprice',`reprice-${di}`,'Future reprice',rz(prod,'Current reprice'),true)]
+    if(!zRpT){
+      const pLbl=(zNew&&zSora)?prod:'';const isHL=prod==='HL';
+      const rc=m=>(pr[prod]['Reprice Curr Count'][m]||0)+(isHL?0:(pr[prod]['Reprice Fut Count'][m]||0));
+      const rb=m=>(pr[prod]['Reprice Curr Bal'][m]||0)+(isHL?0:(pr[prod]['Reprice Fut Bal'][m]||0));
+      const icon=`<span class="eb" id="btn-reprice-${di}" onclick="toggleGroup('reprice-${di}')" title="Expand">+</span>`;
+      frag.appendChild(_statsRow(prod,a,di,pLbl,'Repriced accounts','Repriced Total','Repriced accounts','rp',rc,rb,icon));
+      [_childRow(prod,a,'Current reprice','Current reprice',`reprice-${di}`,'Current reprice',true,rz(prod,'Future reprice')),
+       _childRow(prod,a,'Future reprice','Future reprice',`reprice-${di}`,'Future reprice',rz(prod,'Current reprice'),true)]
       .filter(Boolean).forEach(r=>frag.appendChild(r));
     }
     // BAU
     if(!rz(prod,'BAU Total')){
-      const sp2=(rz(prod,'New originations')&&rz(prod,'Repriced Total')&&rz(prod,'Change in SORA'))?prod:'';
-      frag.appendChild(mkRow([`<td class="cp"><b>${sp2}</b></td><td class="cd">BAU <span class="eb" id="btn-bau-${di}" onclick="toggleGroup('bau-${di}')" title="Expand">+</span></td>`]
-        .concat(mos.map(m=>c(pr[prod]['BAU Total'][m]))).concat([sp,yc(sYtd(pr[prod]['BAU Total']))]).join('')));
+      const pLbl=(zNew&&zRpT&&zSora)?prod:'';
+      const tr=document.createElement('tr');tr.className=a;
+      tr.innerHTML=[`<td class="cp"><b>${pLbl}</b></td><td class="cd">BAU <span class="eb" id="btn-bau-${di}" onclick="toggleGroup('bau-${di}')" title="Expand">+</span></td>`]
+        .concat(mos.map(m=>c(pr[prod]['BAU Total'][m]))).concat([sp,yc(sYtd(pr[prod]['BAU Total']))]).join('');
+      frag.appendChild(tr);
       const aZ=rz(prod,'AEL maturity changed'),eZ=rz(prod,'EIR changed'),oZ=rz(prod,'Other BAU');
-      [crow('AEL maturity changed','AEL maturity changed',`bau-${di}`,'AEL maturity changed',true,eZ&&oZ),
-       crow('EIR changed','EIR changed',`bau-${di}`,'EIR changed',aZ,oZ),
-       crow('Other BAU','Other BAU',`bau-${di}`,'Other BAU',aZ&&eZ,true)]
+      [_childRow(prod,a,'AEL maturity changed','AEL maturity changed',`bau-${di}`,'AEL maturity changed',true,eZ&&oZ),
+       _childRow(prod,a,'EIR changed','EIR changed',`bau-${di}`,'EIR changed',aZ,oZ),
+       _childRow(prod,a,'Other BAU','Other BAU',`bau-${di}`,'Other BAU',aZ&&eZ,true)]
       .filter(Boolean).forEach(r=>frag.appendChild(r));
     }
     // Closed
     if(!rz(prod,'Closed accounts')){
-      let yC=0,yB=0;_ytdMo.forEach(m=>{yC+=(pr[prod]['Closed Count'][m]||0);yB+=(pr[prod]['Closed Balance'][m]||0);});
-      const ySh=`<div class="st-cl-${di} hidden cs">Count: ${yC.toLocaleString()}<br>Bal: ${yB.toFixed(1)}m</div>`;
-      frag.appendChild(mkRow([`<td class="cp"></td><td class="cd">Closed accounts <span class="st" onclick="toggleStats(this,'st-cl-${di}')" title="Stats">+</span></td>`]
-        .concat(mos.map(m=>{const sh=`<div class="st-cl-${di} hidden cs">Count: ${(pr[prod]['Closed Count'][m]||0).toLocaleString()}<br>Bal: ${(pr[prod]['Closed Balance'][m]||0).toFixed(1)}m</div>`;return cs(pr[prod]['Closed accounts'][m],sh,prod,'Closed accounts',m);}))
-        .concat([sp,ycs(sYtd(pr[prod]['Closed accounts']),ySh)]).join('')));
+      const cc=m=>pr[prod]['Closed Count'][m]||0,cb=m=>pr[prod]['Closed Balance'][m]||0;
+      frag.appendChild(_statsRow(prod,a,di,'','Closed accounts','Closed accounts','Closed accounts','cl',cc,cb));
     }
     // Manual adj
     if(!rz(prod,'Manual adj: Change in AEL')){
-      frag.appendChild(mkRow([`<td class="cp"></td><td class="cd">Manual adj: Change in AEL</td>`]
-        .concat(mos.map(m=>c(pr[prod]['Manual adj: Change in AEL'][m]))).concat([sp,yc(sYtd(pr[prod]['Manual adj: Change in AEL']))]).join('')));
+      frag.appendChild(_plainRow(prod,a,'','Manual adj: Change in AEL','Manual adj: Change in AEL'));
     }
     // Product total
     const ts=document.createElement('tr');ts.className=`r-sub ${a}`;
@@ -1201,7 +1258,7 @@ function renderDashboard(pr,mos,sel){
     .concat(mos.map(m=>c(pr['Grand Total'][m],{bold:true}))).concat([sp,yc(sYtd(pr['Grand Total']),true)]).join('');
   frag.appendChild(tg);
   tbody.appendChild(frag);
-  if(isExpanded){document.querySelectorAll('.c-row,.cs').forEach(el=>el.classList.remove('hidden'));document.querySelectorAll('.eb,.st').forEach(b=>b.textContent='−');}
+  if(isExpanded){tbody.querySelectorAll('.c-row,.cs').forEach(el=>el.classList.remove('hidden'));tbody.querySelectorAll('.eb,.st').forEach(b=>b.textContent='−');}
 }
 </script>
 </body>
