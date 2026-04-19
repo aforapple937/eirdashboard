@@ -772,15 +772,15 @@ function renderStoredMonthsModal(accRows,manRows){
     parts.push(accRows.map(r=>`<div class="sm-row"><span class="sm-name">${DU.fmtMY(r.date)}</span><span class="sm-cnt">${(r.rows?.length||0).toLocaleString()} accounts</span><button class="sm-del" onclick="deleteStoredMonth('${r.date}')" title="Delete ${DU.fmtMY(r.date)}">Remove</button></div>`).join(''));
   }
   if(manRows&&manRows.length){
-    manRows.sort((a,b)=>String(a.key).localeCompare(String(b.key)));
     parts.push('<div class="sm-sec-lbl">Manual adjustments (JSON)</div>');
-    parts.push(manRows.map(r=>{
-      const d=r.data||{};const fields=[];
-      if(d['1M SORA - USED']!==undefined||d['1M SORA - ACTUAL']!==undefined)fields.push('SORA');
-      ['HL','HP','Others'].forEach(p=>{if(d[p]&&Object.keys(d[p]).length)fields.push(p);});
-      const legacy=/^[A-Z]{3}\d{4}$/.test(String(r.key))?' <span style="color:#b91c1c;font-size:10px">(legacy CSV)</span>':'';
-      return`<div class="sm-row sm-manual"><span class="sm-name">${r.key}${legacy}</span><span class="sm-cnt">${fields.join(', ')||'(empty)'}</span><button class="sm-del" onclick="deleteStoredManual('${r.key.replace(/'/g,"\\'")}')" title="Delete ${r.key}">Remove</button></div>`;
-    }).join(''));
+    const fieldSet=new Set();
+    manRows.forEach(r=>{
+      const d=r.data||{};
+      if(d['1M SORA - USED']!==undefined||d['1M SORA - ACTUAL']!==undefined)fieldSet.add('SORA');
+      ['HL','HP','Others'].forEach(p=>{if(d[p]&&Object.keys(d[p]).length)fieldSet.add(p);});
+    });
+    const fields=Array.from(fieldSet).join(', ')||'(empty)';
+    parts.push(`<div class="sm-row sm-manual"><span class="sm-name">Manual</span><span class="sm-cnt">${fields}</span><button class="sm-del" onclick="deleteAllStoredManual()" title="Delete all manual adjustments">Remove</button></div>`);
   }
   list.innerHTML=parts.join('');
   const totalAcc=(accRows||[]).reduce((s,r)=>s+(r.rows?.length||0),0);
@@ -807,6 +807,16 @@ window.deleteStoredManual=async function(key){
   updateDashboardView();renderSoraChart();renderSoraTable();
   updateManualIndicator();
   showToast('Removed manual '+key);
+};
+window.deleteAllStoredManual=async function(){
+  if(!confirm('Remove ALL manual adjustments? This cannot be undone.'))return;
+  const rows=await IDB.getAll(IDB.manStore);
+  await Promise.all(rows.map(r=>IDB.del(IDB.manStore,r.key)));
+  window.parsedManualDataGlobal={};
+  await renderStoredMonthsPanel();
+  updateDashboardView();renderSoraChart();renderSoraTable();
+  updateManualIndicator();
+  showToast('Removed all manual adjustments');
 };
 window.clearAllStored=async function(){
   if(!confirm('Clear ALL cached months (account + manual)? This cannot be undone.'))return;
