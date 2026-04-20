@@ -314,29 +314,34 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
 /* ═══ CALCULATOR MODULE ═══ */
 #calcView{padding:14px 14px 0;flex-direction:column;}
 #calcPanel{flex:1;display:flex;flex-direction:column;min-height:0;}
-.calc-progress{height:3px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:6px;}
-.calc-progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--yellow-dk),var(--yellow));transition:width .12s;}
+.calc-hint{padding:4px 2px 0;font-size:11px;color:var(--text-3);font-weight:500;min-height:16px;}
 .calc-notice{padding:18px 20px;margin:14px;background:#fef3c7;border:1px solid #fcd34d;border-radius:var(--r);color:#78350f;font-size:12.5px;font-weight:500;line-height:1.6;}
 .calc-notice strong{color:#78350f;}
-.calc-body{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;}
-.calc-tabs{display:flex;gap:4px;padding:10px 14px 0;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
-.calc-tab{display:inline-flex;align-items:center;padding:7px 13px;border-radius:var(--r) var(--r) 0 0;cursor:pointer;background:transparent;font-family:var(--font);font-size:11.5px;font-weight:700;color:var(--text-2);border-bottom:2px solid transparent;transition:all 0.12s;user-select:none;}
-.calc-tab:hover{color:var(--text-1);background:var(--surface-2);}
-.calc-tab.on{color:var(--text-1);background:var(--surface-2);border-bottom-color:var(--yellow-dk);}
-.calc-tab-content{display:none;flex:1;overflow:hidden;flex-direction:column;min-height:0;padding:14px;}
-.calc-tab-content.on{display:flex;}
-.calc-summary{display:flex;flex-direction:column;gap:12px;padding:6px 2px;}
-.calc-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
-.calc-row:has(#cs-derived-eir),.calc-row:has(#cs-m-derived-eir){grid-template-columns:repeat(3,1fr);}
-.calc-card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);padding:14px 16px;box-shadow:var(--shadow);}
-.calc-card h3{font-size:9.5px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);margin-bottom:6px;}
-.calc-card p{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--text-1);letter-spacing:-0.4px;font-variant-numeric:tabular-nums;}
-.calc-stats{display:flex;justify-content:center;flex-wrap:wrap;gap:28px;padding:12px 18px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r-lg);margin:0 2px 12px;}
-.calc-stat{text-align:center;}
-.calc-stat h3{font-size:9.5px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);margin-bottom:4px;}
-.calc-stat p{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--yellow-dk);letter-spacing:-0.4px;}
-.calc-stat.s-warn p{color:#d97706;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
-.calc-stat.s-neg p{color:#dc2626;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+.calc-body{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:14px;gap:12px;}
+.calc-seg{display:inline-flex;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--surface-2);}
+.calc-seg-btn{padding:5px 12px;border:0;background:transparent;font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all 0.12s;}
+.calc-seg-btn:hover{color:var(--text-1);background:#f1f3f5;}
+.calc-seg-btn.on{background:var(--black);color:#fff;}
+.calc-coverage{display:flex;flex-wrap:wrap;gap:6px 22px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);font-size:11.5px;color:var(--text-2);font-weight:600;flex-shrink:0;}
+.calc-coverage strong{color:var(--text-1);font-family:var(--mono);font-weight:700;margin-left:4px;}
+.calc-coverage a{color:var(--text-1);text-decoration:underline;cursor:pointer;font-weight:600;}
+.calc-coverage a:hover{color:var(--yellow-dk);}
+.calc-coverage-sep{color:var(--text-3);}
+.calc-recon-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;flex-shrink:0;}
+.calc-recon-title{padding:10px 16px 8px;font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border-soft);}
+.calc-recon{width:100%;border-collapse:collapse;font-size:12.5px;}
+.calc-recon th{padding:9px 16px;text-align:right;font-family:var(--font);font-size:9.5px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text-3);background:var(--surface-2);border-bottom:1px solid var(--border);}
+.calc-recon th:first-child{text-align:left;}
+.calc-recon td{padding:11px 16px;text-align:right;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text-1);font-variant-numeric:tabular-nums;border-bottom:1px solid var(--border-soft);}
+.calc-recon tr:last-child td{border-bottom:0;}
+.calc-recon td:first-child{text-align:left;font-family:var(--font);font-weight:700;color:var(--text-1);}
+.calc-drill-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 4px;flex-shrink:0;flex-wrap:wrap;}
+.calc-crumb{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all 0.12s;}
+.calc-crumb:hover{background:#fff;color:var(--text-1);border-color:var(--black);}
+.calc-drill-title{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+.calc-drill-title h2{font-family:var(--font);font-size:16px;font-weight:700;color:var(--text-1);margin:0;letter-spacing:-0.3px;}
+.calc-drill-title .calc-drill-meta{font-size:11.5px;color:var(--text-2);font-weight:500;font-variant-numeric:tabular-nums;}
+.calc-drill-title .calc-drill-meta em{font-style:normal;color:var(--text-3);margin:0 6px;}
 .calc-tbl-wrap{flex:1;overflow:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);min-height:0;}
 .calc-tbl{width:100%;min-width:max-content;border-collapse:collapse;font-size:12px;}
 .calc-tbl thead th{position:sticky;top:0;z-index:3;background:var(--black);color:rgba(255,255,255,0.85);font-family:var(--font);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:8px 11px;text-align:right;white-space:nowrap;}
@@ -349,7 +354,19 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
 .calc-tbl tfoot td{padding:8px 11px;font-family:var(--mono);font-size:11.5px;font-weight:700;background:var(--yellow-pale);border-top:2px solid var(--yellow);}
 .calc-tbl tbody td a{color:var(--text-1);font-weight:700;text-decoration:underline;cursor:pointer;}
 .calc-tbl tbody td a:hover{color:var(--yellow-dk);}
-.calc-pg-bar{display:flex;align-items:center;gap:10px;padding:8px 2px 10px;font-size:11.5px;color:var(--text-2);font-weight:600;}
+.calc-pg-bar{display:flex;align-items:center;gap:10px;padding:8px 2px 10px;font-size:11.5px;color:var(--text-2);font-weight:600;flex-shrink:0;}
+.calc-prog-card{margin:auto;max-width:460px;padding:36px 40px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-lg);text-align:center;}
+.calc-prog-card h2{font-family:var(--font);font-size:14px;font-weight:700;letter-spacing:0.3px;color:var(--text-2);text-transform:uppercase;margin:0 0 18px;}
+.calc-prog-pct{font-family:var(--mono);font-size:42px;font-weight:700;color:var(--text-1);letter-spacing:-1.2px;line-height:1;font-variant-numeric:tabular-nums;margin-bottom:16px;}
+.calc-prog-bar{height:12px;background:var(--border);border-radius:99px;overflow:hidden;margin-bottom:16px;}
+.calc-prog-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--yellow-dk),var(--yellow));border-radius:99px;transition:width .15s ease-out;}
+.calc-prog-count{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text-1);margin-bottom:4px;font-variant-numeric:tabular-nums;}
+.calc-prog-eta{font-size:11.5px;color:var(--text-3);font-weight:500;margin-bottom:20px;min-height:15px;}
+.calc-prog-cancel{padding:7px 18px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-1);cursor:pointer;transition:all 0.12s;}
+.calc-prog-cancel:hover{background:#fff;border-color:var(--black);}
+.calc-view{display:none;flex:1;flex-direction:column;min-height:0;overflow:hidden;gap:12px;}
+.calc-view.on{display:flex;}
+.calc-prog-wrap{flex:1;display:flex;min-height:0;}
 </style>
 </head>
 <body>
@@ -461,70 +478,72 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
           </div>
           <div class="dash-grp">
             <span class="dash-lbl">Account</span>
-            <input type="text" id="calcAcc" placeholder="Account Number" style="padding:5px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-1);background:var(--surface-2);outline:none;width:180px;">
+            <input type="text" id="calcAcc" placeholder="(leave blank for all)" style="padding:5px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-1);background:var(--surface-2);outline:none;width:180px;">
           </div>
           <div class="dash-grp">
-            <span class="dash-lbl">Options</span>
-            <label class="dash-pill" style="cursor:pointer;" title="Re-derive EIR via goal-seek"><input type="checkbox" id="calcDerive" style="margin:0;accent-color:var(--yellow-dk);"> Re-Derive EIR</label>
+            <span class="dash-lbl">Method</span>
+            <div class="calc-seg" role="tablist">
+              <button class="calc-seg-btn on" data-method="system" onclick="calcSetMethod('system')" title="Discount cashflows with the system-provided EIR">System EIR</button>
+              <button class="calc-seg-btn" data-method="derive" onclick="calcSetMethod('derive')" title="Goal-seek the EIR that reproduces ledger + allocated cost">Re-derive EIR</button>
+            </div>
           </div>
           <div class="dash-grp" style="margin-left:auto">
-            <button class="dash-btn" id="btnCalcOne" onclick="calcRunSingle()">Calculate</button>
-            <button class="dash-btn" onclick="calcRunAll()" style="background:var(--black);color:#fff;border-color:var(--black);">Calculate All</button>
+            <button class="dash-btn" id="btnCalcRun" onclick="calcRun()" style="background:var(--black);color:#fff;border-color:var(--black);">Calculate All</button>
             <button class="dash-btn hidden" id="btnCalcExport" onclick="calcExportPortfolio()">↓ Excel</button>
           </div>
         </div>
-        <div class="calc-progress hidden" id="calcProgress"><div class="calc-progress-bar" id="calcProgressBar"></div></div>
+        <div class="calc-hint" id="calcHint"></div>
       </div>
       <div id="calcPanel">
         <div class="t-card">
           <div class="empty" id="calcEmpty">
             <div class="empty-ico">🧮</div>
             <h3>EIR Calculator</h3>
-            <p>Pick a <strong>month</strong> above to calculate EIR per account. Load both the account CSV and the rate-history CSV via <strong>Load Data</strong>. Enter an account number for a single result, or click <strong>Calculate All</strong> for the full listing.</p>
+            <p>Pick a <strong>month</strong> above to calculate EIR per account. Load both the account CSV and the rate-history CSV via <strong>Load Data</strong>. Leave the account blank and click <strong>Calculate All</strong>, or enter an account number to drill into a single cashflow schedule.</p>
           </div>
           <div class="calc-notice hidden" id="calcNotice"></div>
           <div class="calc-body hidden" id="calcBody">
-            <div class="calc-tabs" id="calcTabs">
-              <div class="calc-tab on" data-ct="summary" onclick="calcSwitchTab('summary')"><span>Summary</span></div>
-              <div class="calc-tab" data-ct="cashflow" onclick="calcSwitchTab('cashflow')"><span>Cashflow Schedule</span></div>
-              <div class="calc-tab" data-ct="account" onclick="calcSwitchTab('account')"><span>Account Detail</span></div>
-              <div class="calc-tab" data-ct="rate" onclick="calcSwitchTab('rate')"><span>Rate Detail</span></div>
-              <div class="calc-tab hidden" data-ct="portfolio" onclick="calcSwitchTab('portfolio')"><span>Account Listing</span></div>
-            </div>
-            <div id="calc-tab-summary" class="calc-tab-content on">
-              <div class="calc-stats hidden" id="calcStats"></div>
-              <div class="calc-summary">
-                <div class="calc-row">
-                  <div class="calc-card"><h3>PV (Calc)</h3><p id="cs-pv-calc">—</p></div>
-                  <div class="calc-card"><h3>N_PV_CASH_FLOWS_EIR</h3><p id="cs-pv-sys">—</p></div>
-                  <div class="calc-card"><h3>PV Var (Amt)</h3><p id="cs-pv-diff">—</p></div>
-                  <div class="calc-card"><h3>PV Var (%)</h3><p id="cs-pv-diff-pct">—</p></div>
-                </div>
-                <div class="calc-row">
-                  <div class="calc-card"><h3>EIR Adj (Calc)</h3><p id="cs-eir-adj">—</p></div>
-                  <div class="calc-card"><h3>N_UNAMRT_FEES_EIR</h3><p id="cs-unamrt-fees">—</p></div>
-                  <div class="calc-card"><h3>EIR Adj Var (Amt)</h3><p id="cs-eir-diff">—</p></div>
-                  <div class="calc-card"><h3>EIR Adj Var (%)</h3><p id="cs-eir-diff-pct">—</p></div>
-                </div>
-                <div class="calc-row hidden" id="cs-eir-row">
-                  <div class="calc-card"><h3>EIR (Calc)</h3><p id="cs-derived-eir">—</p></div>
-                  <div class="calc-card"><h3>N_IFRS9_EFF_INTEREST_RATE</h3><p id="cs-sys-eir">—</p></div>
-                  <div class="calc-card"><h3>EIR Var</h3><p id="cs-eir-rate-diff">—</p></div>
-                </div>
+            <div class="calc-view on" id="calcPortfolioView">
+              <div class="calc-coverage hidden" id="calcCoverage"></div>
+              <div class="calc-recon-wrap hidden" id="calcPortReconWrap">
+                <div class="calc-recon-title" id="calcPortReconTitle">Portfolio totals</div>
+                <table class="calc-recon"><thead><tr><th>Metric</th><th>Engine</th><th>System</th><th>Variance</th><th>%</th></tr></thead><tbody id="calcPortReconBody"></tbody></table>
               </div>
-            </div>
-            <div id="calc-tab-cashflow" class="calc-tab-content"><div class="calc-tbl-wrap"><table class="calc-tbl" id="calcCfTable"><thead><tr id="calcCfHead"></tr></thead><tbody id="calcCfBody"></tbody><tfoot id="calcCfFoot"></tfoot></table></div></div>
-            <div id="calc-tab-account" class="calc-tab-content"><div class="calc-tbl-wrap"><table class="calc-tbl"><thead><tr id="calcAccHead"></tr></thead><tbody id="calcAccBody"></tbody></table></div></div>
-            <div id="calc-tab-rate" class="calc-tab-content"><div class="calc-tbl-wrap"><table class="calc-tbl"><thead><tr id="calcRateHead"></tr></thead><tbody id="calcRateBody"></tbody></table></div></div>
-            <div id="calc-tab-portfolio" class="calc-tab-content">
-              <div class="calc-pg-bar">
+              <div class="calc-pg-bar hidden" id="calcPgBar">
                 <span id="calcPgInfo">Page 1 of 1</span>
                 <div style="margin-left:auto;display:flex;gap:6px;">
                   <button class="pg-btn" id="calcPgPrev" onclick="calcChangePage(-1)">← Prev</button>
                   <button class="pg-btn" id="calcPgNext" onclick="calcChangePage(1)">Next →</button>
                 </div>
               </div>
-              <div class="calc-tbl-wrap"><table class="calc-tbl" id="calcPortTable"><thead><tr id="calcPortHead"></tr></thead><tbody id="calcPortBody"></tbody></table></div>
+              <div class="calc-tbl-wrap hidden" id="calcPortTblWrap"><table class="calc-tbl" id="calcPortTable"><thead><tr id="calcPortHead"></tr></thead><tbody id="calcPortBody"></tbody></table></div>
+            </div>
+            <div class="calc-view" id="calcSingleView">
+              <div class="calc-drill-head">
+                <button class="calc-crumb" id="calcCrumb" onclick="calcBackFromSingle()">← Back</button>
+                <div class="calc-drill-title">
+                  <h2 id="calcDrillAcc">A—</h2>
+                  <span class="calc-drill-meta" id="calcDrillMeta"></span>
+                </div>
+                <button class="dash-btn" id="btnCalcSingleExport" onclick="calcExportSingle()">↓ Excel</button>
+              </div>
+              <div class="calc-recon-wrap">
+                <div class="calc-recon-title">Reconciliation</div>
+                <table class="calc-recon"><thead><tr><th>Metric</th><th>Engine</th><th>System</th><th>Variance</th><th>%</th></tr></thead><tbody id="calcSingleReconBody"></tbody></table>
+              </div>
+              <div class="calc-tbl-wrap"><table class="calc-tbl" id="calcCfTable"><thead><tr id="calcCfHead"></tr></thead><tbody id="calcCfBody"></tbody><tfoot id="calcCfFoot"></tfoot></table></div>
+            </div>
+            <div class="calc-view" id="calcProgView">
+              <div class="calc-prog-wrap">
+                <div class="calc-prog-card">
+                  <h2 id="calcProgTitle">Calculating all accounts</h2>
+                  <div class="calc-prog-pct" id="calcProgPct">0%</div>
+                  <div class="calc-prog-bar"><div class="calc-prog-bar-fill" id="calcProgBarFill"></div></div>
+                  <div class="calc-prog-count" id="calcProgCount">0 of 0 accounts</div>
+                  <div class="calc-prog-eta" id="calcProgEta">&nbsp;</div>
+                  <button class="calc-prog-cancel" onclick="calcCancelRun()">Cancel</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -662,52 +681,6 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
         <div class="sc-row"><span>Close any modal</span><span class="sc-keys"><span class="sc-key">Esc</span></span></div>
         <div class="sc-row"><span>Page in account drill-down</span><span class="sc-keys"><span class="sc-key">←</span><span class="sc-key">→</span></span></div>
         <div class="sc-row"><span>Show this cheatsheet</span><span class="sc-keys"><span class="sc-key">?</span></span></div>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="m-ov" id="calcAccountModal">
-  <div class="m-box">
-    <div class="m-hd">
-      <h2 id="calcAccTitle">Account Details</h2>
-      <div class="m-acts">
-        <button class="m-btn" onclick="calcExportSingle()" id="btnCalcSingleExport">↓ Excel</button>
-        <button class="m-cl" onclick="calcCloseAccountModal()">✕</button>
-      </div>
-    </div>
-    <div class="m-meta"><span class="m-meta-l" id="calcAccMeta"></span><span class="m-meta-r" id="calcAccMetaR"></span></div>
-    <div class="mm-body" style="padding:0;display:flex;flex-direction:column;overflow:hidden;">
-      <div class="calc-tabs" id="calcMTabs" style="padding:10px 18px 0;background:var(--surface-2);">
-        <div class="calc-tab on" data-ct="summary" onclick="calcSwitchTab('summary',true)"><span>Summary</span></div>
-        <div class="calc-tab" data-ct="cashflow" onclick="calcSwitchTab('cashflow',true)"><span>Cashflow</span></div>
-        <div class="calc-tab" data-ct="account" onclick="calcSwitchTab('account',true)"><span>Account</span></div>
-        <div class="calc-tab" data-ct="rate" onclick="calcSwitchTab('rate',true)"><span>Rate</span></div>
-      </div>
-      <div style="flex:1;overflow:auto;padding:14px 18px;">
-        <div id="calc-m-tab-summary" class="calc-tab-content on">
-          <div class="calc-summary">
-            <div class="calc-row">
-              <div class="calc-card"><h3>PV (Calc)</h3><p id="cs-m-pv-calc">—</p></div>
-              <div class="calc-card"><h3>N_PV_CASH_FLOWS_EIR</h3><p id="cs-m-pv-sys">—</p></div>
-              <div class="calc-card"><h3>PV Var (Amt)</h3><p id="cs-m-pv-diff">—</p></div>
-              <div class="calc-card"><h3>PV Var (%)</h3><p id="cs-m-pv-diff-pct">—</p></div>
-            </div>
-            <div class="calc-row">
-              <div class="calc-card"><h3>EIR Adj (Calc)</h3><p id="cs-m-eir-adj">—</p></div>
-              <div class="calc-card"><h3>N_UNAMRT_FEES_EIR</h3><p id="cs-m-unamrt-fees">—</p></div>
-              <div class="calc-card"><h3>EIR Adj Var (Amt)</h3><p id="cs-m-eir-diff">—</p></div>
-              <div class="calc-card"><h3>EIR Adj Var (%)</h3><p id="cs-m-eir-diff-pct">—</p></div>
-            </div>
-            <div class="calc-row hidden" id="cs-m-eir-row">
-              <div class="calc-card"><h3>EIR (Calc)</h3><p id="cs-m-derived-eir">—</p></div>
-              <div class="calc-card"><h3>N_IFRS9_EFF_INTEREST_RATE</h3><p id="cs-m-sys-eir">—</p></div>
-              <div class="calc-card"><h3>EIR Var</h3><p id="cs-m-eir-rate-diff">—</p></div>
-            </div>
-          </div>
-        </div>
-        <div id="calc-m-tab-cashflow" class="calc-tab-content"><div class="calc-tbl-wrap"><table class="calc-tbl" id="calcMCfTable"><thead><tr id="calcMCfHead"></tr></thead><tbody id="calcMCfBody"></tbody><tfoot id="calcMCfFoot"></tfoot></table></div></div>
-        <div id="calc-m-tab-account" class="calc-tab-content"><div class="calc-tbl-wrap"><table class="calc-tbl"><thead><tr id="calcMAccHead"></tr></thead><tbody id="calcMAccBody"></tbody></table></div></div>
-        <div id="calc-m-tab-rate" class="calc-tab-content"><div class="calc-tbl-wrap"><table class="calc-tbl"><thead><tr id="calcMRateHead"></tr></thead><tbody id="calcMRateBody"></tbody></table></div></div>
       </div>
     </div>
   </div>
@@ -1473,8 +1446,9 @@ if(isExpanded){tbody.querySelectorAll('.c-row,.cs').forEach(el=>el.classList.rem
 const CALC={
 month:null, accByNum:new Map(), rateByAcc:new Map(), accHeaders:[], rateRows:[],
 portfolio:[], negativeEir:[], excludedFlag:[], excludedHP:[],
-page:1, perPage:100, sort:{field:null,dir:1}, running:false,
+page:1, perPage:100, sort:{field:null,dir:1}, running:false, cancelled:false,
 currentAcc:null, lastResult:null,
+method:'system', view:'empty', startedAt:0,
 _rateIdbCache:new Map()
 };
 function _cParse(s){if(!s)return null;const d=DU.parse(s);if(!d)return null;return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));}
@@ -1500,22 +1474,37 @@ const sel=$('calcMonth');if(!sel)return;
 const dates=(window.globalDates||[]).slice().sort((a,b)=>DU.parse(a)-DU.parse(b));
 if(!dates.length){
 sel.innerHTML='<option value="">(no months loaded)</option>';
-$('calcEmpty').classList.remove('hidden');$('calcBody').classList.add('hidden');$('calcNotice').classList.add('hidden');
-return;
+calcShowEmpty();return;
 }
 const prev=sel.value;
 sel.innerHTML=dates.map(d=>`<option value="${d}">${DU.fmtMY(d)}</option>`).join('');
 sel.value=dates.includes(prev)?prev:dates[dates.length-1];
 calcOnMonthChange();
 }
+function calcShowEmpty(){
+CALC.view='empty';
+$('calcEmpty').classList.remove('hidden');
+$('calcBody').classList.add('hidden');
+$('calcNotice').classList.add('hidden');
+calcUpdateRunBtn();calcUpdateHint();
+}
+function calcShowView(view){
+CALC.view=view;
+$('calcEmpty').classList.add('hidden');
+$('calcNotice').classList.add('hidden');
+$('calcBody').classList.remove('hidden');
+['calcPortfolioView','calcSingleView','calcProgView'].forEach(id=>{
+$(id).classList.toggle('on',id==='calc'+{portfolio:'Portfolio',single:'Single',progress:'Prog'}[view]+'View');
+});
+}
 window.calcOnMonthChange=async function(){
 const date=$('calcMonth').value;
 CALC.month=date;CALC.accByNum=new Map();CALC.rateByAcc=new Map();CALC.rateRows=[];
-CALC.portfolio=[];CALC.negativeEir=[];CALC.excludedFlag=[];CALC.excludedHP=[];CALC.lastResult=null;
-$('calcBody').classList.add('hidden');$('calcEmpty').classList.add('hidden');
+CALC.portfolio=[];CALC.negativeEir=[];CALC.excludedFlag=[];CALC.excludedHP=[];CALC.lastResult=null;CALC.currentAcc=null;
+$('btnCalcExport').classList.add('hidden');
 const notice=$('calcNotice');
-if(!date){$('calcEmpty').classList.remove('hidden');notice.classList.add('hidden');return;}
-const accData=window.globalAccountData;if(!accData||!accData.size){$('calcEmpty').classList.remove('hidden');notice.classList.add('hidden');return;}
+if(!date){calcShowEmpty();return;}
+const accData=window.globalAccountData;if(!accData||!accData.size){calcShowEmpty();return;}
 let missingCalcCols=false,probe=null;
 for(const[acc,ai]of accData){
 const row=ai.data[date];if(!row)continue;
@@ -1523,40 +1512,70 @@ if(!probe)probe=row;
 CALC.accByNum.set(acc,{...row,product:ai.product});
 }
 if(!CALC.accByNum.size){
+$('calcEmpty').classList.add('hidden');$('calcBody').classList.add('hidden');
 notice.innerHTML=`No accounts found for <strong>${DU.fmtMY(date)}</strong>. Load the account CSV for this month via <strong>Load Data</strong>.`;
-notice.classList.remove('hidden');return;
+notice.classList.remove('hidden');$('calcHint').textContent='';calcUpdateRunBtn();return;
 }
 if(probe&&(probe.lastPymDte===undefined||probe.nPvCashFlowsEir===undefined)){missingCalcCols=true;}
 if(missingCalcCols){
+$('calcEmpty').classList.add('hidden');$('calcBody').classList.add('hidden');
 notice.innerHTML=`The stored account data for <strong>${DU.fmtMY(date)}</strong> was loaded before the Calculator was added and is missing required columns (<code>LAST_PYM_DTE, CURR_INT_RT, N_PV_CASH_FLOWS_EIR, N_UNAMRT_FEES_EIR, PYMT_RECD_CURR_MTH, F_EIR_CALCULATION_FLAG</code>). Re-upload this month's CSV to enable calculation.`;
-notice.classList.remove('hidden');return;
+notice.classList.remove('hidden');$('calcHint').textContent='';calcUpdateRunBtn();return;
 }
 let rateEntry=CALC._rateIdbCache.get(date);
 if(!rateEntry){try{rateEntry=await IDB.get(IDB.rateStore,date);}catch(err){console.error('Rate fetch failed',err);}
 if(!rateEntry||!rateEntry.byAccount){try{const allRate=await IDB.getAll(IDB.rateStore);const tgt=DU.mKey(date);rateEntry=allRate.find(r=>DU.mKey(r.date)===tgt)||rateEntry;}catch(err){console.error('Rate scan failed',err);}}
 CALC._rateIdbCache.set(date,rateEntry);}
 if(!rateEntry||!rateEntry.byAccount){
+$('calcEmpty').classList.add('hidden');$('calcBody').classList.add('hidden');
 notice.innerHTML=`No rate-history file cached for <strong>${DU.fmtMY(date)}</strong>. Load the rate-history CSV (with <code>PROC_DTE = ${date}</code>) via <strong>Load Data</strong>.`;
-notice.classList.remove('hidden');return;
+notice.classList.remove('hidden');$('calcHint').textContent='';calcUpdateRunBtn();return;
 }
 CALC.rateByAcc=new Map(Object.entries(rateEntry.byAccount));
-notice.classList.add('hidden');$('calcBody').classList.remove('hidden');
-calcResetViewToSummary();
+calcShowEmpty();
+calcUpdateHint();
 };
-function calcResetViewToSummary(){
-document.querySelectorAll('#calcTabs .calc-tab').forEach(el=>{
-if(['cashflow','account','rate','portfolio'].includes(el.dataset.ct))el.classList.add('hidden');
-});
-calcSwitchTab('summary',false);
-['cs-pv-calc','cs-pv-sys','cs-pv-diff','cs-pv-diff-pct','cs-eir-adj','cs-unamrt-fees','cs-eir-diff','cs-eir-diff-pct','cs-derived-eir','cs-sys-eir','cs-eir-rate-diff'].forEach(id=>{const el=$(id);if(el)el.textContent='—';});
-$('cs-eir-row').classList.add('hidden');$('calcStats').classList.add('hidden');$('btnCalcExport').classList.add('hidden');
+window.calcSetMethod=function(m){
+if(m!=='system'&&m!=='derive')return;
+CALC.method=m;
+document.querySelectorAll('.calc-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.method===m));
+calcUpdateRunBtn();calcUpdateHint();
+if(CALC.portfolio.length&&CALC.view==='portfolio'){calcRenderPortfolioResults();}
+};
+function calcUpdateRunBtn(){
+const btn=$('btnCalcRun');if(!btn)return;
+const acc=($('calcAcc').value||'').trim();
+if(acc){btn.textContent='Calculate '+acc;}
+else{const n=CALC.accByNum.size;btn.textContent=n?`Calculate All (${n.toLocaleString()})`:'Calculate All';}
 }
-window.calcSwitchTab=function(tab,inModal){
-const tabsSel=inModal?'#calcMTabs .calc-tab':'#calcTabs .calc-tab';
-const contSel=inModal?'[id^="calc-m-tab-"]':'#calcPanel .calc-tab-content';
-document.querySelectorAll(tabsSel).forEach(el=>el.classList.toggle('on',el.dataset.ct===tab));
-document.querySelectorAll(contSel).forEach(el=>el.classList.toggle('on',el.id===(inModal?'calc-m-tab-':'calc-tab-')+tab));
-};
+function calcUpdateHint(){
+const hint=$('calcHint');if(!hint){return;}
+const acc=($('calcAcc').value||'').trim();
+if(!CALC.month||!CALC.accByNum.size){hint.textContent='';return;}
+const methodLbl=CALC.method==='derive'?'Re-derive EIR':'System EIR';
+if(acc){
+const row=CALC.accByNum.get(acc);
+if(!row){hint.textContent=`→ Account ${acc} not found in ${DU.fmtMY(CALC.month)}`;return;}
+const skip=_calcSingleSkipReason(row);
+hint.textContent=skip?`→ Will skip: ${skip}`:`→ Will compute ${acc} · ${methodLbl}`;
+return;
+}
+let hp=0,flag=0,neg=0;
+for(const[,row]of CALC.accByNum){
+if(row.groupId==='SG_HirePurchase'){hp++;continue;}
+if(CALC.method==='derive'&&row.fEirFlag!=='Y'){flag++;continue;}
+if((parseFloat(row.eirRate)||0)<0){neg++;continue;}
+}
+const total=CALC.accByNum.size;const processed=total-hp-flag-neg;
+const parts=[];if(hp)parts.push(`HP ${hp}`);if(flag)parts.push(`Flag≠Y ${flag}`);if(neg)parts.push(`EIR<0 ${neg}`);
+hint.textContent=`→ Will process ${processed.toLocaleString()} of ${total.toLocaleString()} accounts · ${methodLbl}${parts.length?' · excludes '+parts.join(', '):''}`;
+}
+function _calcSingleSkipReason(row){
+if(row.groupId==='SG_HirePurchase')return 'HP accounts not supported';
+if(CALC.method==='derive'&&row.fEirFlag!=='Y')return 'F_EIR_CALCULATION_FLAG ≠ Y (re-derive mode)';
+if((parseFloat(row.eirRate)||0)<0)return 'EIR < 0';
+return null;
+}
 function calcRunEngine(parsedRow,rawRates,deriveEirOn,withCashflow){
 const sysPv=parsedRow.nPvCashFlowsEir||0;
 const sysUnamrt=parsedRow.nUnamrtFeesEir||0;
@@ -1630,45 +1649,54 @@ const pvDiff=pvCalc-sysPv,pvDiffPct=sysPv!==0?(pvDiff/sysPv)*100:0;
 const eirDiff=eirAdj-sysUnamrt,eirDiffPct=sysUnamrt!==0?(eirDiff/sysUnamrt)*100:0;
 return{cashflow,pvCalc,pvSys:sysPv,pvDiff,pvDiffPct,eirAdjCalc:eirAdj,eirAdjSys:sysUnamrt,eirDiff,eirDiffPct,derivedEir:workEir,sysEir:eirRate,eirRateDiff:workEir-eirRate};
 }
-window.calcRunSingle=function(){
-const acc=$('calcAcc').value.trim();if(!acc){alert('Enter an account number.');return;}
-if(!CALC.month||!CALC.accByNum.size){alert('Pick a month with loaded data first.');return;}
-const row=CALC.accByNum.get(acc);if(!row){alert('Account '+acc+' not found in '+DU.fmtMY(CALC.month)+'.');return;}
-if(row.groupId==='SG_HirePurchase'){alert('Account '+acc+' is SG_HirePurchase (HP). EIR Calculator logic for HP accounts is not yet defined — skipped.');return;}
-const deriveEirOn=$('calcDerive').checked;
-if(deriveEirOn&&row.fEirFlag!=='Y'){alert('Account '+acc+' F_EIR_CALCULATION_FLAG is not "Y". Re-derive computation skipped.');return;}
-const eirVal=parseFloat(row.eirRate)||0;
-if(eirVal<0){alert('Account '+acc+' has EIR < 0. Calculator skips this case (matches source-app behaviour).');return;}
+window.calcRun=function(){
+if(!CALC.month||!CALC.accByNum.size){showToast('Pick a month with loaded data first.');return;}
+const acc=($('calcAcc').value||'').trim();
+if(acc){calcRunSingle(acc);}else{calcRunAll();}
+};
+function calcRunSingle(acc){
+if(!CALC.month||!CALC.accByNum.size){showToast('Pick a month with loaded data first.');return;}
+const row=CALC.accByNum.get(acc);
+if(!row){showToast('Account '+acc+' not found in '+DU.fmtMY(CALC.month)+'.');return;}
+const skip=_calcSingleSkipReason(row);
+if(skip){showToast('Skipped '+acc+': '+skip);return;}
+const deriveEirOn=CALC.method==='derive';
 const rates=CALC.rateByAcc.get(acc)||[];
 const res=calcRunEngine(row,rates,deriveEirOn,true);
-if(!res){alert('Missing LAST_PYM_DTE or AEL_MATURITY_DATE for '+acc+'.');return;}
+if(!res){showToast('Missing LAST_PYM_DTE or AEL_MATURITY_DATE for '+acc+'.');return;}
 CALC.currentAcc=acc;CALC.lastResult=res;
-$('calcAccTitle').textContent='Account Details: '+acc;
-$('calcAccMeta').textContent=DU.fmtMY(CALC.month);
-$('calcAccMetaR').textContent=deriveEirOn?'Re-Derive EIR: ON':'Re-Derive EIR: OFF';
-calcRenderSummary(res,'cs-m-',deriveEirOn);
-calcRenderCashflow(res.cashflow,res.pvCalc,'calcMCf');
-calcRenderAccountRow(row,'calcMAcc');
-calcRenderRateRows(rates,'calcMRate');
-calcSwitchTab('summary',true);
-$('calcAccountModal').classList.add('open');
+const hasPortfolio=CALC.portfolio.length>0;
+const crumb=$('calcCrumb');
+crumb.textContent=hasPortfolio?'← Account listing':'← EIR Calculator';
+crumb.dataset.back=hasPortfolio?'portfolio':'empty';
+$('calcDrillAcc').textContent=acc;
+const meta=[DU.fmtMY(CALC.month),row.product||row.groupId||'—','Matures '+(DU.fmtM(row.aelMaturityDate)||'—'),deriveEirOn?'Re-derive EIR':'System EIR'].filter(Boolean);
+$('calcDrillMeta').innerHTML=meta.map(s=>`<span>${s}</span>`).join('<em>·</em>');
+calcRenderRecon('calcSingleReconBody',res,deriveEirOn);
+calcRenderCashflow(res.cashflow,res.pvCalc);
+calcShowView('single');
+}
+window.calcBackFromSingle=function(){
+const back=$('calcCrumb').dataset.back;
+if(back==='portfolio'&&CALC.portfolio.length){calcShowView('portfolio');}
+else{calcShowEmpty();}
 };
-window.calcCloseAccountModal=function(){$('calcAccountModal').classList.remove('open');};
 window.calcCloseNegEirModal=function(){$('calcNegEirModal').classList.remove('open');};
 window.calcCloseExcludedModal=function(){$('calcExcludedModal').classList.remove('open');};
-window.calcRunAll=function(){
-if(!CALC.month||!CALC.accByNum.size){alert('Pick a month with loaded data first.');return;}
+function calcRunAll(){
 if(CALC.running)return;
-CALC.running=true;
-const deriveEirOn=$('calcDerive').checked;
-$('calcProgress').classList.remove('hidden');$('calcProgressBar').style.width='0%';
-document.querySelectorAll('#calcTabs .calc-tab').forEach(el=>{if(['cashflow','account','rate'].includes(el.dataset.ct))el.classList.add('hidden');else if(el.dataset.ct==='portfolio')el.classList.remove('hidden');});
-calcSwitchTab('summary',false);
+CALC.running=true;CALC.cancelled=false;
+const deriveEirOn=CALC.method==='derive';
 const accs=Array.from(CALC.accByNum.entries());
 const total=accs.length;let idx=0;const batch=200;
 CALC.portfolio=[];CALC.negativeEir=[];CALC.excludedFlag=[];CALC.excludedHP=[];
+CALC.startedAt=Date.now();
+$('calcProgTitle').textContent=deriveEirOn?'Calculating all accounts · Re-derive EIR':'Calculating all accounts · System EIR';
+calcUpdateProgress(0,total);
+calcShowView('progress');
 let gPv=0,gPvSys=0,gEir=0,gEirSys=0;
 function step(){
+if(CALC.cancelled){CALC.running=false;CALC.cancelled=false;calcShowEmpty();showToast('Calculation cancelled');return;}
 const end=Math.min(idx+batch,total);
 for(let i=idx;i<end;i++){
 const[acc,row]=accs[i];
@@ -1682,53 +1710,66 @@ if(!res)continue;
 CALC.portfolio.push({acc,pvCalc:res.pvCalc,pvSys:res.pvSys,pvDiff:res.pvDiff,pvDiffPct:res.pvDiffPct,eirAdjCalc:res.eirAdjCalc,eirAdjSys:res.eirAdjSys,eirDiff:res.eirDiff,eirDiffPct:res.eirDiffPct,derivedEir:res.derivedEir,sysEir:res.sysEir,eirRateDiff:res.eirRateDiff});
 gPv+=res.pvCalc;gPvSys+=res.pvSys;gEir+=res.eirAdjCalc;gEirSys+=res.eirAdjSys;
 }
-idx=end;$('calcProgressBar').style.width=((idx/total)*100)+'%';
+idx=end;calcUpdateProgress(idx,total);
 if(idx<total){setTimeout(step,0);return;}
-CALC.running=false;setTimeout(()=>$('calcProgress').classList.add('hidden'),400);
+CALC.running=false;
 const gPvDiff=gPv-gPvSys,gPvDiffPct=gPvSys!==0?(gPvDiff/gPvSys)*100:0;
 const gEirDiff=gEir-gEirSys,gEirDiffPct=gEirSys!==0?(gEirDiff/gEirSys)*100:0;
-calcRenderSummary({pvCalc:gPv,pvSys:gPvSys,pvDiff:gPvDiff,pvDiffPct:gPvDiffPct,eirAdjCalc:gEir,eirAdjSys:gEirSys,eirDiff:gEirDiff,eirDiffPct:gEirDiffPct,derivedEir:0,sysEir:0,eirRateDiff:0},'cs-',false);
-calcRenderStats(total,CALC.portfolio.length,deriveEirOn);
-document.querySelectorAll('#calcTabs .calc-tab').forEach(el=>{if(el.dataset.ct==='portfolio')el.classList.remove('hidden');});
-CALC.page=1;CALC.sort={field:null,dir:1};calcRenderPortfolio();
+CALC.portfolioTotals={pvCalc:gPv,pvSys:gPvSys,pvDiff:gPvDiff,pvDiffPct:gPvDiffPct,eirAdjCalc:gEir,eirAdjSys:gEirSys,eirDiff:gEirDiff,eirDiffPct:gEirDiffPct,derivedEir:0,sysEir:0,eirRateDiff:0};
+CALC.page=1;CALC.sort={field:null,dir:1};
+calcRenderPortfolioResults();
+calcShowView('portfolio');
 $('btnCalcExport').classList.remove('hidden');
 }
 setTimeout(step,0);
-};
-function calcRenderSummary(r,p,showEirRow){
-const fn2=v=>_cFmtN(v,2);
-$(p+'pv-calc').textContent=fn2(r.pvCalc);
-$(p+'pv-sys').textContent=fn2(r.pvSys);
-$(p+'pv-diff').textContent=fn2(r.pvDiff);
-$(p+'pv-diff-pct').textContent=_cFmtPct(r.pvDiffPct,2);
-$(p+'eir-adj').textContent=fn2(r.eirAdjCalc);
-$(p+'unamrt-fees').textContent=fn2(r.eirAdjSys);
-$(p+'eir-diff').textContent=fn2(r.eirDiff);
-$(p+'eir-diff-pct').textContent=_cFmtPct(r.eirDiffPct,2);
-const row=$(p+'eir-row');if(row){row.classList.toggle('hidden',!showEirRow);if(showEirRow){$(p+'derived-eir').textContent=_cFmtPct(r.derivedEir,6);$(p+'sys-eir').textContent=_cFmtPct(r.sysEir,6);$(p+'eir-rate-diff').textContent=_cFmtPct(r.eirRateDiff,6);}}
 }
-function calcRenderStats(listed,processed,deriveEirOn){
-const st=$('calcStats');
-const tiles=[
-`<div class="calc-stat"><h3>Total Accounts in Listing</h3><p>${listed.toLocaleString()}</p></div>`,
-`<div class="calc-stat"><h3>Processed</h3><p>${processed.toLocaleString()}</p></div>`
+window.calcCancelRun=function(){if(CALC.running)CALC.cancelled=true;};
+function calcUpdateProgress(done,total){
+const pct=total?Math.floor((done/total)*100):0;
+$('calcProgPct').textContent=pct+'%';
+$('calcProgBarFill').style.width=pct+'%';
+$('calcProgCount').textContent=`${done.toLocaleString()} of ${total.toLocaleString()} accounts`;
+const eta=$('calcProgEta');
+if(done<500||done===total){eta.innerHTML='&nbsp;';return;}
+const elapsed=(Date.now()-CALC.startedAt)/1000;
+const remaining=Math.max(0,elapsed*(total-done)/done);
+eta.textContent=remaining<1?'< 1 second remaining':('~'+Math.ceil(remaining)+' second'+(remaining>=2?'s':'')+' remaining');
+}
+function calcRenderPortfolioResults(){
+calcRenderCoverage();
+$('calcPortReconTitle').textContent=CALC.method==='derive'?'Portfolio totals · Re-derive EIR':'Portfolio totals · System EIR';
+calcRenderRecon('calcPortReconBody',CALC.portfolioTotals,false);
+$('calcPortReconWrap').classList.remove('hidden');
+calcRenderPortfolio();
+$('calcPgBar').classList.remove('hidden');
+$('calcPortTblWrap').classList.remove('hidden');
+}
+function calcRenderCoverage(){
+const total=CALC.accByNum.size;const processed=CALC.portfolio.length;
+const parts=[`<span>Coverage <strong>${processed.toLocaleString()} / ${total.toLocaleString()}</strong></span>`];
+const excl=[];
+if(CALC.excludedHP.length)excl.push(`<a onclick="calcOpenExcludedModal('HP')">HP ${CALC.excludedHP.length.toLocaleString()}</a>`);
+if(CALC.method==='derive'&&CALC.excludedFlag.length)excl.push(`<a onclick="calcOpenExcludedModal('Flag')">Flag≠Y ${CALC.excludedFlag.length.toLocaleString()}</a>`);
+if(CALC.negativeEir.length)excl.push(`<a onclick="calcOpenNegEirModal()">EIR&lt;0 ${CALC.negativeEir.length.toLocaleString()}</a>`);
+if(excl.length)parts.push(`<span>Exclusions: ${excl.join(' <span class="calc-coverage-sep">·</span> ')}</span>`);
+$('calcCoverage').innerHTML=parts.join('');
+$('calcCoverage').classList.remove('hidden');
+}
+function calcRenderRecon(bodyId,r,singleModeShowEirRow){
+const deriveRow=CALC.method==='derive';
+const rows=[
+['PV of cash flows',_cFmtN(r.pvCalc,2),_cFmtN(r.pvSys,2),_cFmtN(r.pvDiff,2),_cFmtPct(r.pvDiffPct,2)],
+['EIR adjustment',_cFmtN(r.eirAdjCalc,2),_cFmtN(r.eirAdjSys,2),_cFmtN(r.eirDiff,2),_cFmtPct(r.eirDiffPct,2)]
 ];
-if(CALC.excludedHP.length)tiles.push(`<div class="calc-stat s-warn"><h3>Excluded (HP)</h3><p onclick="calcOpenExcludedModal('HP')">${CALC.excludedHP.length.toLocaleString()}</p></div>`);
-if(deriveEirOn&&CALC.excludedFlag.length)tiles.push(`<div class="calc-stat s-warn"><h3>Excluded (Flag != Y)</h3><p onclick="calcOpenExcludedModal('Flag')">${CALC.excludedFlag.length.toLocaleString()}</p></div>`);
-if(CALC.negativeEir.length)tiles.push(`<div class="calc-stat s-neg"><h3>Accounts with EIR &lt; 0</h3><p onclick="calcOpenNegEirModal()">${CALC.negativeEir.length.toLocaleString()}</p></div>`);
-st.innerHTML=tiles.join('');st.classList.remove('hidden');
+if(deriveRow&&singleModeShowEirRow){
+rows.push(['EIR rate',_cFmtPct(r.derivedEir,6),_cFmtPct(r.sysEir,6),(r.eirRateDiff>=0?'+':'')+Number(r.eirRateDiff).toFixed(6)+' pp','—']);
 }
-window.calcOpenNegEirModal=function(){$('calcNegEirTbody').innerHTML=CALC.negativeEir.map(a=>`<tr><td>${a}</td></tr>`).join('')||'<tr><td>No accounts.</td></tr>';$('calcNegEirModal').classList.add('open');};
-window.calcOpenExcludedModal=function(kind){
-const list=kind==='HP'?CALC.excludedHP:CALC.excludedFlag;
-$('calcExclTitle').textContent=kind==='HP'?'Excluded — SG_HirePurchase':'Excluded — F_EIR_CALCULATION_FLAG ≠ Y';
-$('calcExclTbody').innerHTML=list.map(a=>`<tr><td>${a}</td></tr>`).join('')||'<tr><td>No accounts.</td></tr>';
-$('calcExcludedModal').classList.add('open');
-};
+$(bodyId).innerHTML=rows.map(row=>'<tr>'+row.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('');
+}
 const _CF_HEADS=['Period','Start Date','End Date','Rate 1','Rate 2','Days 1','Days 2','Year Fraction 1','Year Fraction 2','Opening Balance','Interest','Principal','Ending Balance','Cashflow Before Disc','Discount Factor','PV'];
-function calcRenderCashflow(cashflow,totalPV,idPrefix){
-$(idPrefix+'Head').innerHTML=_CF_HEADS.map((h,i)=>`<th class="${i===0?'calc-sticky':''}">${h}</th>`).join('');
-$(idPrefix+'Body').innerHTML=cashflow.map(r=>`<tr>
+function calcRenderCashflow(cashflow,totalPV){
+$('calcCfHead').innerHTML=_CF_HEADS.map((h,i)=>`<th class="${i===0?'calc-sticky':''}">${h}</th>`).join('');
+$('calcCfBody').innerHTML=cashflow.map(r=>`<tr>
 <td class="calc-sticky" style="text-align:center;">${r.period}</td>
 <td>${r.startDate}</td><td>${r.endDate}</td>
 <td>${r.rate1!==''?parseFloat(r.rate1).toFixed(6):''}</td>
@@ -1739,35 +1780,10 @@ $(idPrefix+'Body').innerHTML=cashflow.map(r=>`<tr>
 <td>${_cFmtN(r.principal,2)}</td><td>${_cFmtN(r.ending,2)}</td>
 <td>${_cFmtN(r.cf,2)}</td><td>${r.df.toFixed(6)}</td><td>${_cFmtN(r.pv,2)}</td>
 </tr>`).join('');
-$(idPrefix+'Foot').innerHTML=`<tr><td colspan="15" style="text-align:right;">Total PV</td><td>${_cFmtN(totalPV,2)}</td></tr>`;
-}
-const _ACC_HEADS=['ACCOUNT_NUMBER','FIC_MIS_DATE','V_AEL_GROUP_ID','LEDGER_BALANCE_AMT','ALLOCATED_COST','AEL_MATURITY_DATE','LAST_PYM_DTE','CURR_INT_RT','BASE_RT','N_IFRS9_EFF_INTEREST_RATE','N_PV_CASH_FLOWS_EIR','N_UNAMRT_FEES_EIR','PYMT_RECD_CURR_MTH','F_EIR_CALCULATION_FLAG'];
-function calcRenderAccountRow(row,idPrefix){
-$(idPrefix+'Head').innerHTML=_ACC_HEADS.map((h,i)=>`<th class="${i===0?'calc-sticky':''}">${h}</th>`).join('');
-const vals=[
-CALC.currentAcc||'', DU.fmtM(CALC.month), row.groupId||'',
-_cFmtN(row.bal,2), _cFmtN(row.alloc,2),
-DU.fmtM(row.aelMaturityDate), DU.fmtM(row.lastPymDte),
-(parseFloat(row.currIntRt)||0).toFixed(6),
-(parseFloat(row.baseRt)||0).toFixed(6),
-(parseFloat(row.eirRate)||0).toFixed(6),
-_cFmtN(row.nPvCashFlowsEir,2), _cFmtN(row.nUnamrtFeesEir,2),
-_cFmtN(row.pymtRecdCurrMth,2), row.fEirFlag||''
-];
-$(idPrefix+'Body').innerHTML='<tr>'+vals.map((v,i)=>`<td class="${i===0?'calc-sticky':''}">${v}</td>`).join('')+'</tr>';
-}
-const _RATE_HEADS=['ACCOUNT_NUMBER','PROC_DTE','RT_EFF_DTE','TIER_INT_RT'];
-function calcRenderRateRows(rates,idPrefix){
-$(idPrefix+'Head').innerHTML=_RATE_HEADS.map((h,i)=>`<th class="${i===0?'calc-sticky':''}">${h}</th>`).join('');
-$(idPrefix+'Body').innerHTML=rates.map(r=>`<tr>
-<td class="calc-sticky">${CALC.currentAcc||''}</td>
-<td>${DU.fmtM(r.procDte)}</td>
-<td>${DU.fmtM(r.rtEffDte)}</td>
-<td>${(parseFloat(r.tierIntRt)||0).toFixed(6)}</td>
-</tr>`).join('');
+$('calcCfFoot').innerHTML=`<tr><td colspan="15" style="text-align:right;">Total PV</td><td>${_cFmtN(totalPV,2)}</td></tr>`;
 }
 function calcRenderPortfolio(){
-const deriveEirOn=$('calcDerive').checked;
+const deriveEirOn=CALC.method==='derive';
 const base=['Account','PV per Calc','N_PV_CASH_FLOWS_EIR','PV Diff (Amt)','PV Diff (%)'];
 const eirCols=['EIR per Calc','N_IFRS9_EFF_INTEREST_RATE','EIR Diff'];
 const tail=['EIR Adj per Calc','N_UNAMRT_FEES_EIR','EIR Adj Diff (Amt)','EIR Adj Diff (%)'];
@@ -1801,7 +1817,14 @@ CALC.portfolio.sort((a,b)=>(a[field]-b[field])*CALC.sort.dir);
 CALC.page=1;calcRenderPortfolio();
 };
 window.calcDrillAccount=function(acc){
-$('calcAcc').value=acc;calcRunSingle();
+$('calcAcc').value=acc;calcUpdateRunBtn();calcRunSingle(acc);
+};
+window.calcOpenNegEirModal=function(){$('calcNegEirTbody').innerHTML=CALC.negativeEir.map(a=>`<tr><td>${a}</td></tr>`).join('')||'<tr><td>No accounts.</td></tr>';$('calcNegEirModal').classList.add('open');};
+window.calcOpenExcludedModal=function(kind){
+const list=kind==='HP'?CALC.excludedHP:CALC.excludedFlag;
+$('calcExclTitle').textContent=kind==='HP'?'Excluded — SG_HirePurchase':'Excluded — F_EIR_CALCULATION_FLAG ≠ Y';
+$('calcExclTbody').innerHTML=list.map(a=>`<tr><td>${a}</td></tr>`).join('')||'<tr><td>No accounts.</td></tr>';
+$('calcExcludedModal').classList.add('open');
 };
 window.calcExportSingle=function(){
 if(!CALC.lastResult||!CALC.currentAcc)return;
@@ -1825,7 +1848,7 @@ showToast('Exported ✓');
 };
 window.calcExportPortfolio=function(){
 if(!CALC.portfolio.length)return;
-const deriveEirOn=$('calcDerive').checked;
+const deriveEirOn=CALC.method==='derive';
 const rows=CALC.portfolio.map(r=>{
 const row={
 'Account Number':r.acc,
@@ -1855,13 +1878,13 @@ const _origRebuild=rebuildFromStore;
 rebuildFromStore=async function(){await _origRebuild.apply(this,arguments);CALC._rateIdbCache.clear();if(!$('calcView').classList.contains('hidden'))calcSyncMonthPicker();};
 document.addEventListener('keydown',e=>{
 if(e.key==='Escape'){
-if($('calcAccountModal').classList.contains('open')){calcCloseAccountModal();return;}
 if($('calcNegEirModal').classList.contains('open')){calcCloseNegEirModal();return;}
 if($('calcExcludedModal').classList.contains('open')){calcCloseExcludedModal();return;}
+if(CALC.view==='single'){calcBackFromSingle();return;}
 }
 });
-$('calcAcc').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();calcRunSingle();}});
-$('calcDerive').addEventListener('change',()=>{if(CALC.portfolio.length)calcRenderPortfolio();});
+$('calcAcc').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();calcRun();}});
+$('calcAcc').addEventListener('input',()=>{calcUpdateRunBtn();calcUpdateHint();});
 </script>
 </body>
 </html>
