@@ -1532,7 +1532,9 @@ notice.innerHTML=`The stored account data for <strong>${DU.fmtMY(date)}</strong>
 notice.classList.remove('hidden');return;
 }
 let rateEntry=CALC._rateIdbCache.get(date);
-if(!rateEntry){try{rateEntry=await IDB.get(IDB.rateStore,date);}catch(err){console.error('Rate fetch failed',err);}CALC._rateIdbCache.set(date,rateEntry);}
+if(!rateEntry){try{rateEntry=await IDB.get(IDB.rateStore,date);}catch(err){console.error('Rate fetch failed',err);}
+if(!rateEntry||!rateEntry.byAccount){try{const allRate=await IDB.getAll(IDB.rateStore);const tgt=DU.mKey(date);rateEntry=allRate.find(r=>DU.mKey(r.date)===tgt)||rateEntry;}catch(err){console.error('Rate scan failed',err);}}
+CALC._rateIdbCache.set(date,rateEntry);}
 if(!rateEntry||!rateEntry.byAccount){
 notice.innerHTML=`No rate-history file cached for <strong>${DU.fmtMY(date)}</strong>. Load the rate-history CSV (with <code>PROC_DTE = ${date}</code>) via <strong>Load Data</strong>.`;
 notice.classList.remove('hidden');return;
