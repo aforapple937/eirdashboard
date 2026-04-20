@@ -50,6 +50,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-1);height:100
 
 /* SIDEBAR */
 .sidebar{width:var(--sb-w);background:var(--sidebar-bg);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;border-right:1px solid rgba(255,255,255,0.05);}
+.sidebar.hidden{display:none;}
 .sidebar::-webkit-scrollbar{width:3px;}
 .sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px;}
 .sb-sec{padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,0.05);}
@@ -274,19 +275,18 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
 
 /* SORA standalone view */
 .sora-view{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:14px;}
-.sora-hero{background:var(--nav-bg);border-radius:var(--r-lg);padding:18px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;min-height:380px;}
-.sora-hero-hd{display:flex;align-items:center;justify-content:space-between;color:rgba(255,255,255,0.85);}
-.sora-hero-ttl{font-size:14px;font-weight:700;letter-spacing:0.2px;}
-.sora-hero-sub{font-size:10.5px;color:rgba(255,255,255,0.35);letter-spacing:0.4px;text-transform:uppercase;font-weight:600;}
-.sora-hero-chart{flex:1;position:relative;min-height:320px;}
-.sora-table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;}
-.sora-table-card h3{padding:12px 16px;background:var(--surface-2);border-bottom:1px solid var(--border);font-size:12px;font-weight:700;color:var(--text-1);letter-spacing:0.3px;}
-.sora-table{width:100%;border-collapse:collapse;font-size:12px;}
-.sora-table th{background:var(--surface-2);text-align:right;padding:8px 13px;font-family:var(--font);font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text-3);letter-spacing:0.5px;border-bottom:1.5px solid var(--border);}
-.sora-table th:first-child{text-align:left;}
-.sora-table td{padding:7px 13px;border-bottom:1px solid var(--border-soft);text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;}
-.sora-table td:first-child{text-align:left;font-family:var(--font);font-weight:600;}
-.sora-table tbody tr:hover td{background:var(--yellow-pale);}
+.sora-hero{background:linear-gradient(180deg,#ffffff 0%,#f9fafc 100%);border-radius:var(--r-lg);border:1px solid var(--border);padding:20px 22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px;min-height:440px;}
+.sora-hero-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.sora-hero-ttl{font-size:15px;font-weight:700;letter-spacing:0.1px;color:var(--text-1);}
+.sora-hero-chart{flex:1;position:relative;min-height:360px;}
+.sora-range{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:4px 8px;}
+.sora-range-lbl{font-size:9px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);margin-right:2px;}
+.sora-range-sel{padding:4px 8px;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-1);background:#fff;cursor:pointer;outline:none;transition:all 0.12s;}
+.sora-range-sel:hover{border-color:var(--black);}
+.sora-range-sel:focus{border-color:var(--yellow-dk);}
+.sora-range-arrow{color:var(--text-3);font-size:11px;padding:0 2px;}
+.sora-range-reset{padding:4px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11px;font-weight:600;color:var(--text-1);cursor:pointer;transition:all 0.12s;}
+.sora-range-reset:hover{background:var(--yellow);border-color:var(--yellow-dk);}
 
 /* Range picker in dashboard */
 .dash-range-sel{padding:5px 9px;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-1);background:var(--surface-2);cursor:pointer;outline:none;transition:all 0.12s;}
@@ -379,12 +379,17 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
 </div>
 
 <div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-modules">
+      <div class="sb-module active"><span class="sb-module-left"><span class="sb-module-ico"></span>EIR FLUX</span></div>
+    </div>
+  </aside>
   <main class="main">
     <div class="table-area" id="fluxView">
       <div class="app-header">
         <div class="view-tabs" id="viewTabs">
-          <div class="view-tab on" data-tab="flux" onclick="switchTab('flux')"><span>EIR Flux</span><span class="view-tab-kbd">[</span></div>
-          <div class="view-tab" data-tab="sora" onclick="switchTab('sora')"><span>SORA Graph</span><span class="view-tab-kbd">]</span></div>
+          <div class="view-tab on" data-tab="flux" onclick="switchTab('flux')"><span>EIR Flux</span></div>
+          <div class="view-tab" data-tab="sora" onclick="switchTab('sora')"><span>SORA Graph</span></div>
           <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
             <div class="view-tab" onclick="openShortcutsOverlay()" title="Keyboard shortcuts (?)" style="padding:7px 11px;">
               <span style="font-weight:700">?</span>
@@ -414,10 +419,10 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
             <button class="dash-btn" onclick="resetRange()" title="Reset to last 6 months" style="padding:4px 8px">Reset</button>
           </div>
           <div class="dash-grp" style="margin-left:auto">
-            <button class="dash-btn" onclick="openManualModal()" title="Manual Adjustments (U)" id="btnManual"><span>✎</span> Manual<span class="dash-kbd">U</span><span class="manual-dot hidden" id="manualDot" title="Unfilled manual values"></span></button>
-            <button class="dash-btn" onclick="toggleAll()" id="btnToggleAll" title="Expand All (X)"><span>⊞</span> Expand All<span class="dash-kbd">X</span></button>
-            <button class="dash-btn" onclick="copyTable()" title="Copy Table (C)"><span>⎘</span> Copy<span class="dash-kbd">C</span></button>
-            <button class="dash-btn" onclick="exportFluxToExcel()" title="Export Excel (E)"><span>↓</span> Excel<span class="dash-kbd">E</span></button>
+            <button class="dash-btn" onclick="openManualModal()" title="Manual Adjustments" id="btnManual"><span>✎</span> Manual<span class="manual-dot hidden" id="manualDot" title="Unfilled manual values"></span></button>
+            <button class="dash-btn" onclick="toggleAll()" id="btnToggleAll" title="Expand All"><span>⊞</span> Expand All</button>
+            <button class="dash-btn" onclick="copyTable()" title="Copy Table"><span>⎘</span> Copy</button>
+            <button class="dash-btn" onclick="exportFluxToExcel()" title="Export Excel"><span>↓</span> Excel</button>
           </div>
         </div>
       </div>
@@ -439,19 +444,16 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
       <div class="sora-view hidden" id="soraView" style="padding:0;">
         <div class="sora-hero">
           <div class="sora-hero-hd">
-            <div>
-              <div class="sora-hero-ttl">1M SORA Trend</div>
-              <div class="sora-hero-sub">Used (applied in flux) vs Actual (market)</div>
+            <div class="sora-hero-ttl">1M SORA Trend</div>
+            <div class="sora-range">
+              <span class="sora-range-lbl">Range</span>
+              <select class="sora-range-sel" id="soraRangeFrom" onchange="updateSoraRange()" title="First month shown"></select>
+              <span class="sora-range-arrow">→</span>
+              <select class="sora-range-sel" id="soraRangeTo" onchange="updateSoraRange()" title="Last month shown"></select>
+              <button class="sora-range-reset" onclick="resetSoraRange()" title="Show all months">Reset</button>
             </div>
           </div>
           <div class="sora-hero-chart" id="soraCapture"><canvas id="soraChart"></canvas></div>
-        </div>
-        <div class="sora-table-card" id="soraTableCard">
-          <h3>SORA values by month</h3>
-          <table class="sora-table">
-            <thead><tr><th>Month</th><th>Used (%)</th><th>Actual (%)</th><th>Δ (Actual − Used)</th></tr></thead>
-            <tbody id="soraTbody"></tbody>
-          </table>
         </div>
       </div>
     </div>
@@ -463,7 +465,7 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
     <div class="m-hd">
       <h2>Manual Adjustments</h2>
       <div class="m-acts">
-        <button class="m-btn" onclick="saveManualEntry()" title="Save (S)">💾 Save <span style="font-family:var(--mono);font-size:9px;opacity:0.65;margin-left:3px">S</span></button>
+        <button class="m-btn" onclick="saveManualEntry()" title="Save">💾 Save</button>
         <button class="m-cl" onclick="closeManualModal()">✕</button>
       </div>
     </div>
@@ -690,8 +692,22 @@ window.switchTab=function(tab){
   $('soraView').classList.toggle('hidden',tab!=='sora');
   // Dashboard controls (products/units/range/buttons) are flux-only — hide on SORA, restore on flux if data is loaded.
   const dc=$('dashCtrl');if(dc){if(tab==='sora')dc.classList.add('hidden');else if(gMonths.length)dc.classList.remove('hidden');}
-  if(tab==='sora'){renderSoraChart();renderSoraTable();}
+  // Left sidebar belongs to the EIR Flux module only.
+  const sb=$('sidebar');if(sb)sb.classList.toggle('hidden',tab!=='flux');
+  if(tab==='sora')renderSoraChart();
 };
+// _hasYtd — YTD is only meaningful when every month from Jan through the last displayed month
+// of that year is present in the computed flux months. If the earliest CSV doesn't reach back to
+// Jan (or its prior-month baseline is missing), the YTD total would be a partial sum — hide it.
+function _hasYtd(){
+  if(!_dMo.length)return false;
+  const last=DU.parse(_dMo[_dMo.length-1]);if(!last)return false;
+  const ly=last.getFullYear(),endM=last.getMonth();
+  const present=new Set();
+  for(const m of gMonths){const d=DU.parse(m);if(d&&d.getFullYear()===ly)present.add(d.getMonth());}
+  for(let i=0;i<=endM;i++)if(!present.has(i))return false;
+  return true;
+}
 // sYtd — memoised per row object; invalidates when _ytdMo changes (_ytdVer bumped in _reMo).
 function sYtd(row){
   if(!row)return 0;
@@ -1118,7 +1134,7 @@ window.toggleGroup=function(id){
 window.toggleStats=function(btn,cls){const els=document.querySelectorAll('.'+cls);if(!els.length)return;const h=els[0].classList.contains('hidden');els.forEach(el=>el.classList.toggle('hidden',!h));btn.textContent=h?'−':'+';};
 window.toggleAll=function(){
   isExpanded=!isExpanded;
-  $('btnToggleAll').innerHTML=(isExpanded?'<span>⊟</span> Collapse All':'<span>⊞</span> Expand All')+'<span class="dash-kbd">X</span>';
+  $('btnToggleAll').innerHTML=isExpanded?'<span>⊟</span> Collapse All':'<span>⊞</span> Expand All';
   // Scope queries to tbody so we don't scan the whole document (modal, sora view, etc.)
   const tb=$('tBody');if(!tb)return;
   tb.querySelectorAll('.c-row,.cs').forEach(r=>r.classList.toggle('hidden',!isExpanded));
@@ -1135,19 +1151,30 @@ window.copyTable=async function(){
 window.exportFluxToExcel=function(){
   if(!gMonths.length||!_ldr){showToast('No data.');return;}
   const lm=_dMo[_dMo.length-1];const ml=_dMo.map(m=>DU.fmtMY(m));const yl=`YTD (${DU.fmtMY(lm)})`;
+  const hasYtd=_hasYtd();
   const drs=[{k:'Change in SORA',l:'Change in SORA'},{k:'New originations',l:'New originations'},{k:'Repriced Total',l:'Repriced accounts'},{k:'Current reprice',l:'  Current reprice'},{k:'Future reprice',l:'  Future reprice'},{k:'BAU Total',l:'BAU'},{k:'AEL maturity changed',l:'  AEL maturity changed'},{k:'EIR changed',l:'  EIR changed'},{k:'Other BAU',l:'  Other BAU'},{k:'Closed accounts',l:'Closed accounts'},{k:'Manual adj: Change in AEL',l:'Manual adj: Change in AEL'},{k:'Total',l:'TOTAL'}];
   const fn=v=>Math.abs(v||0)<0.005?'':(v<0?-Math.abs(v):v);const rows=[];
-  _sel.forEach(p=>{if(!_ldr[p])return;if(rows.length)rows.push({});drs.forEach(({k,l})=>{const rd=_ldr[p][k];if(!rd)return;if(gMonths.every(m=>Math.abs(rd[m]||0)<0.005))return;const row={Product:p,Driver:l};_dMo.forEach((m,i)=>{row[ml[i]]=fn(rd[m]||0);});row[yl]=fn(sYtd(rd));rows.push(row);});});
-  const gr={Product:'Grand Total',Driver:''};_dMo.forEach((m,i)=>{gr[ml[i]]=fn(_ldr['Grand Total'][m]||0);});gr[yl]=fn(sYtd(_ldr['Grand Total']));rows.push(gr);
-  const ws=XLSX.utils.json_to_sheet(rows);ws['!cols']=['Product','Driver',...ml,yl].map(x=>({wch:Math.max(x.length+2,14)}));
+  _sel.forEach(p=>{if(!_ldr[p])return;if(rows.length)rows.push({});drs.forEach(({k,l})=>{const rd=_ldr[p][k];if(!rd)return;if(gMonths.every(m=>Math.abs(rd[m]||0)<0.005))return;const row={Product:p,Driver:l};_dMo.forEach((m,i)=>{row[ml[i]]=fn(rd[m]||0);});if(hasYtd)row[yl]=fn(sYtd(rd));rows.push(row);});});
+  const gr={Product:'Grand Total',Driver:''};_dMo.forEach((m,i)=>{gr[ml[i]]=fn(_ldr['Grand Total'][m]||0);});if(hasYtd)gr[yl]=fn(sYtd(_ldr['Grand Total']));rows.push(gr);
+  const cols=['Product','Driver',...ml];if(hasYtd)cols.push(yl);
+  const ws=XLSX.utils.json_to_sheet(rows);ws['!cols']=cols.map(x=>({wch:Math.max(x.length+2,14)}));
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'EIR Flux');XLSX.writeFile(wb,`EIR_Flux_${DU.fmtMY(lm)}.xlsx`);showToast('Exported ✓');
 };
 
-// SORA Chart — rendered into the SORA tab; shows every stored month.
+// SORA Chart — rendered into the SORA tab; shows every stored month (month range is independent of the flux range).
 // globalDates is already sorted by processData, so no re-sort needed; mKey is memoised.
+let _soraRange=null;let _soraRangeOptsSig='';
 function _parseSoraVal(v){if(v===undefined||v==='')return null;const n=parseFloat(String(v).replace(/[^0-9.-]/g,''));return isNaN(n)?null:n;}
+function _soraAllMonths(){return window.globalDates&&window.globalDates.length?window.globalDates:gMonths;}
+function _soraMonthsInRange(){
+  const all=_soraAllMonths();
+  if(!_soraRange||!all.includes(_soraRange.from)||!all.includes(_soraRange.to))return all;
+  const fi=all.indexOf(_soraRange.from),ti=all.indexOf(_soraRange.to);
+  const a=Math.min(fi,ti),b=Math.max(fi,ti);
+  return all.slice(a,b+1);
+}
 function _soraSeries(){
-  const months=window.globalDates&&window.globalDates.length?window.globalDates:gMonths;
+  const months=_soraMonthsInRange();
   const labs=[],dU=[],dA=[],manual=window.parsedManualDataGlobal||{};
   for(let i=0;i<months.length;i++){
     const m=months[i];labs.push(DU.fmtMY(m));
@@ -1157,25 +1184,44 @@ function _soraSeries(){
   }
   return{months,labs,dU,dA};
 }
-window.renderSoraTable=function(){
-  const tb=$('soraTbody');if(!tb)return;
-  const{months,labs,dU,dA}=_soraSeries();
-  if(!months.length){tb.innerHTML='<tr><td colspan="4" style="text-align:center;padding:18px;color:var(--text-3)">No SORA data yet. Load data and key in manual entries.</td></tr>';return;}
-  const fmt=v=>v===null||v===undefined||isNaN(v)?'—':v.toFixed(4)+'%';
-  const deltaCell=(u,a)=>{if(u===null||a===null||isNaN(u)||isNaN(a))return'<td>—</td>';const d=a-u;const cls=d>=0?'pos-d':'neg-d';const sign=d>=0?'+':'−';return`<td class="${cls}">${sign}${Math.abs(d).toFixed(4)}%</td>`;};
-  tb.innerHTML=labs.map((l,i)=>`<tr><td>${l}</td><td>${fmt(dU[i])}</td><td>${fmt(dA[i])}</td>${deltaCell(dU[i],dA[i])}</tr>`).join('');
+function _syncSoraRangeSelects(){
+  const all=_soraAllMonths();const fr=$('soraRangeFrom'),to=$('soraRangeTo');if(!fr||!to||!all.length)return;
+  const sig=all.join('|');
+  if(sig!==_soraRangeOptsSig){
+    const opts=all.map(m=>`<option value="${m}">${DU.fmtMY(m)}</option>`).join('');
+    fr.innerHTML=opts;to.innerHTML=opts;_soraRangeOptsSig=sig;
+  }
+  const shown=_soraMonthsInRange();
+  fr.value=shown[0]||all[0];to.value=shown[shown.length-1]||all[all.length-1];
+}
+window.updateSoraRange=function(){
+  const f=$('soraRangeFrom').value,t=$('soraRangeTo').value;if(!f||!t)return;
+  const all=_soraAllMonths();const fi=all.indexOf(f),ti=all.indexOf(t);if(fi<0||ti<0)return;
+  _soraRange={from:fi<=ti?f:t,to:fi<=ti?t:f};
+  renderSoraChart();
 };
+window.resetSoraRange=function(){_soraRange=null;_syncSoraRangeSelects();renderSoraChart();};
 let _chartPluginReady=false;
 function _ensureChartPlugin(){if(_chartPluginReady||typeof Chart==='undefined'||typeof ChartDataLabels==='undefined')return;Chart.register(ChartDataLabels);_chartPluginReady=true;}
 window.renderSoraChart=function(){
   _ensureChartPlugin();const cEl=$('soraChart');if(!cEl)return;const ctx=cEl.getContext('2d');
+  _syncSoraRangeSelects();
   const{labs,dU,dA}=_soraSeries();
   if(soraCi)soraCi.destroy();
-  soraCi=new Chart(ctx,{type:'line',data:{labels:labs,datasets:[{label:'Used',data:dU,borderColor:'#FDCF0B',backgroundColor:'rgba(253,207,11,0.08)',borderWidth:2.5,pointBackgroundColor:'#fff',pointBorderColor:'#FDCF0B',pointBorderWidth:2,pointRadius:5,fill:false,tension:0.35,spanGaps:true},{label:'Actual',data:dA,borderColor:'rgba(255,255,255,0.6)',backgroundColor:'rgba(0,0,0,0)',borderWidth:2.5,pointBackgroundColor:'#111',pointBorderColor:'rgba(255,255,255,0.7)',pointBorderWidth:2,pointRadius:5,fill:false,tension:0.35,spanGaps:true}]},
-    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:18,right:10,left:6,bottom:4}},
-      plugins:{legend:{position:'top',align:'end',labels:{color:'rgba(255,255,255,0.75)',font:{family:"'DM Sans',sans-serif",size:12,weight:'600'},padding:14,usePointStyle:true,pointStyleWidth:8}},tooltip:{displayColors:false,backgroundColor:'rgba(0,0,0,0.9)',titleFont:{family:"'DM Sans',sans-serif",size:12,weight:'700'},bodyFont:{family:"'Roboto Mono',monospace",size:12},callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y==null?'—':c.parsed.y.toFixed(4)+'%')}},datalabels:{display:false}},
-      scales:{y:{grid:{color:'rgba(255,255,255,0.06)'},ticks:{color:'rgba(255,255,255,0.55)',font:{size:11,family:"'Roboto Mono',monospace"},callback:v=>v+'%'},border:{color:'transparent'}},x:{grid:{display:false},ticks:{color:'rgba(255,255,255,0.55)',font:{size:11,family:"'DM Sans',sans-serif",weight:'600'}},border:{color:'transparent'}}}}});
+  const usedGrad=ctx.createLinearGradient(0,0,0,360);
+  usedGrad.addColorStop(0,'rgba(253,207,11,0.22)');usedGrad.addColorStop(1,'rgba(253,207,11,0)');
+  const actGrad=ctx.createLinearGradient(0,0,0,360);
+  actGrad.addColorStop(0,'rgba(59,130,246,0.18)');actGrad.addColorStop(1,'rgba(59,130,246,0)');
+  soraCi=new Chart(ctx,{type:'line',data:{labels:labs,datasets:[
+    {label:'Used',data:dU,borderColor:'#e6ba00',backgroundColor:usedGrad,borderWidth:2.5,pointBackgroundColor:'#fff',pointBorderColor:'#e6ba00',pointBorderWidth:2,pointRadius:4.5,pointHoverRadius:6,fill:true,tension:0.35,spanGaps:true},
+    {label:'Actual',data:dA,borderColor:'#3b82f6',backgroundColor:actGrad,borderWidth:2.5,pointBackgroundColor:'#fff',pointBorderColor:'#3b82f6',pointBorderWidth:2,pointRadius:4.5,pointHoverRadius:6,fill:true,tension:0.35,spanGaps:true}
+  ]},
+    options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:18,right:12,left:6,bottom:4}},
+      plugins:{legend:{position:'top',align:'end',labels:{color:'#5a6070',font:{family:"'DM Sans',sans-serif",size:12,weight:'600'},padding:14,usePointStyle:true,pointStyleWidth:8}},tooltip:{displayColors:false,backgroundColor:'rgba(15,17,23,0.95)',titleFont:{family:"'DM Sans',sans-serif",size:12,weight:'700'},bodyFont:{family:"'Roboto Mono',monospace",size:12},padding:10,callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y==null?'—':c.parsed.y.toFixed(4)+'%')}},datalabels:{display:false}},
+      scales:{y:{grid:{color:'rgba(15,17,23,0.06)',drawTicks:false},ticks:{color:'#5a6070',font:{size:11,family:"'Roboto Mono',monospace"},padding:8,callback:v=>v+'%'},border:{display:false}},x:{grid:{display:false},ticks:{color:'#5a6070',font:{size:11,family:"'DM Sans',sans-serif",weight:'600'},padding:4},border:{display:false}}}}});
 };
+// Legacy no-op: SORA table has been removed, but older call sites may still reference it.
+window.renderSoraTable=function(){};
 
 // Modal
 window.sortModalByPnl=function(){window.modalSortAsc=!window.modalSortAsc;$('btnSort').textContent=window.modalSortAsc?'↑ Ascending':'↓ Descending';window.modalRecords.sort((a,b)=>window.modalSortAsc?a.pnl-b.pnl:b.pnl-a.pnl);window.modalFilteredRecords=[...window.modalRecords];window.modalCurrentPage=1;renderModalPage();};
@@ -1233,20 +1279,26 @@ function renderDashboard(pr,mos,sel){
   const tbody=$('tBody');tbody.innerHTML='';
   const hRow=$('tHead');const ul=isMil?'S$ Millions':'S$';const lm=mos[mos.length-1];
   const mH=mos.map(m=>`<th class="col-data">${DU.fmtMY(m)}</th>`).join('');
+  // YTD only shown when the user's range ends in a year for which every month Jan→last is available
+  // in the flux data. If the earliest account CSVs don't cover the start of the year, the YTD would
+  // silently be a partial-year sum — hide it instead of presenting a misleading number.
+  const hasYtd=_hasYtd();
+  const ytdHead=hasYtd?`<th class="csp"></th><th class="cy">Y-T-D<br><span style="font-weight:400;font-size:8.5px;opacity:0.5;text-transform:none;letter-spacing:0">${DU.fmtMY(lm)}</span></th>`:'';
 
-  hRow.innerHTML=`<th class="cp">Product<br><span style="font-weight:400;font-size:8.5px;opacity:0.35;text-transform:none;letter-spacing:0">${ul}</span></th><th class="cd">Driver</th>${mH}<th class="csp"></th><th class="cy">Y-T-D<br><span style="font-weight:400;font-size:8.5px;opacity:0.5;text-transform:none;letter-spacing:0">${DU.fmtMY(lm)}</span></th>`;
+  hRow.innerHTML=`<th class="cp">Product<br><span style="font-weight:400;font-size:8.5px;opacity:0.35;text-transform:none;letter-spacing:0">${ul}</span></th><th class="cd">Driver</th>${mH}${ytdHead}`;
 
-  if(!sel.length){tbody.innerHTML=`<tr><td colspan="${mos.length+4}" style="text-align:center;padding:32px;color:var(--text-3)">No products selected.</td></tr>`;$('tScroll').classList.remove('hidden');$('emptyState').classList.add('hidden');return;}
+  if(!sel.length){tbody.innerHTML=`<tr><td colspan="${mos.length+2+(hasYtd?2:0)}" style="text-align:center;padding:32px;color:var(--text-3)">No products selected.</td></tr>`;$('tScroll').classList.remove('hidden');$('emptyState').classList.add('hidden');return;}
   $('tScroll').classList.remove('hidden');$('emptyState').classList.add('hidden');
 
   _bZc(pr);
   const sp='<td class="csp"></td>';const frag=document.createDocumentFragment();
 
   // Helpers shared by all product row builders below.
+  const _ytdTail=cellHtml=>hasYtd?[sp,cellHtml]:[];
   const _statsFrag=(cls,count,bal)=>`<div class="${cls} hidden cs">Count: ${count.toLocaleString()}<br>Bal: ${bal.toFixed(1)}m</div>`;
   const _plainRow=(prod,a,prodLbl,label,rowKey)=>{const tr=document.createElement('tr');tr.className=a;
     tr.innerHTML=[`<td class="cp"><b>${prodLbl}</b></td><td class="cd">${label}</td>`]
-      .concat(mos.map(m=>c(pr[prod][rowKey][m]))).concat([sp,yc(sYtd(pr[prod][rowKey]))]).join('');
+      .concat(mos.map(m=>c(pr[prod][rowKey][m]))).concat(_ytdTail(yc(sYtd(pr[prod][rowKey])))).join('');
     return tr;};
   // One helper handles New/Repriced/Closed "stats" rows — all share the "YTD count+bal, inline stats frag" shape.
   const _statsRow=(prod,a,di,prodLbl,label,rowKey,driver,clsKey,countFn,balFn,extraIcon)=>{
@@ -1257,7 +1309,7 @@ function renderDashboard(pr,mos,sel){
     const tr=document.createElement('tr');tr.className=a;
     tr.innerHTML=[`<td class="cp"><b>${prodLbl}</b></td><td class="cd">${lbl}</td>`]
       .concat(mos.map(m=>cs(pr[prod][rowKey][m],_statsFrag(cls,countFn(m),balFn(m)),prod,driver,m)))
-      .concat([sp,ycs(sYtd(pr[prod][rowKey]),ySh)]).join('');
+      .concat(_ytdTail(ycs(sYtd(pr[prod][rowKey]),ySh))).join('');
     return tr;
   };
   const _childRow=(prod,a,key,label,grp,drv,isF,isL)=>{
@@ -1266,7 +1318,7 @@ function renderDashboard(pr,mos,sel){
     tr.className=`child-of-${grp} hidden c-row ${a}${isF?' c-1st':''}${isL?' c-lst':''}`;
     tr.innerHTML=[`<td class="cp"></td><td class="cd">${label}</td>`]
       .concat(mos.map(m=>c(pr[prod][key][m],{prod,drv,mo:m})))
-      .concat([sp,yc(sYtd(pr[prod][key]))]).join('');
+      .concat(_ytdTail(yc(sYtd(pr[prod][key])))).join('');
     return tr;
   };
 
@@ -1299,7 +1351,7 @@ function renderDashboard(pr,mos,sel){
       const pLbl=(zNew&&zRpT&&zSora)?prod:'';
       const tr=document.createElement('tr');tr.className=a;
       tr.innerHTML=[`<td class="cp"><b>${pLbl}</b></td><td class="cd">BAU <span class="eb" id="btn-bau-${di}" onclick="toggleGroup('bau-${di}')" title="Expand">+</span></td>`]
-        .concat(mos.map(m=>c(pr[prod]['BAU Total'][m]))).concat([sp,yc(sYtd(pr[prod]['BAU Total']))]).join('');
+        .concat(mos.map(m=>c(pr[prod]['BAU Total'][m]))).concat(_ytdTail(yc(sYtd(pr[prod]['BAU Total'])))).join('');
       frag.appendChild(tr);
       const aZ=rz(prod,'AEL maturity changed'),eZ=rz(prod,'EIR changed'),oZ=rz(prod,'Other BAU');
       [_childRow(prod,a,'AEL maturity changed','AEL maturity changed',`bau-${di}`,'AEL maturity changed',true,eZ&&oZ),
@@ -1319,14 +1371,14 @@ function renderDashboard(pr,mos,sel){
     // Product total
     const ts=document.createElement('tr');ts.className=`r-sub ${a}`;
     ts.innerHTML=[`<td class="cp"></td><td class="cd"><b>${prod} Total</b></td>`]
-      .concat(mos.map(m=>c(pr[prod]['Total'][m],{bold:true}))).concat([sp,yc(sYtd(pr[prod]['Total']),true)]).join('');
+      .concat(mos.map(m=>c(pr[prod]['Total'][m],{bold:true}))).concat(_ytdTail(yc(sYtd(pr[prod]['Total']),true))).join('');
     frag.appendChild(ts);
   });
 
   // Grand Total
   const tg=document.createElement('tr');tg.className='r-grand';
   tg.innerHTML=[`<td class="cp"><b>Grand Total</b></td><td class="cd"></td>`]
-    .concat(mos.map(m=>c(pr['Grand Total'][m],{bold:true}))).concat([sp,yc(sYtd(pr['Grand Total']),true)]).join('');
+    .concat(mos.map(m=>c(pr['Grand Total'][m],{bold:true}))).concat(_ytdTail(yc(sYtd(pr['Grand Total']),true))).join('');
   frag.appendChild(tg);
   tbody.appendChild(frag);
   if(isExpanded){tbody.querySelectorAll('.c-row,.cs').forEach(el=>el.classList.remove('hidden'));tbody.querySelectorAll('.eb,.st').forEach(b=>b.textContent='−');}
