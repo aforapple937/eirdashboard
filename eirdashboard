@@ -110,6 +110,10 @@ td.cp,th.cp{position:sticky;left:0;z-index:3;width:84px;min-width:84px;max-width
 td.cd,th.cd{position:sticky;left:84px;z-index:3;width:224px;min-width:224px;max-width:224px;box-shadow:3px 0 8px rgba(0,0,0,0.05);}
 /* Data column (monthly) — consistent width regardless of month count */
 td.col-data,th.col-data{width:116px;min-width:116px;max-width:116px;}
+/* Exact (S$) mode: wider numeric cells and more right padding so long numbers
+   don't crowd the border. Millions mode keeps the tighter default widths. */
+body.exact-units td.col-data,body.exact-units th.col-data{width:144px;min-width:144px;max-width:144px;padding-left:14px;padding-right:16px;}
+body.exact-units td.cy,body.exact-units th.cy{width:164px;min-width:164px;max-width:164px;padding-left:14px;padding-right:16px;}
 /* Sticky header */
 thead th{position:sticky;top:0;z-index:4;background:var(--black);color:rgba(255,255,255,0.82);font-family:var(--font);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;padding:10px 13px;text-align:right;white-space:nowrap;border-right:1px solid rgba(255,255,255,0.04);}
 thead th.cp,thead th.cd{z-index:6;}
@@ -489,7 +493,8 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
           </div>
           <div class="dash-grp" style="margin-left:auto">
             <button class="dash-btn" id="btnCalcRun" onclick="calcRun()" style="background:var(--black);color:#fff;border-color:var(--black);">Calculate All</button>
-            <button class="dash-btn hidden" id="btnCalcExport" onclick="calcExportPortfolio()">↓ Excel</button>
+            <button class="dash-btn hidden" id="btnCalcExport" onclick="calcExportPortfolio()" title="Export Excel (E)">↓ Excel <span class="dash-kbd">E</span></button>
+            <button class="dash-btn hidden" id="btnCalcSingleExport" onclick="calcExportSingle()" title="Export Excel (E)">↓ Excel <span class="dash-kbd">E</span></button>
           </div>
         </div>
         <div class="calc-hint" id="calcHint"></div>
@@ -525,7 +530,6 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
                   <h2 id="calcDrillAcc">A—</h2>
                   <span class="calc-drill-meta" id="calcDrillMeta"></span>
                 </div>
-                <button class="dash-btn" id="btnCalcSingleExport" onclick="calcExportSingle()">↓ Excel</button>
               </div>
               <div class="calc-recon-wrap">
                 <div class="calc-recon-title">Reconciliation</div>
@@ -826,7 +830,13 @@ if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
 if(e.key==='?'){e.preventDefault();openShortcutsOverlay();return;}
 if(e.key==='r'||e.key==='R'){e.preventDefault();$('navFile').click();}
 const _calcOn=!$('calcView').classList.contains('hidden');
-if(_calcOn)return;
+if(_calcOn){
+if(e.key==='e'||e.key==='E'){
+if(CALC.view==='single'&&CALC.lastResult){e.preventDefault();calcExportSingle();}
+else if(CALC.view==='portfolio'&&CALC.portfolio.length){e.preventDefault();calcExportPortfolio();}
+}
+return;
+}
 if(e.key==='[')switchTab('flux');
 if(e.key===']')switchTab('sora');
 if(e.key==='u'||e.key==='U')openManualModal();
@@ -1169,7 +1179,7 @@ if(_currentTab!=='sora')$('dashCtrl').classList.remove('hidden');
 function gdv(v){if(!v)return 0;return isMil?Math.round(v/100000)/10:v;}
 const _DERIVED_KEYS=['Total','Change in SORA','New originations','Current reprice','Future reprice','Repriced Total','AEL maturity changed','EIR changed','Other BAU','BAU Total','Closed accounts','Manual adj: Change in AEL','New Balance','Reprice Curr Bal','Reprice Fut Bal','Closed Balance'];
 const _PASSTHROUGH_KEYS=['New Count','Reprice Curr Count','Reprice Fut Count','Closed Count'];
-function _setUnitLabels(){const x=isMil;$('lbl-exact').className='dash-unit-lbl'+(x?'':' on');$('lbl-millions').className='dash-unit-lbl'+(x?' on':'');}
+function _setUnitLabels(){const x=isMil;$('lbl-exact').className='dash-unit-lbl'+(x?'':' on');$('lbl-millions').className='dash-unit-lbl'+(x?' on':'');document.body.classList.toggle('exact-units',!x);}
 window.updateDashboardView=function(){
 isMil=$('unitToggle').checked;_setUnitLabels();
 if(!gMonths.length)return;
@@ -1448,7 +1458,7 @@ const CALC={
 month:null, accByNum:new Map(), rateByAcc:new Map(), accHeaders:[], rateRows:[],
 portfolio:[], negativeEir:[], excludedFlag:[], excludedHP:[],
 page:1, perPage:100, sort:{field:null,dir:1}, running:false, cancelled:false,
-currentAcc:null, lastResult:null,
+currentAcc:null, lastResult:null, cameFromPortfolio:false,
 method:'system', resultMethod:null, view:'empty', startedAt:0,
 _rateIdbCache:new Map()
 };
@@ -1499,12 +1509,16 @@ $(id).classList.toggle('on',id==='calc'+{portfolio:'Portfolio',single:'Single',p
 });
 const btnExp=$('btnCalcExport');
 if(btnExp)btnExp.classList.toggle('hidden',view!=='portfolio'||!CALC.portfolio.length);
+const btnSingleExp=$('btnCalcSingleExport');
+if(btnSingleExp)btnSingleExp.classList.toggle('hidden',view!=='single'||!CALC.lastResult);
+const crumb=$('calcCrumb');
+if(crumb)crumb.classList.toggle('hidden',view!=='single'||!CALC.cameFromPortfolio);
 }
 window.calcOnMonthChange=async function(){
 const date=$('calcMonth').value;
 CALC.month=date;CALC.accByNum=new Map();CALC.rateByAcc=new Map();CALC.rateRows=[];
-CALC.portfolio=[];CALC.negativeEir=[];CALC.excludedFlag=[];CALC.excludedHP=[];CALC.lastResult=null;CALC.currentAcc=null;
-$('btnCalcExport').classList.add('hidden');
+CALC.portfolio=[];CALC.negativeEir=[];CALC.excludedFlag=[];CALC.excludedHP=[];CALC.lastResult=null;CALC.currentAcc=null;CALC.cameFromPortfolio=false;
+$('btnCalcExport').classList.add('hidden');$('btnCalcSingleExport').classList.add('hidden');
 const notice=$('calcNotice');
 if(!date){calcShowEmpty();return;}
 const accData=window.globalAccountData;if(!accData||!accData.size){calcShowEmpty();return;}
@@ -1657,7 +1671,7 @@ return{cashflow,pvCalc,pvSys:sysPv,pvDiff,pvDiffPct,eirAdjCalc:eirAdj,eirAdjSys:
 window.calcRun=function(){
 if(!CALC.month||!CALC.accByNum.size){showToast('Pick a month with loaded data first.');return;}
 const acc=($('calcAcc').value||'').trim();
-if(acc){calcRunSingle(acc);}else{calcRunAll();}
+if(acc){CALC.cameFromPortfolio=false;calcRunSingle(acc);}else{calcRunAll();}
 };
 function calcRunSingle(acc){
 if(!CALC.month||!CALC.accByNum.size){showToast('Pick a month with loaded data first.');return;}
@@ -1670,9 +1684,6 @@ const rates=CALC.rateByAcc.get(acc)||[];
 const res=calcRunEngine(row,rates,deriveEirOn,true);
 if(!res){showToast('Missing LAST_PYM_DTE or AEL_MATURITY_DATE for '+acc+'.');return;}
 CALC.currentAcc=acc;CALC.lastResult=res;CALC.singleMethod=CALC.method;
-const crumb=$('calcCrumb');
-crumb.textContent='← Back';
-crumb.dataset.back='empty';
 $('calcDrillAcc').textContent=acc;
 $('calcDrillMeta').innerHTML=`<span>${deriveEirOn?'Re-derive EIR':'System EIR'}</span>`;
 calcRenderRecon('calcSingleReconBody',res,deriveEirOn,CALC.method);
@@ -1757,7 +1768,7 @@ const parts=[`<span>Coverage <strong>${processed.toLocaleString()} / ${total.toL
 const excl=[];
 const rm=CALC.resultMethod||CALC.method;
 if(CALC.excludedHP.length)excl.push(`<span>HP ${CALC.excludedHP.length.toLocaleString()}</span>`);
-if(rm==='derive'&&CALC.excludedFlag.length)excl.push(`<a onclick="calcOpenExcludedModal('Flag')">Flag≠Y ${CALC.excludedFlag.length.toLocaleString()}</a>`);
+if(rm==='derive'&&CALC.excludedFlag.length)excl.push(`<span>Flag≠Y ${CALC.excludedFlag.length.toLocaleString()}</span>`);
 if(CALC.negativeEir.length)excl.push(`<a onclick="calcOpenNegEirModal()">EIR&lt;0 ${CALC.negativeEir.length.toLocaleString()}</a>`);
 if(excl.length)parts.push(`<span>Exclusions: ${excl.join(' <span class="calc-coverage-sep">·</span> ')}</span>`);
 $('calcCoverage').innerHTML=parts.join('');
@@ -1825,6 +1836,7 @@ CALC.portfolio.sort((a,b)=>(a[field]-b[field])*CALC.sort.dir);
 CALC.page=1;calcRenderPortfolio();
 };
 window.calcDrillAccount=function(acc){
+CALC.cameFromPortfolio=true;
 $('calcAcc').value=acc;calcUpdateRunBtn();calcRunSingle(acc);
 };
 window.calcOpenNegEirModal=function(){$('calcNegEirTbody').innerHTML=CALC.negativeEir.map(a=>`<tr><td>${a}</td></tr>`).join('')||'<tr><td>No accounts.</td></tr>';$('calcNegEirModal').classList.add('open');};
