@@ -33,14 +33,14 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-1);height:100
 /* NAVBAR */
 .navbar{height:var(--nav-h);background:var(--nav-bg);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;box-shadow:0 1px 0 rgba(255,255,255,0.05);}
 .nav-brand{display:flex;align-items:center;gap:10px;}
-.nav-title{font-size:14px;font-weight:700;color:#fff;letter-spacing:-0.2px;}
-.nav-sub{font-size:9.5px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;text-transform:uppercase;margin-top:1px;}
+.nav-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:-0.2px;}
+.nav-sub{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;text-transform:uppercase;margin-top:1px;}
 .nav-right{display:flex;align-items:center;gap:10px;}
-.nav-period{font-size:11px;font-weight:600;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:3px 11px;letter-spacing:0.2px;}
-.nav-kbd{font-size:9.5px;color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:2px 7px;font-family:var(--mono);}
+.nav-period{font-size:12px;font-weight:600;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:3px 11px;letter-spacing:0.2px;}
+.nav-kbd{font-size:10px;color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:2px 7px;font-family:var(--mono);}
 .nav-load{display:flex;align-items:center;gap:6px;background:var(--yellow);color:var(--black);border:none;border-radius:6px;padding:6px 13px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;}
 .nav-load:hover{background:var(--yellow-dk);transform:translateY(-1px);}
-.nav-cache{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:5px 11px;font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.nav-cache{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:5px 11px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;}
 .nav-cache:hover{background:rgba(255,255,255,0.14);color:#fff;}
 .nav-cache-count{font-family:var(--mono);font-size:10px;color:var(--yellow);background:rgba(253,207,11,0.14);padding:1px 6px;border-radius:9px;}
 #navFile{display:none;}
@@ -100,10 +100,8 @@ input:checked+.slider::before{transform:translateX(15px);}
 .main{flex:1;overflow:hidden;display:flex;flex-direction:column;}
 .table-area{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:14px 14px 0;}
 
-/* Toolbar */
-.toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0;}
-.tb-title{font-size:13px;font-weight:700;color:var(--text-1);}
-.tb-sub{font-size:11px;color:var(--text-3);margin-left:8px;}
+/* Consolidated app-header (tabs + dashboard controls share one container with no gap) */
+.app-header{display:flex;flex-direction:column;gap:6px;flex-shrink:0;margin-bottom:10px;}
 
 /* Table card */
 .t-card{background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow);flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;margin-bottom:14px;}
@@ -144,8 +142,11 @@ td.cd{font-family:var(--font);font-size:12.5px;text-align:left;padding-left:14px
 .a-hp td,.a-hp td.cp,.a-hp td.cd{background:#e4eeff;}
 .a-ot td,.a-ot td.cp,.a-ot td.cd{background:#ece2ff;}
 
-/* Hover — consistent across all cells */
-tbody tr:hover td,tbody tr:hover td.cp,tbody tr:hover td.cd{background:#fffbe8;}
+/* Hover — neutral overlay layered above any row tint via inset box-shadow.
+   Skips the spacer column so the gap between monthly/YTD stays clean.
+   Sticky `cd` column keeps its outer right-edge shadow alongside the overlay. */
+tbody tr:hover td:not(.csp){box-shadow:inset 0 0 0 9999px rgba(0,0,0,0.04);}
+tbody tr:hover td.cd{box-shadow:3px 0 8px rgba(0,0,0,0.05),inset 0 0 0 9999px rgba(0,0,0,0.04);}
 
 .cc{cursor:pointer;} .cc:hover{text-decoration:underline;text-underline-offset:2px;}
 
@@ -154,19 +155,16 @@ tbody tr:hover td,tbody tr:hover td.cp,tbody tr:hover td.cd{background:#fffbe8;}
 .r-sub.a-hl td,.r-sub.a-hl td.cp,.r-sub.a-hl td.cd{background:#fff7d1;}
 .r-sub.a-hp td,.r-sub.a-hp td.cp,.r-sub.a-hp td.cd{background:#e4eeff;}
 .r-sub.a-ot td,.r-sub.a-ot td.cp,.r-sub.a-ot td.cd{background:#ece2ff;}
-tbody tr.r-sub:hover td,tbody tr.r-sub:hover td.cp,tbody tr.r-sub:hover td.cd{background:#fff6d6;}
 
 /* Grand total row */
 .r-grand td,.r-grand td.cp,.r-grand td.cd{font-weight:700!important;background:var(--yellow-pale)!important;border-top:2px solid var(--yellow)!important;border-bottom:none!important;}
-tbody tr.r-grand:hover td,tbody tr.r-grand:hover td.cp,tbody tr.r-grand:hover td.cd{background:#fff8cc!important;}
 
 /* Child rows — inherit product accent, slightly darker tint for contrast */
 .c-row td,.c-row td.cp,.c-row td.cd{font-size:12px;border-bottom:1px solid #eef1f4;}
 .c-row.a-hl td,.c-row.a-hl td.cp,.c-row.a-hl td.cd{background:#ffefae;}
 .c-row.a-hp td,.c-row.a-hp td.cp,.c-row.a-hp td.cd{background:#d1deff;}
 .c-row.a-ot td,.c-row.a-ot td.cp,.c-row.a-ot td.cd{background:#ddcdff;}
-.c-row td.cd{padding-left:34px;color:var(--text-2);font-style:italic;}
-tbody tr.c-row:hover td,tbody tr.c-row:hover td.cp,tbody tr.c-row:hover td.cd{background:#fff6d6;}
+.c-row td.cd{padding-left:34px;color:var(--text-2);}
 
 /* Toggle buttons */
 .eb{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-left:4px;background:#dbeafe;border:1px solid #93c5fd;border-radius:3px;color:#1d6fb8;font-size:10px;font-weight:700;cursor:pointer;user-select:none;vertical-align:middle;transition:all 0.12s;}
@@ -181,7 +179,6 @@ td.csp,th.csp,thead th.csp,tbody tr:hover td.csp{width:22px!important;min-width:
 /* YTD column — consistent width, distinguished by spacer gap + gold header text */
 td.cy,th.cy{width:134px;min-width:134px;max-width:134px;font-weight:600;}
 thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
-tbody tr:hover td.cy{background:#fff6d6;}
 
 /* LOADING */
 .ld-ov{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;}
@@ -249,7 +246,7 @@ tbody tr:hover td.cy{background:#fff6d6;}
 #fluxPanel.hidden{display:none;}
 
 /* View tabs (above dashboard controls) */
-.view-tabs{display:flex;align-items:center;gap:6px;padding:6px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow);flex-shrink:0;margin-bottom:10px;}
+.view-tabs{display:flex;align-items:center;gap:6px;padding:6px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow);flex-shrink:0;}
 .view-tab{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:var(--r);cursor:pointer;background:transparent;border:1.5px solid transparent;font-family:var(--font);font-size:12px;font-weight:700;color:var(--text-2);transition:all 0.12s;user-select:none;}
 .view-tab:hover{background:var(--surface-2);color:var(--text-1);}
 .view-tab.on{background:var(--black);border-color:var(--black);color:#fff;}
@@ -257,7 +254,7 @@ tbody tr:hover td.cy{background:#fff6d6;}
 .view-tab.on .view-tab-kbd{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.6);}
 
 /* Dashboard controls bar */
-.dash-ctrl{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow);flex-shrink:0;margin-bottom:10px;flex-wrap:wrap;}
+.dash-ctrl{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow);flex-shrink:0;flex-wrap:wrap;}
 .dash-grp{display:flex;align-items:center;gap:6px;}
 .dash-grp+.dash-grp{padding-left:10px;border-left:1px solid var(--border);}
 .dash-lbl{font-size:9px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);margin-right:3px;}
@@ -347,6 +344,15 @@ tbody tr:hover td.cy{background:#fff6d6;}
 .manual-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:4px;box-shadow:0 0 0 2px rgba(239,68,68,0.15);animation:pulseDot 1.8s ease-in-out infinite;}
 @keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:0.55;}}
 .hidden{display:none!important;}
+
+/* Keyboard shortcuts cheatsheet */
+.sc-body{padding:14px 18px;display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;}
+.sc-group h4{font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;}
+.sc-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;font-size:12px;color:var(--text-1);}
+.sc-row+.sc-row{border-top:1px dashed var(--border-soft);}
+.sc-keys{display:inline-flex;gap:4px;}
+.sc-key{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text-1);background:var(--surface-2);border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:2px 7px;min-width:18px;text-align:center;}
+
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
 </style>
 </head>
@@ -375,17 +381,17 @@ tbody tr:hover td.cy{background:#fff6d6;}
 <div class="app">
   <main class="main">
     <div class="table-area" id="fluxView">
-      <div class="toolbar">
-        <div style="display:flex;align-items:center;">
-          <span class="tb-title" id="viewTitle">EIR Flux</span>
+      <div class="app-header">
+        <div class="view-tabs" id="viewTabs">
+          <div class="view-tab on" data-tab="flux" onclick="switchTab('flux')"><span>EIR Flux</span><span class="view-tab-kbd">[</span></div>
+          <div class="view-tab" data-tab="sora" onclick="switchTab('sora')"><span>SORA Graph</span><span class="view-tab-kbd">]</span></div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
+            <div class="view-tab" onclick="openShortcutsOverlay()" title="Keyboard shortcuts (?)" style="padding:7px 11px;">
+              <span style="font-weight:700">?</span>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="view-tabs" id="viewTabs">
-        <div class="view-tab on" data-tab="flux" onclick="switchTab('flux')"><span>EIR Flux</span><span class="view-tab-kbd">[</span></div>
-        <div class="view-tab" data-tab="sora" onclick="switchTab('sora')"><span>SORA Graph</span><span class="view-tab-kbd">]</span></div>
-      </div>
-      <div id="fluxPanel">
-        <div class="dash-ctrl" id="dashCtrl" style="display:none">
+        <div class="dash-ctrl hidden" id="dashCtrl">
           <div class="dash-grp">
             <span class="dash-lbl">Products</span>
             <div id="pills" style="display:flex;gap:5px;">
@@ -414,11 +420,13 @@ tbody tr:hover td.cy{background:#fff6d6;}
             <button class="dash-btn" onclick="exportFluxToExcel()" title="Export Excel (E)"><span>↓</span> Excel<span class="dash-kbd">E</span></button>
           </div>
         </div>
+      </div>
+      <div id="fluxPanel">
         <div class="t-card" id="tCard">
           <div class="empty" id="emptyState">
             <div class="empty-ico">📊</div>
             <h3>No data loaded</h3>
-            <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV. Press <strong>U</strong> or click <strong>Manual</strong> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage. Use <strong>[</strong> and <strong>]</strong> to toggle between EIR Flux and SORA tabs.</p>
+            <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV. Press <strong>U</strong> or click <strong>Manual</strong> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage. Use <strong>[</strong> and <strong>]</strong> to toggle between EIR Flux and SORA tabs. Press <strong>?</strong> for the full keyboard cheatsheet.</p>
           </div>
           <div class="t-scroll hidden" id="tScroll">
             <table id="pnlTable">
@@ -552,6 +560,42 @@ tbody tr:hover td.cy{background:#fff6d6;}
   </div>
 </div>
 
+<div class="m-ov" id="shortcutsModal">
+  <div class="m-box" style="max-width:560px">
+    <div class="m-hd">
+      <h2>Keyboard shortcuts</h2>
+      <div class="m-acts">
+        <button class="m-cl" onclick="closeShortcutsOverlay()">✕</button>
+      </div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-group">
+        <h4>Views</h4>
+        <div class="sc-row"><span>EIR Flux tab</span><span class="sc-keys"><span class="sc-key">[</span></span></div>
+        <div class="sc-row"><span>SORA tab</span><span class="sc-keys"><span class="sc-key">]</span></span></div>
+        <div class="sc-row"><span>Toggle HL</span><span class="sc-keys"><span class="sc-key">1</span></span></div>
+        <div class="sc-row"><span>Toggle HP</span><span class="sc-keys"><span class="sc-key">2</span></span></div>
+        <div class="sc-row"><span>Toggle Others</span><span class="sc-keys"><span class="sc-key">3</span></span></div>
+        <div class="sc-row"><span>Toggle units (S$ / Millions)</span><span class="sc-keys"><span class="sc-key">M</span></span></div>
+      </div>
+      <div class="sc-group">
+        <h4>Data</h4>
+        <div class="sc-row"><span>Load CSV / JSON</span><span class="sc-keys"><span class="sc-key">R</span></span></div>
+        <div class="sc-row"><span>Manual adjustments</span><span class="sc-keys"><span class="sc-key">U</span></span></div>
+        <div class="sc-row"><span>Save (in Manual modal)</span><span class="sc-keys"><span class="sc-key">S</span></span></div>
+        <h4 style="margin-top:14px">Table</h4>
+        <div class="sc-row"><span>Expand / collapse all</span><span class="sc-keys"><span class="sc-key">X</span></span></div>
+        <div class="sc-row"><span>Copy table as image</span><span class="sc-keys"><span class="sc-key">C</span></span></div>
+        <div class="sc-row"><span>Export to Excel</span><span class="sc-keys"><span class="sc-key">E</span></span></div>
+        <h4 style="margin-top:14px">Modals</h4>
+        <div class="sc-row"><span>Close any modal</span><span class="sc-keys"><span class="sc-key">Esc</span></span></div>
+        <div class="sc-row"><span>Page in account drill-down</span><span class="sc-keys"><span class="sc-key">←</span><span class="sc-key">→</span></span></div>
+        <div class="sc-row"><span>Show this cheatsheet</span><span class="sc-keys"><span class="sc-key">?</span></span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -644,7 +688,8 @@ window.switchTab=function(tab){
   document.querySelectorAll('.view-tab').forEach(el=>el.classList.toggle('on',el.dataset.tab===tab));
   $('fluxPanel').classList.toggle('hidden',tab!=='flux');
   $('soraView').classList.toggle('hidden',tab!=='sora');
-  const vt=$('viewTitle');if(vt)vt.textContent=tab==='sora'?'SORA Graph':'EIR Flux';
+  // Dashboard controls (products/units/range/buttons) are flux-only — hide on SORA, restore on flux if data is loaded.
+  const dc=$('dashCtrl');if(dc){if(tab==='sora')dc.classList.add('hidden');else if(gMonths.length)dc.classList.remove('hidden');}
   if(tab==='sora'){renderSoraChart();renderSoraTable();}
 };
 // sYtd — memoised per row object; invalidates when _ytdMo changes (_ytdVer bumped in _reMo).
@@ -666,8 +711,12 @@ function _bZc(pr){
 }
 function rz(p,k){return _zc[p+'|'+k]??true;}
 
+window.openShortcutsOverlay=function(){$('shortcutsModal').classList.add('open');};
+window.closeShortcutsOverlay=function(){$('shortcutsModal').classList.remove('open');};
+
 // Keyboard shortcuts
 window.addEventListener('keydown',e=>{
+  if($('shortcutsModal').classList.contains('open')){if(e.key==='Escape')closeShortcutsOverlay();return;}
   if($('manualModal').classList.contains('open')){
     if(e.key==='Escape')closeManualModal();
     else if(e.key==='s'||e.key==='S'){e.preventDefault();saveManualEntry();}
@@ -676,6 +725,7 @@ window.addEventListener('keydown',e=>{
   if($('storedModal').classList.contains('open')){if(e.key==='Escape')closeStoredMonthsModal();return;}
   if($('modal').classList.contains('open')){if(e.key==='Escape')closeModal();else if(e.key==='ArrowLeft')changePage(-1);else if(e.key==='ArrowRight')changePage(1);return;}
   if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+  if(e.key==='?'){e.preventDefault();openShortcutsOverlay();return;}
   if(e.key==='[')switchTab('flux');
   if(e.key===']')switchTab('sora');
   if(e.key==='r'||e.key==='R'){e.preventDefault();$('navFile').click();}
@@ -698,37 +748,58 @@ window.toggleProd=function(p,el){
 };
 
 // File loading — group by FIC_MIS_DATE, persist per-month to IndexedDB, rebuild from store.
-// Accepts account-row CSVs (header ACCOUNT_NUMBER) and manual-adjustment JSON files ({months:{KEY:{...}}}).
+// Accepts account-row CSVs (validated header) and manual-adjustment JSON files ({months:{KEY:{...}}}).
+const REQUIRED_CSV_COLS=['ACCOUNT_NUMBER','FIC_MIS_DATE','V_AEL_GROUP_ID','LCY_EIR_ADJ_AMT','ALLOCATED_COST','LEDGER_BALANCE_AMT','REPRICE_DATE','AEL_MATURITY_DATE','N_IFRS9_EFF_INTEREST_RATE','BASE_RT'];
 $('navFile').addEventListener('change',async function(e){
   const files=Array.from(e.target.files);if(!files.length)return;
   $('ldOv').classList.remove('hidden');$('emptyState').classList.add('hidden');
   const accBuckets={},manBuckets={};
   const csvFiles=files.filter(f=>!/\.json$/i.test(f.name));
   const jsonFiles=files.filter(f=>/\.json$/i.test(f.name));
-  let bytesProcessed=0;const totalBytes=csvFiles.reduce((s,f)=>s+f.size,0)||1;
-  await Promise.all(csvFiles.map(file=>new Promise(resolve=>{
-    let lastCursor=0;
+  // Per-file progress state — keyed so the overlay can show "Parsing X.csv (n of N) — pct%".
+  const fileState=csvFiles.map((f,i)=>({name:f.name,idx:i+1,pct:0,done:false}));
+  const totalCsv=csvFiles.length;
+  const updateProgress=()=>{
+    const overall=totalCsv?Math.round(fileState.reduce((s,f)=>s+f.pct,0)/totalCsv):0;
+    $('progressBar').style.width=overall+'%';
+    const active=fileState.find(f=>!f.done)||fileState[fileState.length-1];
+    if(active)$('progressText').textContent=`Parsing ${active.name} (${active.idx} of ${totalCsv}) — ${Math.round(active.pct)}%`;
+    else $('progressText').textContent=`Reading files… ${overall}%`;
+  };
+  const rejectedFiles=[];  // {name, missing:[]}
+  await Promise.all(csvFiles.map((file,fi)=>new Promise(resolve=>{
+    const st=fileState[fi];let valid=null;  // null = not yet checked
     Papa.parse(file,{header:true,skipEmptyLines:true,
       chunk(results){
         if(!results.data.length)return;
-        const cursor=results.meta.cursor||0;bytesProcessed+=(cursor-lastCursor);lastCursor=cursor;
-        const pct=Math.min((bytesProcessed/totalBytes)*100,99);
-        $('progressBar').style.width=pct+'%';$('progressText').textContent=`Reading files… ${Math.round(pct)}%`;
-        if(results.meta.fields.includes('ACCOUNT_NUMBER')){
-          results.data.forEach(row=>{
-            const acc=row.ACCOUNT_NUMBER,date=row.FIC_MIS_DATE;if(!acc||!date)return;
-            let prod='Others';
-            if(row.V_AEL_GROUP_ID==='SG_Housing')prod='HL';else if(row.V_AEL_GROUP_ID==='SG_HirePurchase')prod='HP';
-            let rY=null,rM=null;if(row.REPRICE_DATE){const rd=DU.parse(row.REPRICE_DATE);if(rd){rY=rd.getFullYear();rM=rd.getMonth();}}
-            if(!accBuckets[date])accBuckets[date]=[];
-            accBuckets[date].push({acc,product:prod,lcy:parseFloat(row.LCY_EIR_ADJ_AMT)||0,alloc:parseFloat(row.ALLOCATED_COST)||0,repriceDate:row.REPRICE_DATE,rYear:rY,rMonth:rM,aelMaturityDate:row.AEL_MATURITY_DATE,eirRate:row.N_IFRS9_EFF_INTEREST_RATE,baseRt:parseFloat(row.BASE_RT)||0,bal:parseFloat(row.LEDGER_BALANCE_AMT)||0});
-          });
+        // Validate header on first chunk — if any required column is missing, skip the entire file.
+        if(valid===null){
+          const fields=results.meta.fields||[];
+          const missing=REQUIRED_CSV_COLS.filter(c=>!fields.includes(c));
+          valid=missing.length===0;
+          if(!valid){rejectedFiles.push({name:file.name,missing});}
         }
+        // Track per-file progress regardless of validity so the overlay still moves.
+        if(file.size){st.pct=Math.min(((results.meta.cursor||0)/file.size)*100,99);updateProgress();}
+        if(!valid)return;
+        results.data.forEach(row=>{
+          const acc=row.ACCOUNT_NUMBER,date=row.FIC_MIS_DATE;if(!acc||!date)return;
+          let prod='Others';
+          if(row.V_AEL_GROUP_ID==='SG_Housing')prod='HL';else if(row.V_AEL_GROUP_ID==='SG_HirePurchase')prod='HP';
+          let rY=null,rM=null;if(row.REPRICE_DATE){const rd=DU.parse(row.REPRICE_DATE);if(rd){rY=rd.getFullYear();rM=rd.getMonth();}}
+          if(!accBuckets[date])accBuckets[date]=[];
+          accBuckets[date].push({acc,product:prod,lcy:parseFloat(row.LCY_EIR_ADJ_AMT)||0,alloc:parseFloat(row.ALLOCATED_COST)||0,repriceDate:row.REPRICE_DATE,rYear:rY,rMonth:rM,aelMaturityDate:row.AEL_MATURITY_DATE,eirRate:row.N_IFRS9_EFF_INTEREST_RATE,baseRt:parseFloat(row.BASE_RT)||0,bal:parseFloat(row.LEDGER_BALANCE_AMT)||0});
+        });
       },
-      complete(){resolve();},
-      error(){resolve();}
+      complete(){st.pct=100;st.done=true;updateProgress();resolve();},
+      error(){st.pct=100;st.done=true;updateProgress();resolve();}
     });
   })));
+  // Surface rejected files (silent on success per user spec — only warn when invalid).
+  if(rejectedFiles.length){
+    const lines=rejectedFiles.map(r=>`• ${r.name}\n   missing: ${r.missing.join(', ')}`).join('\n\n');
+    alert(`Skipped ${rejectedFiles.length} file${rejectedFiles.length>1?'s':''} — required columns not found:\n\n${lines}\n\nExpected columns:\n${REQUIRED_CSV_COLS.join(', ')}`);
+  }
   for(const file of jsonFiles){
     try{
       const txt=await file.text();const obj=JSON.parse(txt);
@@ -772,7 +843,7 @@ async function rebuildFromStore(){
   if(!accountData.size){
     $('ldOv').classList.add('hidden');
     $('emptyState').classList.remove('hidden');$('tScroll').classList.add('hidden');
-    $('dashCtrl').style.display='none';
+    $('dashCtrl').classList.add('hidden');
     gPnl={};gMonths=[];window.globalDates=[];_ldr=null;_userRange=null;
     if(typeof updateManualIndicator==='function')updateManualIndicator();
     return;
@@ -972,7 +1043,7 @@ function processData(accountData,dates){
   _syncRangeSelects();
   updateDashboardView();renderSoraChart();renderSoraTable();
   updateManualIndicator();
-  $('dashCtrl').style.display='';
+  if(_currentTab!=='sora')$('dashCtrl').classList.remove('hidden');
 }
 
 function gdv(v){if(!v)return 0;return isMil?Math.round(v/100000)/10:v;}
