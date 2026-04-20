@@ -2,7 +2,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EIR P&L Dashboard</title>
+<title>EIR Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -507,7 +507,7 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
               <div class="calc-coverage hidden" id="calcCoverage"></div>
               <div class="calc-recon-wrap hidden" id="calcPortReconWrap">
                 <div class="calc-recon-title" id="calcPortReconTitle">Portfolio totals</div>
-                <table class="calc-recon"><thead><tr><th>Metric</th><th>Engine</th><th>System</th><th>Variance</th><th>%</th></tr></thead><tbody id="calcPortReconBody"></tbody></table>
+                <table class="calc-recon"><thead><tr><th>Metric</th><th>Calculated</th><th>System</th><th>Variance</th><th>%</th></tr></thead><tbody id="calcPortReconBody"></tbody></table>
               </div>
               <div class="calc-pg-bar hidden" id="calcPgBar">
                 <span id="calcPgInfo">Page 1 of 1</span>
@@ -529,7 +529,7 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
               </div>
               <div class="calc-recon-wrap">
                 <div class="calc-recon-title">Reconciliation</div>
-                <table class="calc-recon"><thead><tr><th>Metric</th><th>Engine</th><th>System</th><th>Variance</th><th>%</th></tr></thead><tbody id="calcSingleReconBody"></tbody></table>
+                <table class="calc-recon"><thead><tr><th>Metric</th><th>Calculated</th><th>System</th><th>Variance</th><th>%</th></tr></thead><tbody id="calcSingleReconBody"></tbody></table>
               </div>
               <div class="calc-tbl-wrap"><table class="calc-tbl" id="calcCfTable"><thead><tr id="calcCfHead"></tr></thead><tbody id="calcCfBody"></tbody><tfoot id="calcCfFoot"></tfoot></table></div>
             </div>
@@ -1234,7 +1234,8 @@ tb.querySelectorAll('.eb,.st').forEach(b=>b.textContent=isExpanded?'−':'+');
 window.copyTable=async function(){
 document.querySelectorAll('.eb,.st').forEach(b=>b.style.display='none');
 const tw=$('tScroll');const sv=tw.style.overflow;tw.style.overflow='visible';
-try{const cv=await html2canvas(tw,{backgroundColor:'#fff',scale:2,windowWidth:tw.scrollWidth+50,width:tw.scrollWidth});tw.style.overflow=sv;cv.toBlob(async blob=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('Copied ✓');}catch{showToast('Clipboard failed.');}document.querySelectorAll('.eb,.st').forEach(b=>b.style.display='');});}
+const tbl=$('pnlTable');const tw2=tbl?Math.ceil(tbl.getBoundingClientRect().width):tw.scrollWidth;const th2=tbl?Math.ceil(tbl.getBoundingClientRect().height):tw.scrollHeight;
+try{const cv=await html2canvas(tbl||tw,{backgroundColor:'#fff',scale:2,windowWidth:tw2,width:tw2,height:th2});tw.style.overflow=sv;cv.toBlob(async blob=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('Copied ✓');}catch{showToast('Clipboard failed.');}document.querySelectorAll('.eb,.st').forEach(b=>b.style.display='');});}
 catch{showToast('Failed.');tw.style.overflow=sv;document.querySelectorAll('.eb,.st').forEach(b=>b.style.display='');}
 };
 window.exportFluxToExcel=function(){
@@ -1448,7 +1449,7 @@ month:null, accByNum:new Map(), rateByAcc:new Map(), accHeaders:[], rateRows:[],
 portfolio:[], negativeEir:[], excludedFlag:[], excludedHP:[],
 page:1, perPage:100, sort:{field:null,dir:1}, running:false, cancelled:false,
 currentAcc:null, lastResult:null,
-method:'system', view:'empty', startedAt:0,
+method:'system', resultMethod:null, view:'empty', startedAt:0,
 _rateIdbCache:new Map()
 };
 function _cParse(s){if(!s)return null;const d=DU.parse(s);if(!d)return null;return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));}
@@ -1467,7 +1468,7 @@ $('fluxView').classList.toggle('hidden',isCalc);
 $('calcView').classList.toggle('hidden',!isCalc);
 document.querySelectorAll('#viewTabs').forEach(el=>el.classList.toggle('hidden',isCalc));
 const dc=$('dashCtrl');if(dc)dc.classList.toggle('hidden',isCalc||!gMonths.length);
-if(isCalc)calcSyncMonthPicker();
+if(isCalc){const sel=$('calcMonth');if(!sel||!sel.options.length||!CALC.month)calcSyncMonthPicker();}
 };
 function calcSyncMonthPicker(){
 const sel=$('calcMonth');if(!sel)return;
@@ -1496,6 +1497,8 @@ $('calcBody').classList.remove('hidden');
 ['calcPortfolioView','calcSingleView','calcProgView'].forEach(id=>{
 $(id).classList.toggle('on',id==='calc'+{portfolio:'Portfolio',single:'Single',progress:'Prog'}[view]+'View');
 });
+const btnExp=$('btnCalcExport');
+if(btnExp)btnExp.classList.toggle('hidden',view!=='portfolio'||!CALC.portfolio.length);
 }
 window.calcOnMonthChange=async function(){
 const date=$('calcMonth').value;
@@ -1540,7 +1543,6 @@ if(m!=='system'&&m!=='derive')return;
 CALC.method=m;
 document.querySelectorAll('.calc-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.method===m));
 calcUpdateRunBtn();calcUpdateHint();
-if(CALC.portfolio.length&&CALC.view==='portfolio'){calcRenderPortfolioResults();}
 };
 function calcUpdateRunBtn(){
 const btn=$('btnCalcRun');if(!btn)return;
@@ -1567,7 +1569,7 @@ if(CALC.method==='derive'&&row.fEirFlag!=='Y'){flag++;continue;}
 if((parseFloat(row.eirRate)||0)<0){neg++;continue;}
 }
 const total=CALC.accByNum.size;const processed=total-hp-flag-neg;
-const parts=[];if(hp)parts.push(`HP ${hp}`);if(flag)parts.push(`Flag≠Y ${flag}`);if(neg)parts.push(`EIR<0 ${neg}`);
+const parts=[];if(hp)parts.push(`HP ${hp.toLocaleString()}`);if(flag)parts.push(`Flag≠Y ${flag.toLocaleString()}`);if(neg)parts.push(`EIR<0 ${neg.toLocaleString()}`);
 hint.textContent=`→ Will process ${processed.toLocaleString()} of ${total.toLocaleString()} accounts · ${methodLbl}${parts.length?' · excludes '+parts.join(', '):''}`;
 }
 function _calcSingleSkipReason(row){
@@ -1645,8 +1647,11 @@ const nAct=ficMis?_cACT(startDate,ficMis):0;
 const eirInterest=pvCalc*(workEir/100)*nAct;
 const cirInterest=initLedger*(cirRate/100)*nAct;
 const eirAdj=pvCalc-initLedger+eirInterest-cirInterest;
-const pvDiff=pvCalc-sysPv,pvDiffPct=sysPv!==0?(pvDiff/sysPv)*100:0;
-const eirDiff=eirAdj-sysUnamrt,eirDiffPct=sysUnamrt!==0?(eirDiff/sysUnamrt)*100:0;
+const _r2=v=>Math.round((v||0)*100)/100;
+const pvCalcR=_r2(pvCalc),pvSysR=_r2(sysPv);
+const pvDiff=_r2(pvCalcR-pvSysR),pvDiffPct=pvSysR!==0?(pvDiff/pvSysR)*100:0;
+const eirAdjR=_r2(eirAdj),eirSysR=_r2(sysUnamrt);
+const eirDiff=_r2(eirAdjR-eirSysR),eirDiffPct=eirSysR!==0?(eirDiff/eirSysR)*100:0;
 return{cashflow,pvCalc,pvSys:sysPv,pvDiff,pvDiffPct,eirAdjCalc:eirAdj,eirAdjSys:sysUnamrt,eirDiff,eirDiffPct,derivedEir:workEir,sysEir:eirRate,eirRateDiff:workEir-eirRate};
 }
 window.calcRun=function(){
@@ -1664,21 +1669,18 @@ const deriveEirOn=CALC.method==='derive';
 const rates=CALC.rateByAcc.get(acc)||[];
 const res=calcRunEngine(row,rates,deriveEirOn,true);
 if(!res){showToast('Missing LAST_PYM_DTE or AEL_MATURITY_DATE for '+acc+'.');return;}
-CALC.currentAcc=acc;CALC.lastResult=res;
-const hasPortfolio=CALC.portfolio.length>0;
+CALC.currentAcc=acc;CALC.lastResult=res;CALC.singleMethod=CALC.method;
 const crumb=$('calcCrumb');
-crumb.textContent=hasPortfolio?'← Account listing':'← EIR Calculator';
-crumb.dataset.back=hasPortfolio?'portfolio':'empty';
+crumb.textContent='← Back';
+crumb.dataset.back='empty';
 $('calcDrillAcc').textContent=acc;
-const meta=[DU.fmtMY(CALC.month),row.product||row.groupId||'—','Matures '+(DU.fmtM(row.aelMaturityDate)||'—'),deriveEirOn?'Re-derive EIR':'System EIR'].filter(Boolean);
-$('calcDrillMeta').innerHTML=meta.map(s=>`<span>${s}</span>`).join('<em>·</em>');
-calcRenderRecon('calcSingleReconBody',res,deriveEirOn);
+$('calcDrillMeta').innerHTML=`<span>${deriveEirOn?'Re-derive EIR':'System EIR'}</span>`;
+calcRenderRecon('calcSingleReconBody',res,deriveEirOn,CALC.method);
 calcRenderCashflow(res.cashflow,res.pvCalc);
 calcShowView('single');
 }
 window.calcBackFromSingle=function(){
-const back=$('calcCrumb').dataset.back;
-if(back==='portfolio'&&CALC.portfolio.length){calcShowView('portfolio');}
+if(CALC.portfolio.length){calcShowView('portfolio');}
 else{calcShowEmpty();}
 };
 window.calcCloseNegEirModal=function(){$('calcNegEirModal').classList.remove('open');};
@@ -1713,9 +1715,13 @@ gPv+=res.pvCalc;gPvSys+=res.pvSys;gEir+=res.eirAdjCalc;gEirSys+=res.eirAdjSys;
 idx=end;calcUpdateProgress(idx,total);
 if(idx<total){setTimeout(step,0);return;}
 CALC.running=false;
-const gPvDiff=gPv-gPvSys,gPvDiffPct=gPvSys!==0?(gPvDiff/gPvSys)*100:0;
-const gEirDiff=gEir-gEirSys,gEirDiffPct=gEirSys!==0?(gEirDiff/gEirSys)*100:0;
+const _r2p=v=>Math.round((v||0)*100)/100;
+const gPvR=_r2p(gPv),gPvSysR=_r2p(gPvSys);
+const gPvDiff=_r2p(gPvR-gPvSysR),gPvDiffPct=gPvSysR!==0?(gPvDiff/gPvSysR)*100:0;
+const gEirR=_r2p(gEir),gEirSysR=_r2p(gEirSys);
+const gEirDiff=_r2p(gEirR-gEirSysR),gEirDiffPct=gEirSysR!==0?(gEirDiff/gEirSysR)*100:0;
 CALC.portfolioTotals={pvCalc:gPv,pvSys:gPvSys,pvDiff:gPvDiff,pvDiffPct:gPvDiffPct,eirAdjCalc:gEir,eirAdjSys:gEirSys,eirDiff:gEirDiff,eirDiffPct:gEirDiffPct,derivedEir:0,sysEir:0,eirRateDiff:0};
+CALC.resultMethod=CALC.method;
 CALC.page=1;CALC.sort={field:null,dir:1};
 calcRenderPortfolioResults();
 calcShowView('portfolio');
@@ -1737,8 +1743,9 @@ eta.textContent=remaining<1?'< 1 second remaining':('~'+Math.ceil(remaining)+' s
 }
 function calcRenderPortfolioResults(){
 calcRenderCoverage();
-$('calcPortReconTitle').textContent=CALC.method==='derive'?'Portfolio totals · Re-derive EIR':'Portfolio totals · System EIR';
-calcRenderRecon('calcPortReconBody',CALC.portfolioTotals,false);
+const rm=CALC.resultMethod||CALC.method;
+$('calcPortReconTitle').textContent=rm==='derive'?'Portfolio totals · Re-derive EIR':'Portfolio totals · System EIR';
+calcRenderRecon('calcPortReconBody',CALC.portfolioTotals,false,rm);
 $('calcPortReconWrap').classList.remove('hidden');
 calcRenderPortfolio();
 $('calcPgBar').classList.remove('hidden');
@@ -1748,15 +1755,16 @@ function calcRenderCoverage(){
 const total=CALC.accByNum.size;const processed=CALC.portfolio.length;
 const parts=[`<span>Coverage <strong>${processed.toLocaleString()} / ${total.toLocaleString()}</strong></span>`];
 const excl=[];
-if(CALC.excludedHP.length)excl.push(`<a onclick="calcOpenExcludedModal('HP')">HP ${CALC.excludedHP.length.toLocaleString()}</a>`);
-if(CALC.method==='derive'&&CALC.excludedFlag.length)excl.push(`<a onclick="calcOpenExcludedModal('Flag')">Flag≠Y ${CALC.excludedFlag.length.toLocaleString()}</a>`);
+const rm=CALC.resultMethod||CALC.method;
+if(CALC.excludedHP.length)excl.push(`<span>HP ${CALC.excludedHP.length.toLocaleString()}</span>`);
+if(rm==='derive'&&CALC.excludedFlag.length)excl.push(`<a onclick="calcOpenExcludedModal('Flag')">Flag≠Y ${CALC.excludedFlag.length.toLocaleString()}</a>`);
 if(CALC.negativeEir.length)excl.push(`<a onclick="calcOpenNegEirModal()">EIR&lt;0 ${CALC.negativeEir.length.toLocaleString()}</a>`);
 if(excl.length)parts.push(`<span>Exclusions: ${excl.join(' <span class="calc-coverage-sep">·</span> ')}</span>`);
 $('calcCoverage').innerHTML=parts.join('');
 $('calcCoverage').classList.remove('hidden');
 }
-function calcRenderRecon(bodyId,r,singleModeShowEirRow){
-const deriveRow=CALC.method==='derive';
+function calcRenderRecon(bodyId,r,singleModeShowEirRow,methodOverride){
+const deriveRow=(methodOverride||CALC.method)==='derive';
 const rows=[
 ['PV of cash flows',_cFmtN(r.pvCalc,2),_cFmtN(r.pvSys,2),_cFmtN(r.pvDiff,2),_cFmtPct(r.pvDiffPct,2)],
 ['EIR adjustment',_cFmtN(r.eirAdjCalc,2),_cFmtN(r.eirAdjSys,2),_cFmtN(r.eirDiff,2),_cFmtPct(r.eirDiffPct,2)]
@@ -1783,7 +1791,7 @@ $('calcCfBody').innerHTML=cashflow.map(r=>`<tr>
 $('calcCfFoot').innerHTML=`<tr><td colspan="15" style="text-align:right;">Total PV</td><td>${_cFmtN(totalPV,2)}</td></tr>`;
 }
 function calcRenderPortfolio(){
-const deriveEirOn=CALC.method==='derive';
+const deriveEirOn=(CALC.resultMethod||CALC.method)==='derive';
 const base=['Account','PV per Calc','N_PV_CASH_FLOWS_EIR','PV Diff (Amt)','PV Diff (%)'];
 const eirCols=['EIR per Calc','N_IFRS9_EFF_INTEREST_RATE','EIR Diff'];
 const tail=['EIR Adj per Calc','N_UNAMRT_FEES_EIR','EIR Adj Diff (Amt)','EIR Adj Diff (%)'];
