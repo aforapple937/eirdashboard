@@ -1540,8 +1540,11 @@ const prodCell=`<td class="cp" rowspan="${rowCount}"><div class="eir-prod-k">${p
 rows[0]=rows[0].replace(/^<tr([^>]*)>/,`<tr$1>${prodCell}`);
 html+=rows.join('');
 });
-// Grand total row
-html+=`<tr class="r-grand"><td class="cd" colspan="2"><b>Grand Total</b></td>${_boldCells('Total','Grand Total')}${_ytdTail('Total','Grand Total',true)}</tr>`;
+// Grand total row — pr['Grand Total'] is a flat {month:value} map, not nested under 'Total'
+const gt=pr['Grand Total']||{};
+const gtCells=mos.map(m=>c(gt[m],{bold:true})).join('');
+const gtYtdTail=hasYtd?sp+yc(sYtd(gt),true):'';
+html+=`<tr class="r-grand"><td class="cd" colspan="2"><b>Grand Total</b></td>${gtCells}${gtYtdTail}</tr>`;
 tbody.innerHTML=html;
 }
 const CALC={
