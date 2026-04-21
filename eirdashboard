@@ -28,29 +28,24 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{font-size:14px;}
 body{font-family:var(--font);background:var(--bg);color:var(--text-1);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
-/* NAVBAR */
-.navbar{height:var(--nav-h);background:var(--nav-bg);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;box-shadow:0 1px 0 rgba(255,255,255,0.05);}
-.nav-brand{display:flex;align-items:center;gap:10px;}
-.nav-title{font-size:13px;font-weight:700;color:#fff;letter-spacing:-0.2px;}
-.nav-sub{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;text-transform:uppercase;margin-top:1px;}
-.nav-right{display:flex;align-items:center;gap:10px;}
-.nav-period{font-size:12px;font-weight:600;color:rgba(255,255,255,0.4);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.09);border-radius:20px;padding:3px 11px;letter-spacing:0.2px;}
-.nav-kbd{font-size:10px;color:rgba(255,255,255,0.25);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:2px 7px;font-family:var(--mono);}
-.nav-load{display:flex;align-items:center;gap:6px;background:var(--yellow);color:var(--black);border:none;border-radius:6px;padding:6px 13px;font-family:var(--font);font-size:12px;font-weight:700;cursor:pointer;transition:all 0.15s;}
-.nav-load:hover{background:var(--yellow-dk);transform:translateY(-1px);}
-.nav-cache{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:5px 11px;font-family:var(--font);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;}
-.nav-cache:hover{background:rgba(255,255,255,0.14);color:#fff;}
-.nav-cache-count{font-family:var(--mono);font-size:10px;color:var(--yellow);background:rgba(253,207,11,0.14);padding:1px 6px;border-radius:9px;}
-#navFile{display:none;}
 /* APP SHELL */
 .app{display:flex;flex:1;overflow:hidden;}
-/* SIDEBAR */
-.sidebar{width:var(--sb-w);background:var(--sidebar-bg);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;border-right:1px solid rgba(255,255,255,0.05);}
+/* SIDEBAR — light design */
+.sidebar{width:var(--sb-w);background:var(--surface);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;border-right:1px solid var(--border);padding-bottom:14px;}
 .sidebar.hidden{display:none;}
 .sidebar::-webkit-scrollbar{width:3px;}
-.sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);border-radius:3px;}
-.sb-sec{padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,0.05);}
-.sb-lbl{font-size:9.5px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:rgba(255,255,255,0.28);margin-bottom:10px;}
+.sidebar::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:3px;}
+.sb-section-title{font-size:10px;text-transform:uppercase;letter-spacing:0.14em;color:var(--text-3);padding:22px 18px 6px;font-weight:600;}
+.sb-nav{display:flex;flex-direction:column;padding:0 10px;gap:2px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:6px;color:var(--text-2);cursor:pointer;user-select:none;transition:background .12s,color .12s;}
+.sb-item:hover{background:var(--surface-2);color:var(--text-1);}
+.sb-item.active{background:var(--black);color:var(--yellow);}
+.sb-item.active .sb-icon{color:var(--yellow);}
+.sb-icon{width:16px;height:16px;flex:0 0 auto;color:var(--text-3);}
+.sb-item:hover .sb-icon{color:inherit;}
+.sb-label{font-size:13px;font-weight:500;}
+.sb-badge{margin-left:auto;font-size:10px;padding:1px 7px;border-radius:999px;background:var(--yellow);color:var(--black);font-weight:700;font-family:var(--mono);}
+.sb-item.active .sb-badge{background:var(--yellow);color:var(--black);}
 /* KPI */
 .kpi-grid{display:flex;flex-direction:column;gap:7px;}
 .kpi-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:var(--r);padding:11px 13px;}
@@ -201,18 +196,34 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
 /* TOAST */
 .toast{position:fixed;bottom:22px;right:22px;background:var(--black);color:#fff;padding:10px 16px;border-radius:7px;font-size:12px;font-weight:500;box-shadow:0 6px 20px rgba(0,0,0,0.2);border-left:4px solid var(--yellow);z-index:9999;transform:translateY(60px);opacity:0;transition:all .27s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
-/* Sidebar module navigation */
-.sb-modules{padding:14px 12px;display:flex;flex-direction:column;gap:6px;border-bottom:1px solid rgba(255,255,255,0.05);}
-.sb-module{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-radius:var(--r);cursor:pointer;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);color:rgba(255,255,255,0.7);font-size:12.5px;font-weight:700;letter-spacing:0.3px;user-select:none;transition:all 0.12s;}
-.sb-module:hover{background:rgba(255,255,255,0.09);color:#fff;}
-.sb-module.active{background:rgba(253,207,11,0.2);border-color:rgba(253,207,11,0.5);color:#fff;}
-.sb-module-left{display:flex;align-items:center;gap:10px;}
-.sb-module-ico{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.3);flex-shrink:0;}
-.sb-module.active .sb-module-ico{background:var(--yellow);}
-.sb-module-kbd{font-family:var(--mono);font-size:9.5px;color:rgba(255,255,255,0.35);background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:3px;padding:1px 5px;}
-.sb-link{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 12px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:var(--r);cursor:pointer;color:rgba(255,255,255,0.75);font-family:var(--font);font-size:11.5px;font-weight:600;transition:all 0.12s;width:100%;text-align:left;}
-.sb-link:hover{background:rgba(255,255,255,0.09);color:#fff;}
-.sb-link-count{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.45);background:rgba(255,255,255,0.08);padding:2px 7px;border-radius:10px;}
+/* Stored Files view (full page) */
+#filesView{flex:1;min-height:0;padding:20px 22px;overflow:auto;}
+.files-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:16px;}
+.files-title h1{font-size:22px;font-weight:700;letter-spacing:-0.3px;margin:0 0 4px;color:var(--text-1);}
+.files-title h1 .files-sub{color:var(--text-3);font-weight:400;font-size:14px;letter-spacing:-0.01em;margin-left:4px;}
+.files-title .files-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-3);}
+.files-title .files-meta b{color:var(--text-1);font-weight:600;font-family:var(--mono);}
+.files-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;}
+.files-tbl{width:100%;border-collapse:collapse;}
+.files-tbl th{text-align:left;font-family:var(--font);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);padding:11px 14px;background:var(--surface-2);border-bottom:1px solid var(--border);}
+.files-tbl td{padding:10px 14px;border-bottom:1px solid var(--border-soft);font-size:12.5px;vertical-align:middle;background:#fff;}
+.files-tbl tr:last-child td{border-bottom:none;}
+.files-tbl tr:hover td{background:var(--surface-2);}
+.files-tbl .f-name{font-weight:600;color:var(--text-1);}
+.files-tbl .f-badge{display:inline-block;padding:1px 8px;border-radius:4px;font-family:var(--mono);font-size:10.5px;font-weight:700;background:var(--border-soft);color:var(--text-2);text-transform:uppercase;letter-spacing:0.3px;}
+.files-tbl .f-badge.csv{background:#dcfce7;color:#065f46;}
+.files-tbl .f-badge.json{background:#fef3c7;color:#78350f;}
+.files-tbl .f-badge.acc{background:#dbeafe;color:#1d4ed8;}
+.files-tbl .f-badge.rate{background:#ede9fe;color:#5b21b6;}
+.files-tbl .f-badge.man{background:#ffe4e6;color:#9d174d;}
+.files-tbl .f-date{font-family:var(--mono);font-size:11.5px;color:var(--text-3);}
+.files-tbl .f-cnt{font-family:var(--mono);font-size:11.5px;color:var(--text-2);}
+.files-act{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text-2);font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .12s;}
+.files-act:hover{color:#b91c1c;border-color:#fecaca;background:#fef2f2;}
+.files-empty{padding:60px 20px;text-align:center;color:var(--text-3);}
+.files-empty-ico{font-size:36px;opacity:0.35;margin-bottom:10px;}
+.files-empty h3{font-size:14px;font-weight:600;color:var(--text-2);margin-bottom:6px;}
+.files-empty p{font-size:12px;max-width:320px;margin:0 auto;line-height:1.6;}
 /* Flux panel (wraps controls + table so it flexes alongside SORA view) */
 #fluxPanel{flex:1;display:flex;flex-direction:column;min-height:0;}
 #fluxPanel.hidden{display:none;}
@@ -374,16 +385,13 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
 </style>
 </head>
 <body>
-<nav class="navbar">
-  <div class="nav-brand">
-    <div class="nav-title">EIR Dashboard</div>
-  </div>
-  <div class="nav-right">
-    <button class="nav-cache hidden" id="navCache" onclick="openStoredMonthsModal()" title="View cached files">🗂 View cached files <span class="nav-cache-count" id="navCacheCount">0</span></button>
-    <label class="nav-load" for="navFile" title="Load Data (R)">📂 Load Data</label>
-    <input type="file" id="navFile" accept=".csv,.json" multiple>
-  </div>
-</nav>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-trend" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></symbol>
+  <symbol id="i-calc" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 12h2M12 12h2M16 12h0M8 16h2M12 16h2M16 16h0"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V8"/><path d="M8 12l4-4 4 4"/><path d="M4 4h16"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 7V4h4v3M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/></symbol>
+</svg>
 <div class="ld-ov hidden" id="ldOv">
   <div class="ld-card">
     <div class="ld-spin"></div>
@@ -392,13 +400,19 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
     <div class="p-track"><div class="p-fill" id="progressBar"></div></div>
   </div>
 </div>
-</div>
+<input type="file" id="navFile" accept=".csv,.json" multiple style="display:none">
 <div class="app">
   <aside class="sidebar" id="sidebar">
-    <div class="sb-modules">
-      <div class="sb-module active" data-mod="flux" onclick="switchModule('flux')"><span class="sb-module-left"><span class="sb-module-ico"></span>EIR FLUX</span></div>
-      <div class="sb-module" data-mod="calc" onclick="switchModule('calc')"><span class="sb-module-left"><span class="sb-module-ico"></span>EIR CALCULATOR</span></div>
-    </div>
+    <div class="sb-section-title">Analysis</div>
+    <nav class="sb-nav">
+      <div class="sb-item active" data-mod="flux" onclick="switchModule('flux')"><svg class="sb-icon"><use href="#i-trend"/></svg><span class="sb-label">EIR Flux</span></div>
+      <div class="sb-item" data-mod="calc" onclick="switchModule('calc')"><svg class="sb-icon"><use href="#i-calc"/></svg><span class="sb-label">EIR Calculator</span></div>
+    </nav>
+    <div class="sb-section-title">Files</div>
+    <nav class="sb-nav">
+      <div class="sb-item" data-mod="files" onclick="switchModule('files')"><svg class="sb-icon"><use href="#i-folder"/></svg><span class="sb-label">Stored Files</span><span class="sb-badge" id="sbFilesBadge">0</span></div>
+      <label class="sb-item" for="navFile" title="Load Data (R)"><svg class="sb-icon"><use href="#i-upload"/></svg><span class="sb-label">Upload / Reload</span></label>
+    </nav>
   </aside>
   <main class="main">
     <div class="table-area" id="fluxView">
@@ -553,6 +567,36 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
         </div>
       </div>
     </div>
+    <div class="hidden" id="filesView">
+      <div class="files-head">
+        <div class="files-title">
+          <h1>Stored Files <span class="files-sub">· Local IndexedDB</span></h1>
+          <div class="files-meta">
+            <span>All files are stored locally in your browser · never leave this device</span>
+            <span>·</span>
+            <span><b id="filesCountMeta">0</b> cached items</span>
+          </div>
+        </div>
+      </div>
+      <div class="files-card">
+        <table class="files-tbl" id="filesTbl">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th style="width:110px">Type</th>
+              <th style="width:170px">Details</th>
+              <th style="width:170px;text-align:right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="filesRows"></tbody>
+        </table>
+        <div id="filesEmpty" class="files-empty" style="display:none">
+          <div class="files-empty-ico">🗂</div>
+          <h3>No files stored yet</h3>
+          <p>Click <strong>Upload / Reload</strong> in the sidebar to load a CSV or JSON. Files are cached locally in your browser.</p>
+        </div>
+      </div>
+    </div>
   </main>
 </div>
 <div class="m-ov" id="manualModal">
@@ -611,21 +655,6 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
           </table>
         </div>
       </div>
-    </div>
-  </div>
-</div>
-<div class="m-ov" id="storedModal">
-  <div class="m-box" style="max-width:580px">
-    <div class="m-hd">
-      <h2>Cached Files</h2>
-      <div class="m-acts">
-        <button class="m-cl" onclick="closeStoredMonthsModal()">✕</button>
-      </div>
-    </div>
-    <div id="smList" class="sm-list"></div>
-    <div class="sm-ft">
-      <span id="smSummary" style="font-size:11.5px;color:var(--text-3)"></span>
-      <button class="sm-clear" onclick="clearAllStored()">Clear All Cached Data</button>
     </div>
   </div>
 </div>
@@ -824,7 +853,6 @@ if(e.key==='Escape')closeManualModal();
 else if(e.key==='s'||e.key==='S'){e.preventDefault();saveManualEntry();}
 return;
 }
-if($('storedModal').classList.contains('open')){if(e.key==='Escape')closeStoredMonthsModal();return;}
 if($('modal').classList.contains('open')){if(e.key==='Escape')closeModal();else if(e.key==='ArrowLeft')changePage(-1);else if(e.key==='ArrowRight')changePage(1);return;}
 if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
 if(e.key==='?'){e.preventDefault();openShortcutsOverlay();return;}
@@ -984,54 +1012,44 @@ await new Promise(r=>setTimeout(()=>{processData(accountData,Array.from(datesSet
 if(datesSet.size<2)showToast('Only '+datesSet.size+' month stored — upload the prior month to enable flux comparison.');
 }
 async function renderStoredMonthsPanel(){
-const btn=$('navCache'),countEl=$('navCacheCount');
 const[accRows,manRows,rateRows]=await Promise.all([IDB.getAll(IDB.accStore),IDB.getAll(IDB.manStore),IDB.getAll(IDB.rateStore)]);
 const manCount=manRows.length?1:0;
 const total=accRows.length+manCount+rateRows.length;
-if(btn){if(total)btn.classList.remove('hidden');else btn.classList.add('hidden');}
-if(countEl)countEl.textContent=total.toString();
-if($('storedModal').classList.contains('open'))renderStoredMonthsModal(accRows,manRows,rateRows);
+const badge=$('sbFilesBadge');if(badge)badge.textContent=total.toString();
+if(!$('filesView').classList.contains('hidden'))renderFilesView(accRows,manRows,rateRows);
 }
-function renderStoredMonthsModal(accRows,manRows,rateRows){
-const list=$('smList'),sum=$('smSummary');if(!list)return;
-if((!accRows||!accRows.length)&&(!manRows||!manRows.length)&&(!rateRows||!rateRows.length)){list.innerHTML='<div class="sm-empty">Nothing cached yet. Use <strong>Load Data</strong> or press <strong>U</strong> to add manual adjustments.</div>';if(sum)sum.textContent='';return;}
+window.renderFilesView=async function(accRows,manRows,rateRows){
+if(!accRows||!manRows||!rateRows){[accRows,manRows,rateRows]=await Promise.all([IDB.getAll(IDB.accStore),IDB.getAll(IDB.manStore),IDB.getAll(IDB.rateStore)]);}
+const rowsEl=$('filesRows'),emptyEl=$('filesEmpty'),countEl=$('filesCountMeta');
+const manCount=(manRows&&manRows.length)?1:0;
+const total=(accRows?.length||0)+manCount+(rateRows?.length||0);
+if(countEl)countEl.textContent=total.toString();
+if(!total){rowsEl.innerHTML='';emptyEl.style.display='';return;}
+emptyEl.style.display='none';
 const parts=[];
 if(accRows&&accRows.length){
 accRows.sort((a,b)=>{const da=DU.parse(a.date),db=DU.parse(b.date);return(da?.getTime()||0)-(db?.getTime()||0);});
-parts.push('<div class="sm-sec-lbl">Account months (CSV)</div>');
-parts.push(accRows.map(r=>`<div class="sm-row"><span class="sm-name">${DU.fmtMY(r.date)}</span><span class="sm-cnt">${(r.rows?.length||0).toLocaleString()} accounts</span><button class="sm-del" onclick="deleteStoredMonth('${r.date}')" title="Delete ${DU.fmtMY(r.date)}">Remove</button></div>`).join(''));
+for(const r of accRows){
+parts.push(`<tr><td><span class="f-name">${DU.fmtMY(r.date)}</span></td><td><span class="f-badge acc">Accounts</span></td><td class="f-cnt">${(r.rows?.length||0).toLocaleString()} rows</td><td style="text-align:right"><button class="files-act" onclick="deleteStoredMonth('${r.date}')" title="Remove ${DU.fmtMY(r.date)}"><svg width="11" height="11"><use href="#i-trash"/></svg>Remove</button></td></tr>`);
+}
 }
 if(rateRows&&rateRows.length){
 rateRows.sort((a,b)=>{const da=DU.parse(a.date),db=DU.parse(b.date);return(da?.getTime()||0)-(db?.getTime()||0);});
-parts.push('<div class="sm-sec-lbl">Rate history months (CSV)</div>');
-parts.push(rateRows.map(r=>`<div class="sm-row"><span class="sm-name">${DU.fmtMY(r.date)}</span><span class="sm-cnt">${(r.count||0).toLocaleString()} rate rows</span><button class="sm-del" onclick="deleteStoredRate('${r.date}')" title="Delete rate history ${DU.fmtMY(r.date)}">Remove</button></div>`).join(''));
+for(const r of rateRows){
+parts.push(`<tr><td><span class="f-name">${DU.fmtMY(r.date)}</span></td><td><span class="f-badge rate">Rate history</span></td><td class="f-cnt">${(r.count||0).toLocaleString()} rows</td><td style="text-align:right"><button class="files-act" onclick="deleteStoredRate('${r.date}')" title="Remove rate history ${DU.fmtMY(r.date)}"><svg width="11" height="11"><use href="#i-trash"/></svg>Remove</button></td></tr>`);
+}
 }
 if(manRows&&manRows.length){
-parts.push('<div class="sm-sec-lbl">Manual adjustments (JSON)</div>');
 const fieldSet=new Set();
-manRows.forEach(r=>{
-const d=r.data||{};
-if(d['1M SORA - USED']!==undefined||d['1M SORA - ACTUAL']!==undefined)fieldSet.add('SORA');
-PRODUCTS.forEach(p=>{if(d[p]&&Object.keys(d[p]).length)fieldSet.add(p);});
-});
+manRows.forEach(r=>{const d=r.data||{};if(d['1M SORA - USED']!==undefined||d['1M SORA - ACTUAL']!==undefined)fieldSet.add('SORA');PRODUCTS.forEach(p=>{if(d[p]&&Object.keys(d[p]).length)fieldSet.add(p);});});
 const fields=Array.from(fieldSet).join(', ')||'(empty)';
-parts.push(`<div class="sm-row sm-manual"><span class="sm-name">Manual</span><span class="sm-cnt">${fields}</span><button class="sm-del" onclick="deleteAllStoredManual()" title="Delete all manual adjustments">Remove</button></div>`);
+parts.push(`<tr><td><span class="f-name">Manual adjustments</span></td><td><span class="f-badge man">Manual</span></td><td class="f-cnt">${fields}</td><td style="text-align:right"><button class="files-act" onclick="deleteAllStoredManual()" title="Remove all manual adjustments"><svg width="11" height="11"><use href="#i-trash"/></svg>Remove</button></td></tr>`);
 }
-list.innerHTML=parts.join('');
-const totalAcc=(accRows||[]).reduce((s,r)=>s+(r.rows?.length||0),0);
-const totalRate=(rateRows||[]).reduce((s,r)=>s+(r.count||0),0);
-const manCount=manRows?.length?1:0;
-if(sum)sum.textContent=`${accRows?.length||0} account month${(accRows?.length||0)!==1?'s':''} · ${totalAcc.toLocaleString()} accounts · ${rateRows?.length||0} rate month${(rateRows?.length||0)!==1?'s':''} · ${totalRate.toLocaleString()} rate rows · ${manCount} manual entr${manCount!==1?'ies':'y'}`;
-}
-window.openStoredMonthsModal=async function(){
-const[accRows,manRows,rateRows]=await Promise.all([IDB.getAll(IDB.accStore),IDB.getAll(IDB.manStore),IDB.getAll(IDB.rateStore)]);
-renderStoredMonthsModal(accRows,manRows,rateRows);
-$('storedModal').classList.add('open');
+rowsEl.innerHTML=parts.join('');
 };
 window.deleteStoredRate=function(date){
 return _confirmAndAct('Remove cached rate history for '+DU.fmtMY(date)+'?',()=>IDB.del(IDB.rateStore,date),'Removed rate history '+DU.fmtMY(date),{progress:'Removing rate month…',rebuild:true});
 };
-window.closeStoredMonthsModal=function(){$('storedModal').classList.remove('open');};
 async function _confirmAndAct(prompt,mutate,doneMsg,opts){
 if(!confirm(prompt))return;
 if(opts&&opts.progress){$('ldOv').classList.remove('hidden');$('progressText').textContent=opts.progress;$('progressBar').style.width='60%';}
@@ -1042,7 +1060,6 @@ await renderStoredMonthsPanel();
 updateDashboardView();renderSoraChart();renderSoraTable();
 updateManualIndicator();
 }
-if(opts&&opts.closeModal)closeStoredMonthsModal();
 showToast(doneMsg);
 }
 window.deleteStoredMonth=function(date){
@@ -1473,12 +1490,16 @@ function _cFmtN(v,dp){return(v==null||isNaN(v))?'—':Number(v).toLocaleString(u
 function _cFmtPct(v,dp){return(v==null||isNaN(v))?'—':Number(v).toFixed(dp)+'%';}
 window.switchModule=function(mod){
 const isCalc=mod==='calc';
-document.querySelectorAll('.sb-module').forEach(el=>el.classList.toggle('active',el.dataset.mod===mod));
-$('fluxView').classList.toggle('hidden',isCalc);
+const isFiles=mod==='files';
+const isFlux=mod==='flux';
+document.querySelectorAll('.sb-item[data-mod]').forEach(el=>el.classList.toggle('active',el.dataset.mod===mod));
+$('fluxView').classList.toggle('hidden',!isFlux);
 $('calcView').classList.toggle('hidden',!isCalc);
-document.querySelectorAll('#viewTabs').forEach(el=>el.classList.toggle('hidden',isCalc));
-const dc=$('dashCtrl');if(dc)dc.classList.toggle('hidden',isCalc||!gMonths.length);
+const fv=$('filesView');if(fv)fv.classList.toggle('hidden',!isFiles);
+document.querySelectorAll('#viewTabs').forEach(el=>el.classList.toggle('hidden',!isFlux));
+const dc=$('dashCtrl');if(dc)dc.classList.toggle('hidden',!isFlux||!gMonths.length);
 if(isCalc){const sel=$('calcMonth');if(!sel||!sel.options.length||!CALC.month)calcSyncMonthPicker();}
+if(isFiles)renderFilesView();
 };
 function calcSyncMonthPicker(){
 const sel=$('calcMonth');if(!sel)return;
