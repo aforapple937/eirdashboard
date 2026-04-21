@@ -9,25 +9,31 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --yellow:#FDCF0B; --yellow-dk:#e6ba00; --yellow-pale:#fffbe8; --yellow-light:#fff5c0;
-  --black:#0d0d0d; --nav-bg:#111111; --sidebar-bg:#181818;
-  --bg:#f0f2f5; --surface:#ffffff; --surface-2:#f7f8fa;
-  --border:#e4e6ea; --border-soft:#eef0f3;
-  --text-1:#0f1117; --text-2:#5a6070; --text-3:#9ca3af;
-  --green:#047857; --red:#b91c1c;
-  --hl:#FDCF0B; --hp:#3b82f6; --ot:#8b5cf6;
-  --font:'DM Sans',sans-serif; --mono:'Roboto Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-  --nav-h:56px; --sb-w:256px;
-  --r:8px; --r-lg:12px;
-  --shadow:0 2px 8px rgba(0,0,0,0.07),0 1px 3px rgba(0,0,0,0.04);
-  --shadow-lg:0 8px 24px rgba(0,0,0,0.1),0 3px 8px rgba(0,0,0,0.06);
+  /* Design tokens — matches Dashboard.html handoff */
+  --yellow:#FFCC00; --yellow-dk:#E6B800; --yellow-pale:#FFFBE0; --yellow-light:#FFF4B8;
+  --accent:#FFCC00; --accent-ink:#1A1A00; --accent-soft:#FFF4B8; --accent-soft-2:#FFFBE0;
+  --black:#0A0A0A; --nav-bg:#0A0A0A; --sidebar-bg:#FFFFFF;
+  --bg:#FAFAF7; --surface:#FFFFFF; --surface-2:#F2F2EC;
+  --border:#EAEAE4; --border-soft:#F2F2EC;
+  --line:#EAEAE4; --line-2:#F2F2EC;
+  --ink:#0A0A0A; --ink-2:#3A3A38; --ink-3:#6B6B68; --ink-4:#A3A39F;
+  --text-1:#0A0A0A; --text-2:#3A3A38; --text-3:#6B6B68; --text-4:#A3A39F;
+  --green:#137A3F; --red:#B5292A;
+  --pos:#137A3F; --pos-soft:#E4F3EA; --neg:#B5292A; --neg-soft:#F7E4E4;
+  --hl:#FFCC00; --hp:#3A3A38; --ot:#A3A39F;
+  --font:'Inter',system-ui,sans-serif; --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --nav-h:56px; --sb-w:220px;
+  --r:8px; --r-lg:10px;
+  --shadow:0 1px 2px rgba(0,0,0,0.04),0 4px 14px rgba(0,0,0,0.03);
+  --shadow-lg:0 24px 64px -12px rgba(0,0,0,0.25),0 8px 24px -8px rgba(0,0,0,0.15);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html{font-size:14px;}
-body{font-family:var(--font);background:var(--bg);color:var(--text-1);height:100vh;overflow:hidden;display:flex;flex-direction:column;}
+html{font-size:13px;}
+body{font-family:var(--font);background:var(--bg);color:var(--text-1);height:100vh;overflow:hidden;display:flex;flex-direction:column;font-size:13px;line-height:1.45;-webkit-font-smoothing:antialiased;}
 /* APP SHELL */
 .app{display:flex;flex:1;overflow:hidden;}
 /* SIDEBAR — light design */
@@ -87,8 +93,8 @@ input:checked+.slider::before{transform:translateX(15px);}
 .table-area{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:14px 14px 0;}
 /* Consolidated app-header (tabs + dashboard controls share one container with no gap) */
 .app-header{display:flex;flex-direction:column;gap:6px;flex-shrink:0;margin-bottom:10px;}
-/* Table card */
-.t-card{background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow);flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;margin-bottom:14px;}
+/* Table card (design's `.card` with padding:0) */
+.t-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;margin-bottom:14px;}
 /* Empty state */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;gap:10px;color:var(--text-3);flex:1;}
 .empty-ico{font-size:36px;opacity:0.35;}
@@ -98,59 +104,62 @@ input:checked+.slider::before{transform:translateX(15px);}
 .t-scroll{overflow:auto;flex:1;min-height:0;}
 .t-scroll::-webkit-scrollbar{width:5px;height:5px;}
 .t-scroll::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
-/* TABLE */
-table{border-collapse:collapse;font-size:12.5px;width:auto;}
-/* Frozen cols */
-td.cp,th.cp{position:sticky;left:0;z-index:3;width:84px;min-width:84px;max-width:84px;}
-td.cd,th.cd{position:sticky;left:84px;z-index:3;width:224px;min-width:224px;max-width:224px;box-shadow:3px 0 8px rgba(0,0,0,0.05);}
-/* Data column (monthly) — consistent width regardless of month count */
+/* ============ EIR TABLE — matches design handoff ============ */
+table{border-collapse:collapse;width:100%;font-size:12px;}
 td.col-data,th.col-data{width:116px;min-width:116px;max-width:116px;}
-/* Exact (S$) mode: wider numeric cells and more right padding so long numbers
-   don't crowd the border. Millions mode keeps the tighter default widths. */
-body.exact-units td.col-data,body.exact-units th.col-data{width:144px;min-width:144px;max-width:144px;padding-left:14px;padding-right:16px;}
-body.exact-units td.cy,body.exact-units th.cy{width:164px;min-width:164px;max-width:164px;padding-left:14px;padding-right:16px;}
-/* Sticky header */
-thead th{position:sticky;top:0;z-index:4;background:var(--black);color:rgba(255,255,255,0.82);font-family:var(--font);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.6px;padding:10px 13px;text-align:right;white-space:nowrap;border-right:1px solid rgba(255,255,255,0.04);}
-thead th.cp,thead th.cd{z-index:6;}
-thead th.cp{text-align:left;left:0;}
-thead th.cd{text-align:left;left:84px;}
-td{padding:7px 13px;text-align:right;border-bottom:1px solid var(--border-soft);font-family:var(--mono);font-size:12.5px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap;transition:background 0.07s;background:#fff;}
-td.cp{font-family:var(--font);font-size:11.5px;font-weight:700;text-align:left;padding-left:10px;background:#fff;}
-td.cd{font-family:var(--font);font-size:12.5px;text-align:left;padding-left:14px;background:#fff;}
-/* Product accent — row shading, identifies each product */
-.a-hl td,.a-hl td.cp,.a-hl td.cd{background:#fff7d1;}
-.a-hp td,.a-hp td.cp,.a-hp td.cd{background:#e4eeff;}
-.a-ot td,.a-ot td.cp,.a-ot td.cd{background:#ece2ff;}
-/* Hover — neutral overlay layered above any row tint via inset box-shadow.
-   Skips the spacer column so the gap between monthly/YTD stays clean.
-   Sticky `cd` column keeps its outer right-edge shadow alongside the overlay. */
-tbody tr:hover td:not(.csp){box-shadow:inset 0 0 0 9999px rgba(0,0,0,0.04);}
-tbody tr:hover td.cd{box-shadow:3px 0 8px rgba(0,0,0,0.05),inset 0 0 0 9999px rgba(0,0,0,0.04);}
+body.exact-units td.col-data,body.exact-units th.col-data{width:144px;min-width:144px;max-width:144px;}
+body.exact-units td.cy,body.exact-units th.cy{width:156px;min-width:156px;max-width:156px;}
+/* Table header — light grey bg, small-caps labels, two-line month + unit */
+thead th{position:sticky;top:0;z-index:2;background:var(--line-2);color:var(--ink-3);font-family:var(--font);font-size:10.5px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;padding:8px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line);}
+thead th.num{text-align:right;}
+thead th .eir-mon{font-size:11px;color:var(--ink-2);text-transform:none;letter-spacing:-0.01em;font-weight:600;}
+thead th .eir-unit{font-size:9.5px;color:var(--ink-4);text-transform:none;letter-spacing:0.04em;font-weight:400;margin-top:1px;}
+td{padding:8px 10px;text-align:right;border-bottom:1px solid var(--line-2);font-family:var(--mono);font-size:12px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap;background:#fff;vertical-align:top;}
+td.cp{font-family:var(--mono);font-size:13px;font-weight:600;text-align:left;padding:12px 14px;background:var(--line-2);border-right:1px solid var(--line);vertical-align:top;letter-spacing:-0.01em;color:var(--ink);}
+td.cd{font-family:var(--font);font-size:12px;font-weight:500;text-align:left;padding:8px 10px;background:#fff;color:var(--ink);}
+/* Product cell content (rowspan column) */
+.eir-prod-k{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-0.01em;}
+.eir-prod-lbl{font-size:10.5px;color:var(--ink-3);margin-top:2px;font-family:var(--font);font-weight:400;}
+/* Driver line (label + inline togglers) */
+.eir-drv-line{display:flex;align-items:center;gap:10px;}
+.eir-togg-wrap{display:inline-flex;gap:4px;margin-left:auto;}
+.eir-togg{display:inline-flex;align-items:center;gap:3px;padding:1px 6px;border:1px solid var(--line);background:var(--surface);color:var(--ink-3);border-radius:4px;font-size:10px;font-family:var(--mono);font-weight:500;cursor:pointer;line-height:1.4;transition:all 0.12s;}
+.eir-togg:hover{border-color:var(--ink-3);color:var(--ink);}
+.eir-togg.on{background:var(--ink);color:var(--accent);border-color:var(--ink);}
+.eir-chev{font-size:9px;line-height:1;}
+/* Number cells — positive/negative colouring */
+td.num{text-align:right;}
+.pos-d{color:var(--pos);} .neg-d{color:var(--neg);}
+/* Hover — gentle overlay */
+tbody tr:hover td:not(.csp):not(.cp){background:var(--line-2);}
 .cc{cursor:pointer;} .cc:hover{text-decoration:underline;text-underline-offset:2px;}
-/* Product sub-total row — same shade as product rows */
-.r-sub td,.r-sub td.cp,.r-sub td.cd{font-weight:700!important;border-top:1.5px solid var(--border)!important;border-bottom:1.5px solid var(--border)!important;}
-.r-sub.a-hl td,.r-sub.a-hl td.cp,.r-sub.a-hl td.cd{background:#fff7d1;}
-.r-sub.a-hp td,.r-sub.a-hp td.cp,.r-sub.a-hp td.cd{background:#e4eeff;}
-.r-sub.a-ot td,.r-sub.a-ot td.cp,.r-sub.a-ot td.cd{background:#ece2ff;}
-/* Grand total row */
-.r-grand td,.r-grand td.cp,.r-grand td.cd{font-weight:700!important;background:var(--yellow-pale)!important;border-top:2px solid var(--yellow)!important;border-bottom:none!important;}
-/* Child rows — inherit product accent, slightly darker tint for contrast */
-.c-row td,.c-row td.cp,.c-row td.cd{font-size:12px;border-bottom:1px solid #eef1f4;}
-.c-row.a-hl td,.c-row.a-hl td.cp,.c-row.a-hl td.cd{background:#ffefae;}
-.c-row.a-hp td,.c-row.a-hp td.cp,.c-row.a-hp td.cd{background:#d1deff;}
-.c-row.a-ot td,.c-row.a-ot td.cp,.c-row.a-ot td.cd{background:#ddcdff;}
-.c-row td.cd{padding-left:34px;color:var(--text-2);}
-/* Toggle buttons */
-.eb{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-left:4px;background:#dbeafe;border:1px solid #93c5fd;border-radius:3px;color:#1d6fb8;font-size:10px;font-weight:700;cursor:pointer;user-select:none;vertical-align:middle;transition:all 0.12s;}
-.eb:hover{background:#2563eb;color:#fff;border-color:#2563eb;}
-.st{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin-left:3px;background:#ccfbf1;border:1px solid #5eead4;border-radius:3px;color:#0f766e;font-size:10px;font-weight:700;cursor:pointer;user-select:none;vertical-align:middle;transition:all 0.12s;}
-.st:hover{background:#0d9488;color:#fff;border-color:#0d9488;}
-.cs{font-size:10px;color:var(--text-3);margin-top:3px;padding-top:3px;border-top:1px dashed var(--border);font-family:var(--font);text-align:right;line-height:1.4;}
-/* Spacer column — clear gap between monthly and YTD, visible in header too */
-td.csp,th.csp,thead th.csp,tbody tr:hover td.csp{width:22px!important;min-width:22px!important;max-width:22px!important;padding:0!important;background:var(--bg)!important;border:none!important;box-shadow:none!important;pointer-events:none;}
-/* YTD column — consistent width, distinguished by spacer gap + gold header text */
-td.cy,th.cy{width:134px;min-width:134px;max-width:134px;font-weight:600;}
-thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
+/* Count / outstanding sub-rows */
+.eir-row-cb td{background:var(--line-2);color:var(--ink-3);font-size:11px;font-weight:400;}
+.eir-row-cb td.cp{background:var(--line-2);}
+.eir-row-cb td.cy{background:var(--accent-soft-2);color:var(--ink-3);}
+.eir-drv-meta{padding-left:22px !important;color:var(--ink-3);font-size:11px;font-style:italic;font-family:var(--font);font-weight:400;}
+.eir-drv-meta .eir-unit-inline{color:var(--ink-4);font-size:10px;margin-left:4px;font-style:normal;}
+.eir-meta-num{color:var(--ink-3) !important;font-weight:400 !important;}
+/* Sub-driver rows (expandable children) */
+.c-row td{background:var(--line-2);font-size:11.5px;}
+.c-row td.cd{background:var(--line-2);padding-left:32px;color:var(--ink-3);font-style:italic;}
+.c-row td.cp{background:var(--line-2);}
+.c-row td.cy{background:var(--accent-soft-2);}
+/* Product sub-total row — dark border top/bottom, bold */
+.r-sub td{font-weight:600 !important;background:var(--line) !important;border-top:1px solid var(--ink-4) !important;border-bottom:1px solid var(--ink-4) !important;color:var(--ink);}
+.r-sub td.cp{background:var(--line-2) !important;border-right:1px solid var(--line) !important;}
+.r-sub td.cd{background:var(--line) !important;}
+.r-sub td.cy{background:var(--accent-soft) !important;}
+/* Grand total row — black bg, yellow text */
+.r-grand td{font-weight:700 !important;background:var(--ink) !important;color:var(--accent) !important;border-top:2px solid var(--ink) !important;border-bottom:none !important;padding:11px 10px !important;}
+.r-grand td.pos-d,.r-grand td.neg-d{color:var(--accent) !important;}
+.r-grand td.cy{background:#000 !important;color:var(--accent) !important;border-left:1px solid var(--ink-3) !important;}
+/* Spacer column — clear gap between monthly and YTD */
+td.csp,th.csp,thead th.csp,tbody tr:hover td.csp{width:14px !important;min-width:14px !important;max-width:14px !important;padding:0 !important;background:var(--bg) !important;border:none !important;pointer-events:none;}
+/* YTD column — yellow accent tint */
+td.cy,th.cy{width:124px;min-width:124px;max-width:124px;background:var(--accent-soft-2);border-left:1px solid var(--line);}
+thead th.cy{background:var(--accent-soft-2) !important;color:var(--ink-3);}
+thead th.cy .eir-mon{color:var(--ink-2);}
 /* LOADING */
 .ld-ov{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;}
 .ld-card{background:var(--surface);border-radius:var(--r-lg);padding:38px 50px;text-align:center;min-width:320px;box-shadow:var(--shadow-lg);}
@@ -231,9 +240,12 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
 /* Flux panel (wraps controls + table so it flexes alongside SORA view) */
 #fluxPanel{flex:1;display:flex;flex-direction:column;min-height:0;}
 #fluxPanel.hidden{display:none;}
+/* EIR Flux full-page layout — matches design's `.page` + `.page-head` pattern */
+#fluxView{padding:22px 28px 0;background:var(--bg);}
+#fluxView .app-header{margin-bottom:14px;flex-shrink:0;}
 /* Page header (title + tabs + actions at top right — follows design's tb-recon pattern) */
-.flux-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;flex-shrink:0;padding:2px 2px 4px;}
-.flux-page-title h1{margin:0 0 2px;font-size:22px;font-weight:600;letter-spacing:-0.02em;color:var(--text-1);}
+.flux-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;flex-shrink:0;margin-bottom:18px;}
+.flux-page-title h1{margin:0;font-size:24px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);}
 .flux-page-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 /* Segmented tabs (design pattern — like TB recon's Jan/Feb/Mar row) */
 .view-tabs{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;flex-shrink:0;}
@@ -396,6 +408,9 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
 .calc-view{display:none;flex:1;flex-direction:column;min-height:0;overflow:hidden;gap:12px;}
 .calc-view.on{display:flex;}
 .calc-prog-wrap{flex:1;display:flex;min-height:0;}
+/* ============ KEYBOARD SHORTCUTS FAB ============ */
+.kbd-fab{position:fixed;bottom:18px;left:18px;z-index:40;width:34px;height:34px;border-radius:50%;background:var(--surface);border:1px solid var(--line);color:var(--ink-3);cursor:pointer;font-family:var(--mono);font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,0.06);transition:all 0.12s;padding:0;}
+.kbd-fab:hover{color:var(--ink);border-color:var(--ink-4);background:var(--accent-soft-2);}
 </style>
 </head>
 <body>
@@ -405,6 +420,10 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
   <symbol id="i-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
   <symbol id="i-upload" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V8"/><path d="M8 12l4-4 4 4"/><path d="M4 4h16"/></symbol>
   <symbol id="i-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 7V4h4v3M6 7l1 13a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-13"/></symbol>
+  <symbol id="i-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></symbol>
+  <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h14M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/></symbol>
 </svg>
 <div class="ld-ov hidden" id="ldOv">
   <div class="ld-card">
@@ -441,20 +460,19 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
               <button class="view-tab on" data-tab="flux" onclick="switchTab('flux')">EIR Flux</button>
               <button class="view-tab" data-tab="sora" onclick="switchTab('sora')">SORA Graph</button>
             </div>
-            <button class="dash-btn" onclick="openManualModal()" title="Manual Adjustments" id="btnManual"><span>✎</span> Manual<span class="manual-dot hidden" id="manualDot" title="Unfilled manual values"></span></button>
-            <button class="dash-btn" onclick="copyTable()" title="Copy Table"><span>⎘</span> Copy</button>
-            <button class="dash-btn primary" onclick="exportFluxToExcel()" title="Export Excel"><span>↓</span> Excel</button>
-            <button class="dash-btn" onclick="openShortcutsOverlay()" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
+            <button class="dash-btn" onclick="openManualModal()" title="Manual Adjustments" id="btnManual"><svg width="13" height="13"><use href="#i-pencil"/></svg>Manual<span class="manual-dot hidden" id="manualDot" title="Unfilled manual values"></span></button>
+            <button class="dash-btn" onclick="copyTable()" title="Copy Table"><svg width="13" height="13"><use href="#i-copy"/></svg>Copy</button>
+            <button class="dash-btn primary" onclick="exportFluxToExcel()" title="Export"><svg width="13" height="13"><use href="#i-download"/></svg>Export</button>
           </div>
         </div>
-        <!-- Toolbar: products / unit / range / expand all (design's eir-toolbar layout) -->
+        <!-- Toolbar: products / unit / range / rows (design's eir-toolbar layout) -->
         <div class="dash-ctrl hidden" id="dashCtrl">
           <div class="dash-grp">
             <span class="dash-lbl">Products</span>
             <div id="pills" style="display:flex;gap:4px;">
-              <div class="dash-pill on" data-p="HL" onclick="toggleProd('HL',this)"><span class="dash-pill-dot" style="background:var(--hl)"></span><span>HL</span></div>
-              <div class="dash-pill on" data-p="HP" onclick="toggleProd('HP',this)"><span class="dash-pill-dot" style="background:var(--hp)"></span><span>HP</span></div>
-              <div class="dash-pill on" data-p="Others" onclick="toggleProd('Others',this)"><span class="dash-pill-dot" style="background:var(--ot)"></span><span>Others</span></div>
+              <div class="dash-pill on" data-p="HL" onclick="toggleProd('HL',this)"><span>HL</span></div>
+              <div class="dash-pill on" data-p="HP" onclick="toggleProd('HP',this)"><span>HP</span></div>
+              <div class="dash-pill on" data-p="Others" onclick="toggleProd('Others',this)"><span>Others</span></div>
             </div>
           </div>
           <div class="dash-grp">
@@ -472,8 +490,8 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
             <select class="dash-range-sel" id="rangeTo" onchange="updateRange()" title="Last month shown"></select>
             <button class="dash-btn" onclick="resetRange()" title="Reset to last 6 months" style="padding:4px 10px">Reset</button>
           </div>
-          <div class="dash-grp" style="margin-left:auto">
-            <button class="dash-btn" onclick="toggleAll()" id="btnToggleAll" title="Expand All"><span>⊞</span> Expand All</button>
+          <div class="dash-grp">
+            <button class="dash-btn" onclick="toggleAll()" id="btnToggleAll" title="Expand all rows"><svg width="13" height="13"><use href="#i-sliders"/></svg>Rows</button>
           </div>
         </div>
       </div>
@@ -761,6 +779,7 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
   </div>
 </div>
 <div class="toast" id="toast"></div>
+<button class="kbd-fab" id="kbdFab" onclick="openShortcutsOverlay()" title="Keyboard shortcuts (press ?)" aria-label="Keyboard shortcuts">?</button>
 <script>
 const $=id=>document.getElementById(id);
 let _toastT=null;
@@ -1268,27 +1287,27 @@ return`<td class="${cls}${col}${cc}"${cl}>${cnt}${stats}</td>`;
 function yc(v,b=false){return c(v,{bold:b,ytd:true});}
 function ycs(v,s){return c(v,{ytd:true,stats:s});}
 function cs(v,s,p=null,d=null,m=null){return c(v,{prod:p,drv:d,mo:m,stats:s});}
-window.toggleGroup=function(id){
-const ch=document.querySelectorAll('.child-of-'+id);if(!ch.length)return;
-const btn=$('btn-'+id);
-const hidden=ch[0].classList.contains('hidden');
-ch.forEach(x=>x.classList.toggle('hidden',!hidden));
-if(btn)btn.textContent=hidden?'−':'+';
-};
-window.toggleStats=function(btn,cls){const els=document.querySelectorAll('.'+cls);if(!els.length)return;const h=els[0].classList.contains('hidden');els.forEach(el=>el.classList.toggle('hidden',!h));btn.textContent=h?'−':'+';};
+/* ============ EIR Flux row-expansion state (design's eir-togg pattern) ============ */
+let _expCB=new Set(),_expSub=new Set();
+window.toggleCB=function(key){if(_expCB.has(key))_expCB.delete(key);else _expCB.add(key);if(_ldr)renderDashboard(_ldr,_dMo,_sel);};
+window.toggleSub=function(key){if(_expSub.has(key))_expSub.delete(key);else _expSub.add(key);if(_ldr)renderDashboard(_ldr,_dMo,_sel);};
 window.toggleAll=function(){
-isExpanded=!isExpanded;
-$('btnToggleAll').innerHTML=isExpanded?'<span>⊟</span> Collapse All':'<span>⊞</span> Expand All';
-const tb=$('tBody');if(!tb)return;
-tb.querySelectorAll('.c-row,.cs').forEach(r=>r.classList.toggle('hidden',!isExpanded));
-tb.querySelectorAll('.eb,.st').forEach(b=>b.textContent=isExpanded?'−':'+');
+const anyOn=_expCB.size||_expSub.size;
+_expCB.clear();_expSub.clear();
+if(!anyOn){
+_sel.forEach(p=>{
+['New originations','Repriced accounts','Closed accounts'].forEach(k=>_expCB.add(p+':'+k));
+['Repriced accounts','BAU'].forEach(k=>_expSub.add(p+':'+k));
+});
+isExpanded=true;
+}else{isExpanded=false;}
+if(_ldr)renderDashboard(_ldr,_dMo,_sel);
 };
 window.copyTable=async function(){
-document.querySelectorAll('.eb,.st').forEach(b=>b.style.display='none');
 const tw=$('tScroll');const sv=tw.style.overflow;tw.style.overflow='visible';
 const tbl=$('pnlTable');const tw2=tbl?Math.ceil(tbl.getBoundingClientRect().width):tw.scrollWidth;const th2=tbl?Math.ceil(tbl.getBoundingClientRect().height):tw.scrollHeight;
-try{const cv=await html2canvas(tbl||tw,{backgroundColor:'#fff',scale:2,windowWidth:tw2,width:tw2,height:th2});tw.style.overflow=sv;cv.toBlob(async blob=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('Copied ✓');}catch{showToast('Clipboard failed.');}document.querySelectorAll('.eb,.st').forEach(b=>b.style.display='');});}
-catch{showToast('Failed.');tw.style.overflow=sv;document.querySelectorAll('.eb,.st').forEach(b=>b.style.display='');}
+try{const cv=await html2canvas(tbl||tw,{backgroundColor:'#fff',scale:2,windowWidth:tw2,width:tw2,height:th2});tw.style.overflow=sv;cv.toBlob(async blob=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('Copied ✓');}catch{showToast('Clipboard failed.');}});}
+catch{showToast('Failed.');tw.style.overflow=sv;}
 };
 window.exportFluxToExcel=function(){
 if(!gMonths.length||!_ldr){showToast('No data.');return;}
@@ -1408,93 +1427,122 @@ $('mFt').classList.remove('hidden');renderModalPage();
 },50);
 };
 window.closeModal=function(){$('modal').classList.remove('open');};
+const PROD_LABELS={HL:'Home Loan',HP:'Hire Purchase',Others:'Others'};
 function renderDashboard(pr,mos,sel){
 const tbody=$('tBody');tbody.innerHTML='';
-const hRow=$('tHead');const ul=isMil?'S$ Millions':'S$';const lm=mos[mos.length-1];
-const mH=mos.map(m=>`<th class="col-data">${DU.fmtMY(m)}</th>`).join('');
+const hRow=$('tHead');const ul=isMil?'S$ M':'S$';const lm=mos[mos.length-1];
+const mH=mos.map(m=>`<th class="num col-data"><div class="eir-mon">${DU.fmtMY(m)}</div><div class="eir-unit">${ul}</div></th>`).join('');
 const hasYtd=_hasYtd();
-const ytdHead=hasYtd?`<th class="csp"></th><th class="cy">Y-T-D<br><span style="font-weight:400;font-size:8.5px;opacity:0.5;text-transform:none;letter-spacing:0">${DU.fmtMY(lm)}</span></th>`:'';
-hRow.innerHTML=`<th class="cp">Product<br><span style="font-weight:400;font-size:8.5px;opacity:0.35;text-transform:none;letter-spacing:0">${ul}</span></th><th class="cd">Driver</th>${mH}${ytdHead}`;
-if(!sel.length){tbody.innerHTML=`<tr><td colspan="${mos.length+2+(hasYtd?2:0)}" style="text-align:center;padding:32px;color:var(--text-3)">No products selected.</td></tr>`;$('tScroll').classList.remove('hidden');$('emptyState').classList.add('hidden');return;}
+const yr=(DU.parse(lm)||{getFullYear:()=>''}).getFullYear();
+const ytdHead=hasYtd?`<th class="csp"></th><th class="num cy"><div class="eir-mon">YTD ${yr}</div><div class="eir-unit">${ul}</div></th>`:'';
+hRow.innerHTML=`<th style="width:120px">Product</th><th style="min-width:240px">Driver</th>${mH}${ytdHead}`;
+if(!sel.length){tbody.innerHTML=`<tr><td colspan="${mos.length+2+(hasYtd?2:0)}" style="text-align:center;padding:32px;color:var(--ink-3)">No products selected.</td></tr>`;$('tScroll').classList.remove('hidden');$('emptyState').classList.add('hidden');return;}
 $('tScroll').classList.remove('hidden');$('emptyState').classList.add('hidden');
 _bZc(pr);
-const sp='<td class="csp"></td>';const frag=document.createDocumentFragment();
-const _ytdTail=cellHtml=>hasYtd?[sp,cellHtml]:[];
-const _statsFrag=(cls,count,bal)=>`<div class="${cls} hidden cs">Count: ${count.toLocaleString()}<br>Bal: ${bal.toFixed(1)}m</div>`;
-const _plainRow=(prod,a,prodLbl,label,rowKey)=>{const tr=document.createElement('tr');tr.className=a;
-tr.innerHTML=[`<td class="cp"><b>${prodLbl}</b></td><td class="cd">${label}</td>`]
-.concat(mos.map(m=>c(pr[prod][rowKey][m]))).concat(_ytdTail(yc(sYtd(pr[prod][rowKey])))).join('');
-return tr;};
-const _statsRow=(prod,a,di,prodLbl,label,rowKey,driver,clsKey,countFn,balFn,extraIcon)=>{
-const cls=`st-${clsKey}-${di}`;
-let yC=0,yB=0;for(let i=0;i<_ytdMo.length;i++){yC+=countFn(_ytdMo[i]);yB+=balFn(_ytdMo[i]);}
-const ySh=_statsFrag(cls,yC,yB);
-const lbl=`${label} ${extraIcon||''}<span class="st" onclick="toggleStats(this,'${cls}')" title="Stats">+</span>`;
-const tr=document.createElement('tr');tr.className=a;
-tr.innerHTML=[`<td class="cp"><b>${prodLbl}</b></td><td class="cd">${lbl}</td>`]
-.concat(mos.map(m=>cs(pr[prod][rowKey][m],_statsFrag(cls,countFn(m),balFn(m)),prod,driver,m)))
-.concat(_ytdTail(ycs(sYtd(pr[prod][rowKey]),ySh))).join('');
-return tr;
+const sp=hasYtd?'<td class="csp"></td>':'';
+const _ytdTail=(rowKey,prod,bold=false)=>hasYtd?sp+yc(sYtd(pr[prod][rowKey]),bold):'';
+const _drvCells=(rowKey,prod,drv)=>mos.map(m=>c(pr[prod][rowKey][m],{prod,drv,mo:m})).join('');
+const _plainCells=(rowKey,prod)=>mos.map(m=>c(pr[prod][rowKey][m])).join('');
+const _boldCells=(rowKey,prod)=>mos.map(m=>c(pr[prod][rowKey][m],{bold:true})).join('');
+// Build count/outstanding sub-rows (design's ↳ Count / ↳ Outstanding pattern)
+const _cbRows=(prod,countKey,balKey)=>{
+const cnt=m=>pr[prod][countKey][m]||0;
+const bal=m=>pr[prod][balKey][m]||0;
+let yC=0;for(let i=0;i<_ytdMo.length;i++)yC+=cnt(_ytdMo[i]);
+const endBal=bal(mos[mos.length-1]);
+const cntTd=(v)=>`<td class="col-data eir-meta-num">${(v||0).toLocaleString()}</td>`;
+const balTd=(v)=>`<td class="col-data eir-meta-num">${(v||0).toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1})}</td>`;
+const cntYtd=hasYtd?`${sp}<td class="cy eir-meta-num">${yC.toLocaleString()}</td>`:'';
+const balYtd=hasYtd?`${sp}<td class="cy eir-meta-num">${endBal.toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1})}</td>`:'';
+const rC=`<tr class="eir-row-cb"><td class="cd eir-drv-meta">↳ Count <span class="eir-unit-inline">loans</span></td>${mos.map(m=>cntTd(cnt(m))).join('')}${cntYtd}</tr>`;
+const rB=`<tr class="eir-row-cb"><td class="cd eir-drv-meta">↳ Outstanding <span class="eir-unit-inline">S$ M</span></td>${mos.map(m=>balTd(bal(m))).join('')}${balYtd}</tr>`;
+return [rC,rB];
 };
-const _childRow=(prod,a,key,label,grp,drv,isF,isL)=>{
+// Sub-driver row (under a parent driver, shown when sub expanded)
+const _subRow=(prod,key,label)=>{
 if(rz(prod,key))return null;
-const tr=document.createElement('tr');
-tr.className=`child-of-${grp} hidden c-row ${a}${isF?' c-1st':''}${isL?' c-lst':''}`;
-tr.innerHTML=[`<td class="cp"></td><td class="cd">${label}</td>`]
-.concat(mos.map(m=>c(pr[prod][key][m],{prod,drv,mo:m})))
-.concat(_ytdTail(yc(sYtd(pr[prod][key])))).join('');
-return tr;
+return `<tr class="c-row"><td class="cd">↳ ${label}</td>${_drvCells(key,prod,label)}${_ytdTail(key,prod)}</tr>`;
 };
+const chev=on=>`<span class="eir-chev">${on?'▾':'▸'}</span>`;
+const cbTogg=(key,on)=>`<button class="eir-togg${on?' on':''}" onclick="toggleCB('${key}')" title="Show/hide count &amp; outstanding">${chev(on)}<span>#/$</span></button>`;
+const subTogg=(key,on)=>`<button class="eir-togg${on?' on':''}" onclick="toggleSub('${key}')" title="Show/hide sub-drivers">${chev(on)}<span>sub</span></button>`;
+const drvLabel=(label,toggs)=>`<div class="eir-drv-line"><span class="eir-drv-lbl">${label}</span>${toggs?`<span class="eir-togg-wrap">${toggs}</span>`:''}</div>`;
+let html='';
 sel.forEach(prod=>{
 if(rz(prod,'Total'))return;
-const a=PROD_ACCENT[prod]||'a-ot';const di=prod.replace(/\s+/g,'-');
-const zSora=rz(prod,'Change in SORA'),zNew=rz(prod,'New originations'),zRpT=rz(prod,'Repriced Total');
-if(!zSora){frag.appendChild(_plainRow(prod,a,prod,'Change in SORA','Change in SORA'));}
+const label=PROD_LABELS[prod]||prod;
+const zSora=rz(prod,'Change in SORA'),zNew=rz(prod,'New originations'),zRpT=rz(prod,'Repriced Total'),zBAU=rz(prod,'BAU Total'),zCl=rz(prod,'Closed accounts'),zMan=rz(prod,'Manual adj: Change in AEL');
+const rows=[];let rowCount=0;
+// Change in SORA — plain driver row
+if(!zSora){
+rows.push(`<tr><td class="cd">${drvLabel('Change in SORA')}</td>${_drvCells('Change in SORA',prod,'Change in SORA')}${_ytdTail('Change in SORA',prod)}</tr>`);
+rowCount++;
+}
+// New originations — count+balance toggle
 if(!zNew){
-const pLbl=zSora?prod:'';
-const nc=m=>pr[prod]['New Count'][m]||0,nb=m=>pr[prod]['New Balance'][m]||0;
-frag.appendChild(_statsRow(prod,a,di,pLbl,'New originations','New originations','New originations','no',nc,nb));
+const k=prod+':New originations';
+const on=_expCB.has(k);
+rows.push(`<tr><td class="cd">${drvLabel('New originations',cbTogg(k,on))}</td>${_drvCells('New originations',prod,'New originations')}${_ytdTail('New originations',prod)}</tr>`);
+rowCount++;
+if(on){const cb=_cbRows(prod,'New Count','New Balance');rows.push(...cb);rowCount+=cb.length;}
 }
+// Repriced accounts — count+balance toggle AND sub-driver toggle
 if(!zRpT){
-const pLbl=(zNew&&zSora)?prod:'';const isHL=prod==='HL';
-const rc=m=>(pr[prod]['Reprice Curr Count'][m]||0)+(isHL?0:(pr[prod]['Reprice Fut Count'][m]||0));
-const rb=m=>(pr[prod]['Reprice Curr Bal'][m]||0)+(isHL?0:(pr[prod]['Reprice Fut Bal'][m]||0));
-const icon=`<span class="eb" id="btn-reprice-${di}" onclick="toggleGroup('reprice-${di}')" title="Expand">+</span>`;
-frag.appendChild(_statsRow(prod,a,di,pLbl,'Repriced accounts','Repriced Total','Repriced accounts','rp',rc,rb,icon));
-[_childRow(prod,a,'Current reprice','Current reprice',`reprice-${di}`,'Current reprice',true,rz(prod,'Future reprice')),
-_childRow(prod,a,'Future reprice','Future reprice',`reprice-${di}`,'Future reprice',rz(prod,'Current reprice'),true)]
-.filter(Boolean).forEach(r=>frag.appendChild(r));
+const kCB=prod+':Repriced accounts',kSub=prod+':Repriced accounts';
+const cbOn=_expCB.has(kCB),subOn=_expSub.has(kSub);
+const isHL=prod==='HL';
+const rcTotal={};_dMo.concat(_ytdMo).forEach(m=>{rcTotal[m]=(pr[prod]['Reprice Curr Count'][m]||0)+(isHL?0:(pr[prod]['Reprice Fut Count'][m]||0));});
+const rbTotal={};_dMo.concat(_ytdMo).forEach(m=>{rbTotal[m]=(pr[prod]['Reprice Curr Bal'][m]||0)+(isHL?0:(pr[prod]['Reprice Fut Bal'][m]||0));});
+const toggs=cbTogg(kCB,cbOn)+subTogg(kSub,subOn);
+rows.push(`<tr><td class="cd">${drvLabel('Repriced accounts',toggs)}</td>${_drvCells('Repriced Total',prod,'Repriced accounts')}${_ytdTail('Repriced Total',prod)}</tr>`);
+rowCount++;
+if(cbOn){
+let yC=0;for(let i=0;i<_ytdMo.length;i++)yC+=rcTotal[_ytdMo[i]]||0;
+const endBal=rbTotal[mos[mos.length-1]]||0;
+const cntTd=v=>`<td class="col-data eir-meta-num">${(v||0).toLocaleString()}</td>`;
+const balTd=v=>`<td class="col-data eir-meta-num">${(v||0).toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1})}</td>`;
+const cntYtd=hasYtd?`${sp}<td class="cy eir-meta-num">${yC.toLocaleString()}</td>`:'';
+const balYtd=hasYtd?`${sp}<td class="cy eir-meta-num">${endBal.toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1})}</td>`:'';
+rows.push(`<tr class="eir-row-cb"><td class="cd eir-drv-meta">↳ Count <span class="eir-unit-inline">loans</span></td>${mos.map(m=>cntTd(rcTotal[m]||0)).join('')}${cntYtd}</tr>`);
+rows.push(`<tr class="eir-row-cb"><td class="cd eir-drv-meta">↳ Outstanding <span class="eir-unit-inline">S$ M</span></td>${mos.map(m=>balTd(rbTotal[m]||0)).join('')}${balYtd}</tr>`);
+rowCount+=2;
 }
-if(!rz(prod,'BAU Total')){
-const pLbl=(zNew&&zRpT&&zSora)?prod:'';
-const tr=document.createElement('tr');tr.className=a;
-tr.innerHTML=[`<td class="cp"><b>${pLbl}</b></td><td class="cd">BAU <span class="eb" id="btn-bau-${di}" onclick="toggleGroup('bau-${di}')" title="Expand">+</span></td>`]
-.concat(mos.map(m=>c(pr[prod]['BAU Total'][m]))).concat(_ytdTail(yc(sYtd(pr[prod]['BAU Total'])))).join('');
-frag.appendChild(tr);
-const aZ=rz(prod,'AEL maturity changed'),eZ=rz(prod,'EIR changed'),oZ=rz(prod,'Other BAU');
-[_childRow(prod,a,'AEL maturity changed','AEL maturity changed',`bau-${di}`,'AEL maturity changed',true,eZ&&oZ),
-_childRow(prod,a,'EIR changed','EIR changed',`bau-${di}`,'EIR changed',aZ,oZ),
-_childRow(prod,a,'Other BAU','Other BAU',`bau-${di}`,'Other BAU',aZ&&eZ,true)]
-.filter(Boolean).forEach(r=>frag.appendChild(r));
+if(subOn){
+[_subRow(prod,'Current reprice','Current reprice'),_subRow(prod,'Future reprice','Future reprice')].filter(Boolean).forEach(r=>{rows.push(r);rowCount++;});
 }
-if(!rz(prod,'Closed accounts')){
-const cc=m=>pr[prod]['Closed Count'][m]||0,cb=m=>pr[prod]['Closed Balance'][m]||0;
-frag.appendChild(_statsRow(prod,a,di,'','Closed accounts','Closed accounts','Closed accounts','cl',cc,cb));
 }
-if(!rz(prod,'Manual adj: Change in AEL')){
-frag.appendChild(_plainRow(prod,a,'','Manual adj: Change in AEL','Manual adj: Change in AEL'));
+// BAU — sub-driver toggle only
+if(!zBAU){
+const kSub=prod+':BAU';const subOn=_expSub.has(kSub);
+rows.push(`<tr><td class="cd">${drvLabel('BAU',subTogg(kSub,subOn))}</td>${_plainCells('BAU Total',prod)}${_ytdTail('BAU Total',prod)}</tr>`);
+rowCount++;
+if(subOn){
+[_subRow(prod,'AEL maturity changed','AEL maturity changed'),_subRow(prod,'EIR changed','EIR changed'),_subRow(prod,'Other BAU','Other BAU')].filter(Boolean).forEach(r=>{rows.push(r);rowCount++;});
 }
-const ts=document.createElement('tr');ts.className=`r-sub ${a}`;
-ts.innerHTML=[`<td class="cp"></td><td class="cd"><b>${prod} Total</b></td>`]
-.concat(mos.map(m=>c(pr[prod]['Total'][m],{bold:true}))).concat(_ytdTail(yc(sYtd(pr[prod]['Total']),true))).join('');
-frag.appendChild(ts);
+}
+// Closed accounts — count+balance toggle
+if(!zCl){
+const k=prod+':Closed accounts';const on=_expCB.has(k);
+rows.push(`<tr><td class="cd">${drvLabel('Closed accounts',cbTogg(k,on))}</td>${_drvCells('Closed accounts',prod,'Closed accounts')}${_ytdTail('Closed accounts',prod)}</tr>`);
+rowCount++;
+if(on){const cb=_cbRows(prod,'Closed Count','Closed Balance');rows.push(...cb);rowCount+=cb.length;}
+}
+// Manual adj — plain
+if(!zMan){
+rows.push(`<tr><td class="cd">${drvLabel('Manual adj: Change in AEL')}</td>${_plainCells('Manual adj: Change in AEL',prod)}${_ytdTail('Manual adj: Change in AEL',prod)}</tr>`);
+rowCount++;
+}
+// Subtotal row (inside product block)
+rows.push(`<tr class="r-sub"><td class="cd"><b>Total ${prod}</b></td>${_boldCells('Total',prod)}${_ytdTail('Total',prod,true)}</tr>`);
+rowCount++;
+// Prepend product cell (rowspan) to first row
+const prodCell=`<td class="cp" rowspan="${rowCount}"><div class="eir-prod-k">${prod}</div><div class="eir-prod-lbl">${label}</div></td>`;
+rows[0]=rows[0].replace(/^<tr([^>]*)>/,`<tr$1>${prodCell}`);
+html+=rows.join('');
 });
-const tg=document.createElement('tr');tg.className='r-grand';
-tg.innerHTML=[`<td class="cp"><b>Grand Total</b></td><td class="cd"></td>`]
-.concat(mos.map(m=>c(pr['Grand Total'][m],{bold:true}))).concat(_ytdTail(yc(sYtd(pr['Grand Total']),true))).join('');
-frag.appendChild(tg);
-tbody.appendChild(frag);
-if(isExpanded){tbody.querySelectorAll('.c-row,.cs').forEach(el=>el.classList.remove('hidden'));tbody.querySelectorAll('.eb,.st').forEach(b=>b.textContent='−');}
+// Grand total row
+html+=`<tr class="r-grand"><td class="cd" colspan="2"><b>Grand Total</b></td>${_boldCells('Total','Grand Total')}${_ytdTail('Total','Grand Total',true)}</tr>`;
+tbody.innerHTML=html;
 }
 const CALC={
 month:null, accByNum:new Map(), rateByAcc:new Map(), accHeaders:[], rateRows:[],
