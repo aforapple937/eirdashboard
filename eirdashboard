@@ -119,7 +119,6 @@ td.cp{font-family:var(--mono);font-size:13px;font-weight:600;text-align:left;pad
 td.cd{font-family:var(--font);font-size:12px;font-weight:500;text-align:left;padding:8px 10px;background:#fff;color:var(--ink);}
 /* Product cell content (rowspan column) */
 .eir-prod-k{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--ink);letter-spacing:-0.01em;}
-.eir-prod-lbl{font-size:10.5px;color:var(--ink-3);margin-top:2px;font-family:var(--font);font-weight:400;}
 /* Driver line (label + inline togglers) */
 .eir-drv-line{display:flex;align-items:center;gap:10px;}
 .eir-togg-wrap{display:inline-flex;gap:4px;margin-left:auto;}
@@ -488,7 +487,6 @@ thead th.cy .eir-mon{color:var(--ink-2);}
             <select class="dash-range-sel" id="rangeFrom" onchange="updateRange()" title="First month shown"></select>
             <span class="dash-dash">→</span>
             <select class="dash-range-sel" id="rangeTo" onchange="updateRange()" title="Last month shown"></select>
-            <button class="dash-btn" onclick="resetRange()" title="Reset to last 6 months" style="padding:4px 10px">Reset</button>
           </div>
           <div class="dash-grp">
             <button class="dash-btn" onclick="toggleAll()" id="btnToggleAll" title="Expand all rows"><svg width="13" height="13"><use href="#i-sliders"/></svg>Rows</button>
@@ -500,7 +498,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
           <div class="empty" id="emptyState">
             <div class="empty-ico">📊</div>
             <h3>No data loaded</h3>
-            <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV. Press <strong>U</strong> or click <strong>Manual</strong> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage. Use <strong>[</strong> and <strong>]</strong> to toggle between EIR Flux and SORA tabs. Press <strong>?</strong> for the full keyboard cheatsheet.</p>
+            <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV. Press <strong>U</strong> or click <strong>Manual</strong> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage. Press <strong>?</strong> for the full keyboard cheatsheet.</p>
           </div>
           <div class="t-scroll hidden" id="tScroll">
             <table id="pnlTable">
@@ -736,8 +734,6 @@ thead th.cy .eir-mon{color:var(--ink-2);}
     <div class="sc-body">
       <div class="sc-group">
         <h4>Views</h4>
-        <div class="sc-row"><span>EIR Flux tab</span><span class="sc-keys"><span class="sc-key">[</span></span></div>
-        <div class="sc-row"><span>SORA tab</span><span class="sc-keys"><span class="sc-key">]</span></span></div>
         <div class="sc-row"><span>Toggle HL</span><span class="sc-keys"><span class="sc-key">1</span></span></div>
         <div class="sc-row"><span>Toggle HP</span><span class="sc-keys"><span class="sc-key">2</span></span></div>
         <div class="sc-row"><span>Toggle Others</span><span class="sc-keys"><span class="sc-key">3</span></span></div>
@@ -853,7 +849,6 @@ const fi=gMonths.indexOf(f),ti=gMonths.indexOf(t);if(fi<0||ti<0)return;
 _userRange={from:fi<=ti?f:t,to:fi<=ti?t:f};
 updateDashboardView();
 };
-window.resetRange=function(){_userRange=null;updateDashboardView();_syncRangeSelects();};
 window.switchTab=function(tab){
 _currentTab=tab;
 document.querySelectorAll('.view-tab').forEach(el=>el.classList.toggle('on',el.dataset.tab===tab));
@@ -908,8 +903,6 @@ else if(CALC.view==='portfolio'&&CALC.portfolio.length){e.preventDefault();calcE
 }
 return;
 }
-if(e.key==='[')switchTab('flux');
-if(e.key===']')switchTab('sora');
 if(e.key==='u'||e.key==='U')openManualModal();
 if(_currentTab!=='flux')return;
 if(e.key==='x'||e.key==='X')toggleAll();
@@ -1305,9 +1298,12 @@ if(_ldr)renderDashboard(_ldr,_dMo,_sel);
 };
 window.copyTable=async function(){
 const tw=$('tScroll');const sv=tw.style.overflow;tw.style.overflow='visible';
-const tbl=$('pnlTable');const tw2=tbl?Math.ceil(tbl.getBoundingClientRect().width):tw.scrollWidth;const th2=tbl?Math.ceil(tbl.getBoundingClientRect().height):tw.scrollHeight;
-try{const cv=await html2canvas(tbl||tw,{backgroundColor:'#fff',scale:2,windowWidth:tw2,width:tw2,height:th2});tw.style.overflow=sv;cv.toBlob(async blob=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('Copied ✓');}catch{showToast('Clipboard failed.');}});}
-catch{showToast('Failed.');tw.style.overflow=sv;}
+const tbl=$('pnlTable');const swPrev=tbl?tbl.style.width:'';if(tbl)tbl.style.width='auto';
+const toggs=tbl?tbl.querySelectorAll('.eir-togg-wrap'):[];const togPrev=[];toggs.forEach(el=>{togPrev.push(el.style.display);el.style.display='none';});
+const restore=()=>{tw.style.overflow=sv;if(tbl)tbl.style.width=swPrev;toggs.forEach((el,i)=>{el.style.display=togPrev[i]||'';});};
+const tw2=tbl?Math.ceil(tbl.getBoundingClientRect().width):tw.scrollWidth;const th2=tbl?Math.ceil(tbl.getBoundingClientRect().height):tw.scrollHeight;
+try{const cv=await html2canvas(tbl||tw,{backgroundColor:'#fff',scale:2,windowWidth:tw2,width:tw2,height:th2});restore();cv.toBlob(async blob=>{try{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('Copied ✓');}catch{showToast('Clipboard failed.');}});}
+catch{showToast('Failed.');restore();}
 };
 window.exportFluxToExcel=function(){
 if(!gMonths.length||!_ldr){showToast('No data.');return;}
@@ -1427,7 +1423,6 @@ $('mFt').classList.remove('hidden');renderModalPage();
 },50);
 };
 window.closeModal=function(){$('modal').classList.remove('open');};
-const PROD_LABELS={HL:'Home Loan',HP:'Hire Purchase',Others:'Others'};
 function renderDashboard(pr,mos,sel){
 const tbody=$('tBody');tbody.innerHTML='';
 const hRow=$('tHead');const ul=isMil?'S$ M':'S$';const lm=mos[mos.length-1];
@@ -1470,7 +1465,6 @@ const drvLabel=(label,toggs)=>`<div class="eir-drv-line"><span class="eir-drv-lb
 let html='';
 sel.forEach(prod=>{
 if(rz(prod,'Total'))return;
-const label=PROD_LABELS[prod]||prod;
 const zSora=rz(prod,'Change in SORA'),zNew=rz(prod,'New originations'),zRpT=rz(prod,'Repriced Total'),zBAU=rz(prod,'BAU Total'),zCl=rz(prod,'Closed accounts'),zMan=rz(prod,'Manual adj: Change in AEL');
 const rows=[];let rowCount=0;
 // Change in SORA — plain driver row
@@ -1536,7 +1530,7 @@ rowCount++;
 rows.push(`<tr class="r-sub"><td class="cd"><b>Total ${prod}</b></td>${_boldCells('Total',prod)}${_ytdTail('Total',prod,true)}</tr>`);
 rowCount++;
 // Prepend product cell (rowspan) to first row
-const prodCell=`<td class="cp" rowspan="${rowCount}"><div class="eir-prod-k">${prod}</div><div class="eir-prod-lbl">${label}</div></td>`;
+const prodCell=`<td class="cp" rowspan="${rowCount}"><div class="eir-prod-k">${prod}</div></td>`;
 rows[0]=rows[0].replace(/^<tr([^>]*)>/,`<tr$1>${prodCell}`);
 html+=rows.join('');
 });
