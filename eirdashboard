@@ -6,8 +6,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -80,10 +78,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text-1);height:100
 .slider::before{content:'';position:absolute;width:13px;height:13px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,0.3);}
 input:checked+.slider{background:var(--yellow);}
 input:checked+.slider::before{transform:translateX(15px);}
-/* SORA in sidebar */
-.sora-sec{padding:13px 14px 15px;border-bottom:1px solid rgba(255,255,255,0.05);}
-.sora-hdr{display:flex;align-items:center;margin-bottom:8px;}
-.sora-wrap{position:relative;height:120px;}
 /* Sidebar actions */
 .sb-actions{padding:12px 14px;display:flex;flex-direction:column;gap:6px;margin-top:auto;}
 .sb-btn{display:flex;align-items:center;gap:7px;padding:8px 11px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.09);border-radius:var(--r);color:rgba(255,255,255,0.6);font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;transition:all 0.12s;}
@@ -237,23 +231,16 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .files-empty-ico{font-size:36px;opacity:0.35;margin-bottom:10px;}
 .files-empty h3{font-size:14px;font-weight:600;color:var(--text-2);margin-bottom:6px;}
 .files-empty p{font-size:12px;max-width:320px;margin:0 auto;line-height:1.6;}
-/* Flux panel (wraps controls + table so it flexes alongside SORA view) */
+/* Flux panel (wraps controls + table) */
 #fluxPanel{flex:1;display:flex;flex-direction:column;min-height:0;}
 #fluxPanel.hidden{display:none;}
 /* EIR Flux full-page layout — matches design's `.page` + `.page-head` pattern */
 #fluxView{padding:22px 28px 0;background:var(--bg);}
 #fluxView .app-header{margin-bottom:14px;flex-shrink:0;}
-/* Page header (title + tabs + actions at top right — follows design's tb-recon pattern) */
+/* Page header (title + actions at top right — follows design's tb-recon pattern) */
 .flux-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap;flex-shrink:0;margin-bottom:18px;}
 .flux-page-title h1{margin:0;font-size:24px;font-weight:600;letter-spacing:-0.02em;color:var(--ink);}
 .flux-page-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-/* Segmented tabs (design pattern — like TB recon's Jan/Feb/Mar row) */
-.view-tabs{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;flex-shrink:0;}
-.view-tab{border:0;background:transparent;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:500;color:var(--text-2);transition:background 0.12s,color 0.12s;user-select:none;display:inline-flex;align-items:center;gap:6px;}
-.view-tab:hover{color:var(--text-1);}
-.view-tab.on{background:var(--black);color:var(--yellow);}
-.view-tab-kbd{font-family:var(--mono);font-size:9px;color:var(--text-3);background:var(--border-soft);border:1px solid var(--border);border-radius:3px;padding:0 4px;font-weight:600;}
-.view-tab.on .view-tab-kbd{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.6);}
 /* Dashboard controls bar — matches design's eir-toolbar layout */
 .dash-ctrl{display:flex;align-items:center;gap:16px 22px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);flex-shrink:0;flex-wrap:wrap;}
 .dash-grp{display:flex;align-items:center;gap:8px;}
@@ -275,23 +262,6 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .dash-btn.primary{background:var(--yellow);color:var(--black);border-color:var(--yellow);font-weight:600;}
 .dash-btn.primary:hover{background:var(--yellow-dk);border-color:var(--yellow-dk);}
 .dash-kbd{font-family:var(--mono);font-size:9px;color:var(--text-3);background:var(--border-soft);border:1px solid var(--border);border-radius:3px;padding:0 4px;margin-left:2px;}
-.dash-sora{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--nav-bg);border-radius:var(--r-lg);margin-bottom:10px;flex-shrink:0;}
-.dash-sora-lbl{font-size:9.5px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;color:rgba(255,255,255,0.4);white-space:nowrap;}
-.dash-sora-wrap{flex:1;height:96px;position:relative;}
-/* SORA standalone view */
-.sora-view{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:14px;}
-.sora-hero{background:linear-gradient(180deg,#ffffff 0%,#f9fafc 100%);border-radius:var(--r-lg);border:1px solid var(--border);padding:20px 22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px;min-height:440px;}
-.sora-hero-hd{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
-.sora-hero-ttl{font-size:15px;font-weight:700;letter-spacing:0.1px;color:var(--text-1);}
-.sora-hero-chart{flex:1;position:relative;min-height:360px;}
-.sora-range{display:inline-flex;align-items:center;gap:6px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);padding:4px 8px;}
-.sora-range-lbl{font-size:9px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);margin-right:2px;}
-.sora-range-sel{padding:4px 8px;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-1);background:#fff;cursor:pointer;outline:none;transition:all 0.12s;}
-.sora-range-sel:hover{border-color:var(--black);}
-.sora-range-sel:focus{border-color:var(--yellow-dk);}
-.sora-range-arrow{color:var(--text-3);font-size:11px;padding:0 2px;}
-.sora-range-reset{padding:4px 10px;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11px;font-weight:600;color:var(--text-1);cursor:pointer;transition:all 0.12s;}
-.sora-range-reset:hover{background:var(--yellow);border-color:var(--yellow-dk);}
 /* Range picker in dashboard */
 .dash-range-sel{padding:5px 9px;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-1);background:var(--surface-2);cursor:pointer;outline:none;transition:all 0.12s;}
 .dash-range-sel:hover{background:#fff;border-color:var(--black);}
@@ -450,16 +420,12 @@ thead th.cy .eir-mon{color:var(--ink-2);}
   <main class="main">
     <div class="table-area" id="fluxView">
       <div class="app-header">
-        <!-- Page header: title on the left, tabs + actions on the top right (design pattern) -->
+        <!-- Page header: title on the left, actions on the top right (design pattern) -->
         <div class="flux-page-head">
           <div class="flux-page-title">
             <h1>EIR Flux</h1>
           </div>
           <div class="flux-page-actions">
-            <div class="view-tabs" id="viewTabs">
-              <button class="view-tab on" data-tab="flux" onclick="switchTab('flux')">EIR Flux</button>
-              <button class="view-tab" data-tab="sora" onclick="switchTab('sora')">SORA Graph</button>
-            </div>
             <button class="dash-btn" onclick="openManualModal()" title="Manual Adjustments" id="btnManual"><svg width="13" height="13"><use href="#i-pencil"/></svg>Manual<span class="manual-dot hidden" id="manualDot" title="Unfilled manual values"></span></button>
             <button class="dash-btn" onclick="copyTable()" title="Copy Table"><svg width="13" height="13"><use href="#i-copy"/></svg>Copy</button>
             <button class="dash-btn primary" onclick="exportFluxToExcel()" title="Export"><svg width="13" height="13"><use href="#i-download"/></svg>Export</button>
@@ -500,7 +466,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
           <div class="empty" id="emptyState">
             <div class="empty-ico">📊</div>
             <h3>No data loaded</h3>
-            <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV. Press <strong>U</strong> or click <strong>Manual</strong> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage. Use <strong>[</strong> and <strong>]</strong> to toggle between EIR Flux and SORA tabs. Press <strong>?</strong> for the full keyboard cheatsheet.</p>
+            <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV. Press <strong>U</strong> or click <strong>Manual</strong> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage. Press <strong>?</strong> for the full keyboard cheatsheet.</p>
           </div>
           <div class="t-scroll hidden" id="tScroll">
             <table id="pnlTable">
@@ -508,21 +474,6 @@ thead th.cy .eir-mon{color:var(--ink-2);}
               <tbody id="tBody"></tbody>
             </table>
           </div>
-        </div>
-      </div>
-      <div class="sora-view hidden" id="soraView" style="padding:0;">
-        <div class="sora-hero">
-          <div class="sora-hero-hd">
-            <div class="sora-hero-ttl">1M SORA Trend</div>
-            <div class="sora-range">
-              <span class="sora-range-lbl">Range</span>
-              <select class="sora-range-sel" id="soraRangeFrom" onchange="updateSoraRange()" title="First month shown"></select>
-              <span class="sora-range-arrow">→</span>
-              <select class="sora-range-sel" id="soraRangeTo" onchange="updateSoraRange()" title="Last month shown"></select>
-              <button class="sora-range-reset" onclick="resetSoraRange()" title="Show all months">Reset</button>
-            </div>
-          </div>
-          <div class="sora-hero-chart" id="soraCapture"><canvas id="soraChart"></canvas></div>
         </div>
       </div>
     </div>
@@ -736,8 +687,6 @@ thead th.cy .eir-mon{color:var(--ink-2);}
     <div class="sc-body">
       <div class="sc-group">
         <h4>Views</h4>
-        <div class="sc-row"><span>EIR Flux tab</span><span class="sc-keys"><span class="sc-key">[</span></span></div>
-        <div class="sc-row"><span>SORA tab</span><span class="sc-keys"><span class="sc-key">]</span></span></div>
         <div class="sc-row"><span>Toggle HL</span><span class="sc-keys"><span class="sc-key">1</span></span></div>
         <div class="sc-row"><span>Toggle HP</span><span class="sc-keys"><span class="sc-key">2</span></span></div>
         <div class="sc-row"><span>Toggle Others</span><span class="sc-keys"><span class="sc-key">3</span></span></div>
@@ -815,7 +764,7 @@ const DC={
 const METRICS=['New originations','New Count','New Balance','Current reprice','Reprice Curr Count','Reprice Curr Bal','Future reprice','Reprice Fut Count','Reprice Fut Bal','Repriced Total','AEL maturity changed','EIR changed','Other BAU','BAU Total','Closed accounts','Closed Count','Closed Balance','Total'];
 const PRODUCTS=['HL','HP','Others'];
 const PROD_ACCENT={HL:'a-hl',HP:'a-hp',Others:'a-ot'};
-let gPnl={},gMonths=[],isMil=false,isExpanded=false,soraCi=null,_userRange=null,_currentTab='flux';
+let gPnl={},gMonths=[],isMil=false,isExpanded=false,_userRange=null;
 window.parsedManualDataGlobal={};window.globalAccountData=null;window.globalDates=[];window.modalIndex={};
 window.modalRecords=[];window.modalFilteredRecords=[];window.modalCurrentPage=1;window.modalRecordsPerPage=100;window.modalCurrentDriver='';window.modalSortAsc=false;
 let _sel=PRODUCTS.slice(),_dMo=[],_ytdMo=[],_zc={},_zcVer=-1,_ldrVer=0,_ytdVer=0;
@@ -854,14 +803,6 @@ _userRange={from:fi<=ti?f:t,to:fi<=ti?t:f};
 updateDashboardView();
 };
 window.resetRange=function(){_userRange=null;updateDashboardView();_syncRangeSelects();};
-window.switchTab=function(tab){
-_currentTab=tab;
-document.querySelectorAll('.view-tab').forEach(el=>el.classList.toggle('on',el.dataset.tab===tab));
-$('fluxPanel').classList.toggle('hidden',tab!=='flux');
-$('soraView').classList.toggle('hidden',tab!=='sora');
-const dc=$('dashCtrl');if(dc){if(tab==='sora')dc.classList.add('hidden');else if(gMonths.length)dc.classList.remove('hidden');}
-if(tab==='sora')renderSoraChart();
-};
 function _hasYtd(){
 if(!_dMo.length)return false;
 const last=DU.parse(_dMo[_dMo.length-1]);if(!last)return false;
@@ -908,10 +849,7 @@ else if(CALC.view==='portfolio'&&CALC.portfolio.length){e.preventDefault();calcE
 }
 return;
 }
-if(e.key==='[')switchTab('flux');
-if(e.key===']')switchTab('sora');
 if(e.key==='u'||e.key==='U')openManualModal();
-if(_currentTab!=='flux')return;
 if(e.key==='x'||e.key==='X')toggleAll();
 if(e.key==='c'||e.key==='C')copyTable();
 if(e.key==='e'||e.key==='E')exportFluxToExcel();
@@ -1100,7 +1038,7 @@ await mutate();
 if(opts&&opts.rebuild){await rebuildFromStore();}
 else{
 await renderStoredMonthsPanel();
-updateDashboardView();renderSoraChart();renderSoraTable();
+updateDashboardView();
 updateManualIndicator();
 }
 showToast(doneMsg);
@@ -1160,7 +1098,7 @@ if(Object.keys(entry).length)data[p]=entry;
 try{await IDB.putMan(key,data);}catch(err){console.error(err);showToast('Save failed: '+err.message);return;}
 window.parsedManualDataGlobal[key]=data;
 await renderStoredMonthsPanel();
-updateDashboardView();renderSoraChart();renderSoraTable();
+updateDashboardView();
 updateManualIndicator();
 showToast('Saved '+DU.fmtMY(date)+' ✓');
 exportManualJson({silent:true});
@@ -1232,9 +1170,9 @@ rm.forEach(m=>prods.forEach(p=>{pr[p]['Total'][m]=pr[p]['New originations'][m]+p
 gPnl=pr;gMonths=rm;_reMo();
 $('ldOv').classList.add('hidden');
 _syncRangeSelects();
-updateDashboardView();renderSoraChart();renderSoraTable();
+updateDashboardView();
 updateManualIndicator();
-if(_currentTab!=='sora')$('dashCtrl').classList.remove('hidden');
+$('dashCtrl').classList.remove('hidden');
 }
 function gdv(v){if(!v)return 0;return isMil?Math.round(v/100000)/10:v;}
 const _DERIVED_KEYS=['Total','Change in SORA','New originations','Current reprice','Future reprice','Repriced Total','AEL maturity changed','EIR changed','Other BAU','BAU Total','Closed accounts','Manual adj: Change in AEL','New Balance','Reprice Curr Bal','Reprice Fut Bal','Closed Balance'];
@@ -1296,7 +1234,7 @@ const anyOn=_expCB.size||_expSub.size;
 _expCB.clear();_expSub.clear();
 if(!anyOn){
 _sel.forEach(p=>{
-['New originations','Repriced accounts','Closed accounts'].forEach(k=>_expCB.add(p+':'+k));
+['Change in SORA','New originations','Repriced accounts','Closed accounts'].forEach(k=>_expCB.add(p+':'+k));
 ['Repriced accounts','BAU'].forEach(k=>_expSub.add(p+':'+k));
 });
 isExpanded=true;
@@ -1321,64 +1259,7 @@ const cols=['Product','Driver',...ml];if(hasYtd)cols.push(yl);
 const ws=XLSX.utils.json_to_sheet(rows);ws['!cols']=cols.map(x=>({wch:Math.max(x.length+2,14)}));
 const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'EIR Flux');XLSX.writeFile(wb,`EIR_Flux_${DU.fmtMY(lm)}.xlsx`);showToast('Exported ✓');
 };
-let _soraRange=null;let _soraRangeOptsSig='';
-function _parseSoraVal(v){if(v===undefined||v==='')return null;const n=parseFloat(String(v).replace(/[^0-9.-]/g,''));return isNaN(n)?null:n;}
-function _soraAllMonths(){return window.globalDates&&window.globalDates.length?window.globalDates:gMonths;}
-function _soraMonthsInRange(){
-const all=_soraAllMonths();
-if(!_soraRange||!all.includes(_soraRange.from)||!all.includes(_soraRange.to))return all;
-const fi=all.indexOf(_soraRange.from),ti=all.indexOf(_soraRange.to);
-const a=Math.min(fi,ti),b=Math.max(fi,ti);
-return all.slice(a,b+1);
-}
-function _soraSeries(){
-const months=_soraMonthsInRange();
-const labs=[],dU=[],dA=[],manual=window.parsedManualDataGlobal||{};
-for(let i=0;i<months.length;i++){
-const m=months[i];labs.push(DU.fmtMY(m));
-const md=manual[DU.mKey(m)];
-dU.push(md?_parseSoraVal(md['1M SORA - USED']):null);
-dA.push(md?_parseSoraVal(md['1M SORA - ACTUAL']):null);
-}
-return{months,labs,dU,dA};
-}
-function _syncSoraRangeSelects(){
-const all=_soraAllMonths();const fr=$('soraRangeFrom'),to=$('soraRangeTo');if(!fr||!to||!all.length)return;
-const sig=all.join('|');
-if(sig!==_soraRangeOptsSig){
-const opts=all.map(m=>`<option value="${m}">${DU.fmtMY(m)}</option>`).join('');
-fr.innerHTML=opts;to.innerHTML=opts;_soraRangeOptsSig=sig;
-}
-const shown=_soraMonthsInRange();
-fr.value=shown[0]||all[0];to.value=shown[shown.length-1]||all[all.length-1];
-}
-window.updateSoraRange=function(){
-const f=$('soraRangeFrom').value,t=$('soraRangeTo').value;if(!f||!t)return;
-const all=_soraAllMonths();const fi=all.indexOf(f),ti=all.indexOf(t);if(fi<0||ti<0)return;
-_soraRange={from:fi<=ti?f:t,to:fi<=ti?t:f};
-renderSoraChart();
-};
-window.resetSoraRange=function(){_soraRange=null;_syncSoraRangeSelects();renderSoraChart();};
-let _chartPluginReady=false;
-function _ensureChartPlugin(){if(_chartPluginReady||typeof Chart==='undefined'||typeof ChartDataLabels==='undefined')return;Chart.register(ChartDataLabels);_chartPluginReady=true;}
-window.renderSoraChart=function(){
-_ensureChartPlugin();const cEl=$('soraChart');if(!cEl)return;const ctx=cEl.getContext('2d');
-_syncSoraRangeSelects();
-const{labs,dU,dA}=_soraSeries();
-if(soraCi)soraCi.destroy();
-const usedGrad=ctx.createLinearGradient(0,0,0,360);
-usedGrad.addColorStop(0,'rgba(253,207,11,0.22)');usedGrad.addColorStop(1,'rgba(253,207,11,0)');
-const actGrad=ctx.createLinearGradient(0,0,0,360);
-actGrad.addColorStop(0,'rgba(59,130,246,0.18)');actGrad.addColorStop(1,'rgba(59,130,246,0)');
-soraCi=new Chart(ctx,{type:'line',data:{labels:labs,datasets:[
-{label:'Used',data:dU,borderColor:'#e6ba00',backgroundColor:usedGrad,borderWidth:2.5,pointBackgroundColor:'#fff',pointBorderColor:'#e6ba00',pointBorderWidth:2,pointRadius:4.5,pointHoverRadius:6,fill:true,tension:0.35,spanGaps:true},
-{label:'Actual',data:dA,borderColor:'#3b82f6',backgroundColor:actGrad,borderWidth:2.5,pointBackgroundColor:'#fff',pointBorderColor:'#3b82f6',pointBorderWidth:2,pointRadius:4.5,pointHoverRadius:6,fill:true,tension:0.35,spanGaps:true}
-]},
-options:{responsive:true,maintainAspectRatio:false,layout:{padding:{top:18,right:12,left:6,bottom:4}},
-plugins:{legend:{position:'top',align:'end',labels:{color:'#5a6070',font:{family:"'DM Sans',sans-serif",size:12,weight:'600'},padding:14,usePointStyle:true,pointStyleWidth:8}},tooltip:{displayColors:false,backgroundColor:'rgba(15,17,23,0.95)',titleFont:{family:"'DM Sans',sans-serif",size:12,weight:'700'},bodyFont:{family:"'Roboto Mono',monospace",size:12},padding:10,callbacks:{label:c=>c.dataset.label+': '+(c.parsed.y==null?'—':c.parsed.y.toFixed(4)+'%')}},datalabels:{display:false}},
-scales:{y:{grid:{color:'rgba(15,17,23,0.06)',drawTicks:false},ticks:{color:'#5a6070',font:{size:11,family:"'Roboto Mono',monospace"},padding:8,callback:v=>v+'%'},border:{display:false}},x:{grid:{display:false},ticks:{color:'#5a6070',font:{size:11,family:"'DM Sans',sans-serif",weight:'600'},padding:4},border:{display:false}}}}});
-};
-window.renderSoraTable=function(){};
+function _parseSoraVal(v){if(v===undefined||v===null||v==='')return null;const n=parseFloat(String(v).replace(/[^0-9.-]/g,''));return isNaN(n)?null:n;}
 window.sortModalByPnl=function(){window.modalSortAsc=!window.modalSortAsc;$('btnSort').textContent=window.modalSortAsc?'↑ Ascending':'↓ Descending';window.modalRecords.sort((a,b)=>window.modalSortAsc?a.pnl-b.pnl:b.pnl-a.pnl);window.modalFilteredRecords=[...window.modalRecords];window.modalCurrentPage=1;renderModalPage();};
 window.filterModal=function(q){q=q.trim().toLowerCase();window.modalFilteredRecords=q?window.modalRecords.filter(r=>String(r.acc).toLowerCase().includes(q)):window.modalRecords.slice();window.modalCurrentPage=1;renderModalPage();};
 window.exportModalToExcel=function(){if(!window.modalRecords?.length)return;const cfg=DC[window.modalCurrentDriver];const data=window.modalRecords.map(r=>{const row={};cfg.h.forEach((h,i)=>{const v=r[cfg.k[i]],f=cfg.f[i];row[h]=f==='d'?DU.fmtM(v):f==='r'?fmtR4(v):(v??'-');});return row;});const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(data),"Details");XLSX.writeFile(wb,"Account_Breakdown.xlsx");showToast('Exported ✓');};
@@ -1463,8 +1344,24 @@ const _subRow=(prod,key,label)=>{
 if(rz(prod,key))return null;
 return `<tr class="c-row"><td class="cd">↳ ${label}</td>${_drvCells(key,prod,label)}${_ytdTail(key,prod)}</tr>`;
 };
+// SORA Used / Actual sub-rows (values are portfolio-wide, sourced from manual entries)
+const _soraRows=()=>{
+const manual=window.parsedManualDataGlobal||{};
+const pctTd=v=>{const n=_parseSoraVal(v);return `<td class="col-data eir-meta-num">${n==null?'—':n.toFixed(4)+'%'}</td>`;};
+const pctYtd=v=>{const n=_parseSoraVal(v);return hasYtd?`${sp}<td class="cy eir-meta-num">${n==null?'—':n.toFixed(4)+'%'}</td>`:'';};
+const pick=(m,k)=>{const md=manual[DU.mKey(m)];return md?md[k]:null;};
+const lastM=mos[mos.length-1];
+const uCells=mos.map(m=>pctTd(pick(m,'1M SORA - USED'))).join('');
+const aCells=mos.map(m=>pctTd(pick(m,'1M SORA - ACTUAL'))).join('');
+const uYtd=pctYtd(pick(lastM,'1M SORA - USED'));
+const aYtd=pctYtd(pick(lastM,'1M SORA - ACTUAL'));
+const rU=`<tr class="eir-row-cb"><td class="cd eir-drv-meta">↳ SORA Used <span class="eir-unit-inline">%</span></td>${uCells}${uYtd}</tr>`;
+const rA=`<tr class="eir-row-cb"><td class="cd eir-drv-meta">↳ SORA Actual <span class="eir-unit-inline">%</span></td>${aCells}${aYtd}</tr>`;
+return [rU,rA];
+};
 const chev=on=>`<span class="eir-chev">${on?'▾':'▸'}</span>`;
 const cbTogg=(key,on)=>`<button class="eir-togg${on?' on':''}" onclick="toggleCB('${key}')" title="Show/hide count &amp; outstanding">${chev(on)}<span>#/$</span></button>`;
+const soraTogg=(key,on)=>`<button class="eir-togg${on?' on':''}" onclick="toggleCB('${key}')" title="Show/hide SORA used &amp; actual">${chev(on)}<span>%</span></button>`;
 const subTogg=(key,on)=>`<button class="eir-togg${on?' on':''}" onclick="toggleSub('${key}')" title="Show/hide sub-drivers">${chev(on)}<span>sub</span></button>`;
 const drvLabel=(label,toggs)=>`<div class="eir-drv-line"><span class="eir-drv-lbl">${label}</span>${toggs?`<span class="eir-togg-wrap">${toggs}</span>`:''}</div>`;
 let html='';
@@ -1473,10 +1370,13 @@ if(rz(prod,'Total'))return;
 const label=PROD_LABELS[prod]||prod;
 const zSora=rz(prod,'Change in SORA'),zNew=rz(prod,'New originations'),zRpT=rz(prod,'Repriced Total'),zBAU=rz(prod,'BAU Total'),zCl=rz(prod,'Closed accounts'),zMan=rz(prod,'Manual adj: Change in AEL');
 const rows=[];let rowCount=0;
-// Change in SORA — plain driver row
+// Change in SORA — with SORA Used/Actual toggle (portfolio-wide %)
 if(!zSora){
-rows.push(`<tr><td class="cd">${drvLabel('Change in SORA')}</td>${_drvCells('Change in SORA',prod,'Change in SORA')}${_ytdTail('Change in SORA',prod)}</tr>`);
+const k=prod+':Change in SORA';
+const on=_expCB.has(k);
+rows.push(`<tr><td class="cd">${drvLabel('Change in SORA',soraTogg(k,on))}</td>${_drvCells('Change in SORA',prod,'Change in SORA')}${_ytdTail('Change in SORA',prod)}</tr>`);
 rowCount++;
+if(on){const sb=_soraRows();rows.push(...sb);rowCount+=sb.length;}
 }
 // New originations — count+balance toggle
 if(!zNew){
@@ -1572,7 +1472,6 @@ document.querySelectorAll('.sb-item[data-mod]').forEach(el=>el.classList.toggle(
 $('fluxView').classList.toggle('hidden',!isFlux);
 $('calcView').classList.toggle('hidden',!isCalc);
 const fv=$('filesView');if(fv)fv.classList.toggle('hidden',!isFiles);
-document.querySelectorAll('#viewTabs').forEach(el=>el.classList.toggle('hidden',!isFlux));
 const dc=$('dashCtrl');if(dc)dc.classList.toggle('hidden',!isFlux||!gMonths.length);
 if(isCalc){const sel=$('calcMonth');if(!sel||!sel.options.length||!CALC.month)calcSyncMonthPicker();}
 if(isFiles)renderFilesView();
