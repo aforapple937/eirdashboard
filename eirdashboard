@@ -196,21 +196,25 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
 /* TOAST */
 .toast{position:fixed;bottom:22px;right:22px;background:var(--black);color:#fff;padding:10px 16px;border-radius:7px;font-size:12px;font-weight:500;box-shadow:0 6px 20px rgba(0,0,0,0.2);border-left:4px solid var(--yellow);z-index:9999;transform:translateY(60px);opacity:0;transition:all .27s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
 .toast.show{transform:translateY(0);opacity:1;}
-/* Stored Files view (full page) */
-#filesView{flex:1;min-height:0;padding:20px 22px;overflow:auto;}
-.files-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:16px;}
-.files-title h1{font-size:22px;font-weight:700;letter-spacing:-0.3px;margin:0 0 4px;color:var(--text-1);}
-.files-title h1 .files-sub{color:var(--text-3);font-weight:400;font-size:14px;letter-spacing:-0.01em;margin-left:4px;}
-.files-title .files-meta{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-3);}
-.files-title .files-meta b{color:var(--text-1);font-weight:600;font-family:var(--mono);}
-.files-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;}
-.files-tbl{width:100%;border-collapse:collapse;}
-.files-tbl th{text-align:left;font-family:var(--font);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-3);padding:11px 14px;background:var(--surface-2);border-bottom:1px solid var(--border);}
-.files-tbl td{padding:10px 14px;border-bottom:1px solid var(--border-soft);font-size:12.5px;vertical-align:middle;background:#fff;}
+/* Stored Files view (full page) — matches design palette */
+#filesView{flex:1;min-height:0;padding:22px 28px 60px;overflow:auto;background:#FAFAF7;font-size:13px;line-height:1.45;}
+.files-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:18px;}
+.files-title h1{font-size:24px;font-weight:600;letter-spacing:-0.02em;margin:0 0 4px;color:var(--text-1);}
+.files-title h1 .files-sub{color:#A3A39F;font-weight:400;font-size:16px;letter-spacing:-0.01em;margin-left:4px;}
+.files-title .files-meta{display:flex;align-items:center;gap:10px;font-size:12px;color:#6B6B68;}
+.files-title .files-meta b{color:#3A3A38;font-weight:500;font-family:var(--mono);}
+.files-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.files-clear{padding:7px 12px;border-radius:8px;border:1px solid #EAEAE4;background:#fff;font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;color:#3A3A38;display:inline-flex;align-items:center;gap:6px;transition:all .12s;}
+.files-clear:hover{color:#b91c1c;border-color:#fecaca;background:#fef2f2;}
+.files-card{background:#fff;border:1px solid #EAEAE4;border-radius:10px;overflow:hidden;}
+.files-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.files-tbl th{text-align:left;font-family:var(--font);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:#6B6B68;padding:10px 14px;background:#F2F2EC;border-bottom:1px solid #EAEAE4;}
+.files-tbl td{padding:10px 14px;border-bottom:1px solid #F2F2EC;font-size:12px;vertical-align:middle;background:#fff;text-align:left;}
+.files-tbl td:last-child{text-align:right;}
 .files-tbl tr:last-child td{border-bottom:none;}
-.files-tbl tr:hover td{background:var(--surface-2);}
-.files-tbl .f-name{font-weight:600;color:var(--text-1);}
-.files-tbl .f-badge{display:inline-block;padding:1px 8px;border-radius:4px;font-family:var(--mono);font-size:10.5px;font-weight:700;background:var(--border-soft);color:var(--text-2);text-transform:uppercase;letter-spacing:0.3px;}
+.files-tbl tr:hover td{background:#F2F2EC;}
+.files-tbl .f-name{font-weight:500;color:#0A0A0A;text-align:left;}
+.files-tbl .f-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:10px;font-weight:500;background:#F2F2EC;color:#3A3A38;text-transform:uppercase;letter-spacing:0.04em;}
 .files-tbl .f-badge.csv{background:#dcfce7;color:#065f46;}
 .files-tbl .f-badge.json{background:#fef3c7;color:#78350f;}
 .files-tbl .f-badge.acc{background:#dbeafe;color:#1d4ed8;}
@@ -227,27 +231,37 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
 /* Flux panel (wraps controls + table so it flexes alongside SORA view) */
 #fluxPanel{flex:1;display:flex;flex-direction:column;min-height:0;}
 #fluxPanel.hidden{display:none;}
-/* View tabs (above dashboard controls) */
-.view-tabs{display:flex;align-items:center;gap:6px;padding:6px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow);flex-shrink:0;}
-.view-tab{display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:var(--r);cursor:pointer;background:transparent;border:1.5px solid transparent;font-family:var(--font);font-size:12px;font-weight:700;color:var(--text-2);transition:all 0.12s;user-select:none;}
-.view-tab:hover{background:var(--surface-2);color:var(--text-1);}
-.view-tab.on{background:var(--black);border-color:var(--black);color:#fff;}
+/* Page header (title + tabs + actions at top right — follows design's tb-recon pattern) */
+.flux-page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;flex-shrink:0;padding:2px 2px 4px;}
+.flux-page-title h1{margin:0 0 2px;font-size:22px;font-weight:600;letter-spacing:-0.02em;color:var(--text-1);}
+.flux-page-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+/* Segmented tabs (design pattern — like TB recon's Jan/Feb/Mar row) */
+.view-tabs{display:flex;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;flex-shrink:0;}
+.view-tab{border:0;background:transparent;padding:6px 12px;border-radius:6px;cursor:pointer;font-family:var(--font);font-size:12px;font-weight:500;color:var(--text-2);transition:background 0.12s,color 0.12s;user-select:none;display:inline-flex;align-items:center;gap:6px;}
+.view-tab:hover{color:var(--text-1);}
+.view-tab.on{background:var(--black);color:var(--yellow);}
 .view-tab-kbd{font-family:var(--mono);font-size:9px;color:var(--text-3);background:var(--border-soft);border:1px solid var(--border);border-radius:3px;padding:0 4px;font-weight:600;}
 .view-tab.on .view-tab-kbd{background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.18);color:rgba(255,255,255,0.6);}
-/* Dashboard controls bar */
-.dash-ctrl{display:flex;align-items:center;gap:10px;padding:9px 12px;background:var(--surface);border-radius:var(--r-lg);border:1px solid var(--border);box-shadow:var(--shadow);flex-shrink:0;flex-wrap:wrap;}
-.dash-grp{display:flex;align-items:center;gap:6px;}
-.dash-grp+.dash-grp{padding-left:10px;border-left:1px solid var(--border);}
-.dash-lbl{font-size:9px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);margin-right:3px;}
-.dash-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:var(--r);cursor:pointer;border:1.5px solid var(--border);background:var(--surface-2);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-2);transition:all 0.12s;user-select:none;}
-.dash-pill:hover{background:#f1f3f5;}
-.dash-pill.on{background:#fff;border-color:var(--black);color:var(--text-1);}
+/* Dashboard controls bar — matches design's eir-toolbar layout */
+.dash-ctrl{display:flex;align-items:center;gap:16px 22px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);flex-shrink:0;flex-wrap:wrap;}
+.dash-grp{display:flex;align-items:center;gap:8px;}
+.dash-lbl{font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);}
+.dash-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:var(--surface);font-family:var(--mono);font-size:12px;font-weight:500;color:var(--text-2);transition:all 0.12s;user-select:none;}
+.dash-pill:hover:not(.on){border-color:var(--text-3);color:var(--text-1);}
+.dash-pill.on{background:var(--black);color:var(--yellow);border-color:var(--black);}
 .dash-pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .dash-pill-tot{font-family:var(--mono);font-size:10px;color:var(--text-3);}
+.dash-unit-seg{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px;}
+.dash-unit-seg button{border:0;background:transparent;padding:4px 10px;border-radius:4px;font-family:var(--font);font-size:11.5px;font-weight:500;color:var(--text-3);cursor:pointer;transition:background 0.12s,color 0.12s;}
+.dash-unit-seg button.active{background:var(--black);color:var(--yellow);}
+.dash-unit-seg button:hover:not(.active){color:var(--text-1);}
 .dash-unit-lbl{font-size:11px;color:var(--text-3);}
 .dash-unit-lbl.on{color:var(--text-1);font-weight:700;}
-.dash-btn{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:6px;color:var(--text-1);font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;transition:all 0.12s;}
-.dash-btn:hover{background:var(--yellow);border-color:var(--yellow-dk);}
+.dash-dash{color:var(--text-3);font-size:11px;}
+.dash-btn{display:inline-flex;align-items:center;gap:6px;padding:6px 11px;background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--text-2);font-family:var(--font);font-size:12px;font-weight:500;cursor:pointer;transition:all 0.12s;}
+.dash-btn:hover{color:var(--text-1);border-color:#a3a3a0;}
+.dash-btn.primary{background:var(--yellow);color:var(--black);border-color:var(--yellow);font-weight:600;}
+.dash-btn.primary:hover{background:var(--yellow-dk);border-color:var(--yellow-dk);}
 .dash-kbd{font-family:var(--mono);font-size:9px;color:var(--text-3);background:var(--border-soft);border:1px solid var(--border);border-radius:3px;padding:0 4px;margin-left:2px;}
 .dash-sora{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--nav-bg);border-radius:var(--r-lg);margin-bottom:10px;flex-shrink:0;}
 .dash-sora-lbl{font-size:9.5px;font-weight:700;letter-spacing:0.7px;text-transform:uppercase;color:rgba(255,255,255,0.4);white-space:nowrap;}
@@ -417,42 +431,49 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
   <main class="main">
     <div class="table-area" id="fluxView">
       <div class="app-header">
-        <div class="view-tabs" id="viewTabs">
-          <div class="view-tab on" data-tab="flux" onclick="switchTab('flux')"><span>EIR Flux</span></div>
-          <div class="view-tab" data-tab="sora" onclick="switchTab('sora')"><span>SORA Graph</span></div>
-          <div style="margin-left:auto;display:flex;align-items:center;gap:6px;">
-            <div class="view-tab" onclick="openShortcutsOverlay()" title="Keyboard shortcuts (?)" style="padding:7px 11px;">
-              <span style="font-weight:700">?</span>
+        <!-- Page header: title on the left, tabs + actions on the top right (design pattern) -->
+        <div class="flux-page-head">
+          <div class="flux-page-title">
+            <h1>EIR Flux</h1>
+          </div>
+          <div class="flux-page-actions">
+            <div class="view-tabs" id="viewTabs">
+              <button class="view-tab on" data-tab="flux" onclick="switchTab('flux')">EIR Flux</button>
+              <button class="view-tab" data-tab="sora" onclick="switchTab('sora')">SORA Graph</button>
             </div>
+            <button class="dash-btn" onclick="openManualModal()" title="Manual Adjustments" id="btnManual"><span>✎</span> Manual<span class="manual-dot hidden" id="manualDot" title="Unfilled manual values"></span></button>
+            <button class="dash-btn" onclick="copyTable()" title="Copy Table"><span>⎘</span> Copy</button>
+            <button class="dash-btn primary" onclick="exportFluxToExcel()" title="Export Excel"><span>↓</span> Excel</button>
+            <button class="dash-btn" onclick="openShortcutsOverlay()" title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">?</button>
           </div>
         </div>
+        <!-- Toolbar: products / unit / range / expand all (design's eir-toolbar layout) -->
         <div class="dash-ctrl hidden" id="dashCtrl">
           <div class="dash-grp">
             <span class="dash-lbl">Products</span>
-            <div id="pills" style="display:flex;gap:5px;">
+            <div id="pills" style="display:flex;gap:4px;">
               <div class="dash-pill on" data-p="HL" onclick="toggleProd('HL',this)"><span class="dash-pill-dot" style="background:var(--hl)"></span><span>HL</span></div>
               <div class="dash-pill on" data-p="HP" onclick="toggleProd('HP',this)"><span class="dash-pill-dot" style="background:var(--hp)"></span><span>HP</span></div>
               <div class="dash-pill on" data-p="Others" onclick="toggleProd('Others',this)"><span class="dash-pill-dot" style="background:var(--ot)"></span><span>Others</span></div>
             </div>
           </div>
           <div class="dash-grp">
-            <span class="dash-lbl">Units</span>
-            <span class="dash-unit-lbl on" id="lbl-exact">Exact (S$)</span>
-            <label class="switch"><input type="checkbox" id="unitToggle" onchange="updateDashboardView()"><span class="slider"></span></label>
-            <span class="dash-unit-lbl" id="lbl-millions">Millions</span>
+            <span class="dash-lbl">Unit</span>
+            <div class="dash-unit-seg" role="tablist">
+              <button type="button" id="unitExact" class="active" onclick="setUnit('exact')">Exact</button>
+              <button type="button" id="unitMillions" onclick="setUnit('millions')">Millions</button>
+            </div>
+            <input type="checkbox" id="unitToggle" onchange="updateDashboardView()" style="display:none">
           </div>
           <div class="dash-grp">
-            <span class="dash-lbl">Range</span>
+            <span class="dash-lbl">Month</span>
             <select class="dash-range-sel" id="rangeFrom" onchange="updateRange()" title="First month shown"></select>
-            <span class="dash-range-arrow">→</span>
+            <span class="dash-dash">→</span>
             <select class="dash-range-sel" id="rangeTo" onchange="updateRange()" title="Last month shown"></select>
-            <button class="dash-btn" onclick="resetRange()" title="Reset to last 6 months" style="padding:4px 8px">Reset</button>
+            <button class="dash-btn" onclick="resetRange()" title="Reset to last 6 months" style="padding:4px 10px">Reset</button>
           </div>
           <div class="dash-grp" style="margin-left:auto">
-            <button class="dash-btn" onclick="openManualModal()" title="Manual Adjustments" id="btnManual"><span>✎</span> Manual<span class="manual-dot hidden" id="manualDot" title="Unfilled manual values"></span></button>
             <button class="dash-btn" onclick="toggleAll()" id="btnToggleAll" title="Expand All"><span>⊞</span> Expand All</button>
-            <button class="dash-btn" onclick="copyTable()" title="Copy Table"><span>⎘</span> Copy</button>
-            <button class="dash-btn" onclick="exportFluxToExcel()" title="Export Excel"><span>↓</span> Excel</button>
           </div>
         </div>
       </div>
@@ -576,6 +597,9 @@ thead th.cy{background:var(--black)!important;color:var(--yellow)!important;}
             <span>·</span>
             <span><b id="filesCountMeta">0</b> cached items</span>
           </div>
+        </div>
+        <div class="files-actions">
+          <button class="files-clear" onclick="clearAllStored()" title="Remove all cached data"><svg width="12" height="12"><use href="#i-trash"/></svg>Clear All</button>
         </div>
       </div>
       <div class="files-card">
@@ -1196,7 +1220,8 @@ if(_currentTab!=='sora')$('dashCtrl').classList.remove('hidden');
 function gdv(v){if(!v)return 0;return isMil?Math.round(v/100000)/10:v;}
 const _DERIVED_KEYS=['Total','Change in SORA','New originations','Current reprice','Future reprice','Repriced Total','AEL maturity changed','EIR changed','Other BAU','BAU Total','Closed accounts','Manual adj: Change in AEL','New Balance','Reprice Curr Bal','Reprice Fut Bal','Closed Balance'];
 const _PASSTHROUGH_KEYS=['New Count','Reprice Curr Count','Reprice Fut Count','Closed Count'];
-function _setUnitLabels(){const x=isMil;$('lbl-exact').className='dash-unit-lbl'+(x?'':' on');$('lbl-millions').className='dash-unit-lbl'+(x?' on':'');document.body.classList.toggle('exact-units',!x);}
+function _setUnitLabels(){const x=isMil;const ex=$('unitExact'),ml=$('unitMillions');if(ex)ex.classList.toggle('active',!x);if(ml)ml.classList.toggle('active',x);document.body.classList.toggle('exact-units',!x);}
+window.setUnit=function(u){const t=$('unitToggle');if(!t)return;t.checked=(u==='millions');updateDashboardView();};
 window.updateDashboardView=function(){
 isMil=$('unitToggle').checked;_setUnitLabels();
 if(!gMonths.length)return;
