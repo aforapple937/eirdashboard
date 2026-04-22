@@ -244,15 +244,15 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .dash-ctrl{display:flex;align-items:center;gap:16px 22px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);flex-shrink:0;flex-wrap:wrap;}
 .dash-grp{display:flex;align-items:center;gap:8px;}
 .dash-lbl{font-size:10px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-3);}
-.dash-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:var(--surface);font-family:var(--mono);font-size:12px;font-weight:500;color:var(--text-2);transition:all 0.12s;user-select:none;}
+.dash-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:var(--surface);font-family:var(--font);font-size:12px;font-weight:500;color:var(--text-2);transition:all 0.12s;user-select:none;}
 .dash-pill:hover:not(.on){border-color:var(--text-3);color:var(--text-1);}
 .dash-pill.on{background:var(--black);color:var(--yellow);border-color:var(--black);}
 .dash-pill-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .dash-pill-tot{font-family:var(--mono);font-size:10px;color:var(--text-3);}
-.dash-unit-seg{display:inline-flex;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px;}
-.dash-unit-seg button{border:0;background:transparent;padding:4px 10px;border-radius:4px;font-family:var(--font);font-size:11.5px;font-weight:500;color:var(--text-3);cursor:pointer;transition:background 0.12s,color 0.12s;}
-.dash-unit-seg button.active{background:var(--black);color:var(--yellow);}
-.dash-unit-seg button:hover:not(.active){color:var(--text-1);}
+.dash-seg{display:inline-flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:2px;}
+.dash-seg-btn{padding:4px 10px;border:0;background:transparent;font-family:var(--font);font-size:12px;font-weight:500;color:var(--text-3);cursor:pointer;border-radius:4px;transition:background 0.12s,color 0.12s;}
+.dash-seg-btn:hover:not(.on){color:var(--text-1);}
+.dash-seg-btn.on{background:var(--black);color:var(--yellow);}
 .dash-unit-lbl{font-size:11px;color:var(--text-3);}
 .dash-unit-lbl.on{color:var(--text-1);font-weight:700;}
 .dash-dash{color:var(--text-3);font-size:11px;}
@@ -328,16 +328,10 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .calc-notice{padding:18px 20px;margin:14px;background:#fef3c7;border:1px solid #fcd34d;border-radius:var(--r);color:#78350f;font-size:12.5px;font-weight:500;line-height:1.6;}
 .calc-notice strong{color:#78350f;}
 .calc-body{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:14px;gap:12px;}
-.calc-seg{display:inline-flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;}
-.calc-seg-btn{padding:5px 10px;border:0;background:transparent;font-family:var(--font);font-size:12px;font-weight:500;color:var(--text-3);cursor:pointer;border-radius:6px;transition:color 0.12s,background 0.12s;}
-.calc-seg-btn:hover:not(.on){color:var(--text-1);}
-.calc-seg-btn.on{background:var(--black);color:var(--yellow);}
-.calc-acct-in{padding:5px 10px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:6px;font-size:12px;font-family:var(--mono);outline:0;width:150px;letter-spacing:0.02em;}
+.calc-acct-in{padding:5px 10px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:6px;font-size:12px;font-family:var(--font);outline:0;width:150px;letter-spacing:0.02em;}
 .calc-acct-in:focus{border-color:var(--ink-3);}
 .calc-ctrl-spacer{flex:1 1 auto;}
 #calcView .app-header{margin-bottom:14px;flex-shrink:0;}
-#calcCtrl{gap:12px 18px;margin-bottom:16px;}
-#calcCtrl .dash-lbl,#calcCtrl .dash-dash{color:var(--text-4);}
 .calc-cov-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0;overflow:hidden;flex-shrink:0;}
 .calc-cov-head{padding:14px 16px 12px;border-bottom:1px solid var(--border);}
 .calc-cov-title{font-size:13px;font-weight:500;color:var(--ink);letter-spacing:-0.01em;}
@@ -471,9 +465,9 @@ thead th.cy .eir-mon{color:var(--ink-2);}
           </div>
           <div class="dash-grp">
             <span class="dash-lbl">Unit</span>
-            <div class="dash-unit-seg" role="tablist">
-              <button type="button" id="unitExact" class="active" onclick="setUnit('exact')">Exact</button>
-              <button type="button" id="unitMillions" onclick="setUnit('millions')">Millions</button>
+            <div class="dash-seg" role="tablist">
+              <button type="button" id="unitExact" class="dash-seg-btn on" onclick="setUnit('exact')">Exact</button>
+              <button type="button" id="unitMillions" class="dash-seg-btn" onclick="setUnit('millions')">Millions</button>
             </div>
             <input type="checkbox" id="unitToggle" onchange="updateDashboardView()" style="display:none">
           </div>
@@ -523,18 +517,18 @@ thead th.cy .eir-mon{color:var(--ink-2);}
           <span class="dash-dash">·</span>
           <div class="dash-grp">
             <span class="dash-lbl">Scope</span>
-            <div class="calc-seg" role="tablist" id="calcScopeSeg">
-              <button class="calc-seg-btn on" data-scope="all" onclick="calcSetScope('all')">All accounts</button>
-              <button class="calc-seg-btn" data-scope="one" onclick="calcSetScope('one')">One account</button>
+            <div class="dash-seg" role="tablist" id="calcScopeSeg">
+              <button class="dash-seg-btn on" data-scope="all" onclick="calcSetScope('all')">All accounts</button>
+              <button class="dash-seg-btn" data-scope="one" onclick="calcSetScope('one')">One account</button>
             </div>
             <input type="text" id="calcAcc" class="calc-acct-in" placeholder="Account number" maxlength="20" style="display:none;">
           </div>
           <span class="dash-dash">·</span>
           <div class="dash-grp">
             <span class="dash-lbl">EIR source</span>
-            <div class="calc-seg" role="tablist" id="calcMethodSeg">
-              <button class="calc-seg-btn on" data-method="system" onclick="calcSetMethod('system')" title="Discount cashflows with the system-provided EIR">Use system EIR</button>
-              <button class="calc-seg-btn" data-method="derive" onclick="calcSetMethod('derive')" title="Goal-seek the EIR that reproduces ledger + allocated cost">Re-derive EIR</button>
+            <div class="dash-seg" role="tablist" id="calcMethodSeg">
+              <button class="dash-seg-btn on" data-method="system" onclick="calcSetMethod('system')" title="Discount cashflows with the system-provided EIR">Use system EIR</button>
+              <button class="dash-seg-btn" data-method="derive" onclick="calcSetMethod('derive')" title="Goal-seek the EIR that reproduces ledger + allocated cost">Re-derive EIR</button>
             </div>
           </div>
           <div class="calc-ctrl-spacer"></div>
@@ -1215,7 +1209,7 @@ $('dashCtrl').classList.remove('hidden');
 function gdv(v){if(!v)return 0;return isMil?Math.round(v/100000)/10:v;}
 const _DERIVED_KEYS=['Total','Change in SORA','New originations','Current reprice','Future reprice','Repriced Total','AEL maturity changed','EIR changed','Other BAU','BAU Total','Closed accounts','Manual adj: Change in AEL','New Balance','Reprice Curr Bal','Reprice Fut Bal','Closed Balance'];
 const _PASSTHROUGH_KEYS=['New Count','Reprice Curr Count','Reprice Fut Count','Closed Count'];
-function _setUnitLabels(){const x=isMil;const ex=$('unitExact'),ml=$('unitMillions');if(ex)ex.classList.toggle('active',!x);if(ml)ml.classList.toggle('active',x);document.body.classList.toggle('exact-units',!x);}
+function _setUnitLabels(){const x=isMil;const ex=$('unitExact'),ml=$('unitMillions');if(ex)ex.classList.toggle('on',!x);if(ml)ml.classList.toggle('on',x);document.body.classList.toggle('exact-units',!x);}
 window.setUnit=function(u){const t=$('unitToggle');if(!t)return;t.checked=(u==='millions');updateDashboardView();};
 window.updateDashboardView=function(){
 isMil=$('unitToggle').checked;_setUnitLabels();
@@ -1590,13 +1584,13 @@ calcUpdateHint();
 window.calcSetMethod=function(m){
 if(m!=='system'&&m!=='derive')return;
 CALC.method=m;
-document.querySelectorAll('#calcMethodSeg .calc-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.method===m));
+document.querySelectorAll('#calcMethodSeg .dash-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.method===m));
 calcUpdateRunBtn();calcUpdateHint();
 };
 window.calcSetScope=function(s){
 if(s!=='all'&&s!=='one')return;
 CALC.scope=s;
-document.querySelectorAll('#calcScopeSeg .calc-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.scope===s));
+document.querySelectorAll('#calcScopeSeg .dash-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.scope===s));
 const inp=$('calcAcc');if(inp){inp.style.display=s==='one'?'':'none';if(s==='one')setTimeout(()=>inp.focus(),0);}
 calcUpdateRunBtn();calcUpdateHint();
 };
