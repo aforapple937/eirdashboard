@@ -309,14 +309,24 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 /* In calc view, strip the outer .t-card chrome so Coverage / Summary / Accounts stack as standalone cards (matches design) */
 #calcView .t-card{background:transparent;border:0;border-radius:0;overflow:visible;margin-bottom:0;}
 #calcView .calc-body{padding:0;gap:16px;overflow:visible;}
-.calc-recon-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;flex-shrink:0;}
-.calc-recon-title{padding:10px 16px 8px;font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border-soft);}
-.calc-recon{width:100%;border-collapse:collapse;font-size:12.5px;}
-.calc-recon th{padding:9px 16px;text-align:right;font-family:var(--font);font-size:9.5px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;color:var(--text-3);background:var(--surface-2);border-bottom:1px solid var(--border);}
-.calc-recon th:first-child{text-align:left;}
-.calc-recon td{padding:11px 16px;text-align:right;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text-1);font-variant-numeric:tabular-nums;border-bottom:1px solid var(--border-soft);}
-.calc-recon tr:last-child td{border-bottom:0;}
-.calc-recon td:first-child{text-align:left;font-family:var(--font);font-weight:700;color:var(--text-1);}
+/* Summary of results card (design: eirc-summary) */
+.eirc-summary{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:0;overflow:hidden;flex-shrink:0;}
+.eirc-sec-head{padding:14px 16px 12px;border-bottom:1px solid var(--line);}
+.eirc-sec-title{font-size:13px;font-weight:500;color:var(--ink);letter-spacing:-0.01em;font-family:var(--font);}
+.eirc-sum-table{width:100%;border-collapse:collapse;}
+.eirc-sum-table th{background:var(--surface);font-family:var(--font);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-3);padding:10px 14px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;position:static;}
+.eirc-sum-table th.num{text-align:right;}
+.eirc-sum-table td{padding:10px 14px;border-bottom:1px solid var(--line-2);font-size:12px;color:var(--ink);font-family:var(--font);font-weight:400;background:transparent;text-align:left;white-space:nowrap;font-variant-numeric:normal;}
+.eirc-sum-table td.num{text-align:right;}
+.eirc-sum-table td.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+.eirc-sum-table tr:last-child td{border-bottom:0;}
+.eirc-sum-table tr:hover td{background:var(--line-2);}
+/* Landing-page empty state (design: eirc-empty) */
+.eirc-empty{flex:1;padding:48px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;}
+.eirc-empty-icon{width:56px;height:56px;border-radius:50%;background:var(--line-2);display:flex;align-items:center;justify-content:center;color:var(--ink-3);margin-bottom:4px;}
+.eirc-empty-title{font-family:var(--font);font-size:14px;font-weight:500;color:var(--ink);}
+.eirc-empty-sub{font-family:var(--font);font-size:12px;color:var(--ink-3);max-width:460px;line-height:1.5;font-weight:400;}
+.eirc-empty-sub b{font-weight:600;color:var(--ink);}
 .calc-drill-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0 4px;flex-shrink:0;flex-wrap:wrap;}
 .calc-crumb{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all 0.12s;}
 .calc-crumb:hover{background:#fff;color:var(--text-1);border-color:var(--black);}
@@ -487,18 +497,18 @@ thead th.cy .eir-mon{color:var(--ink-2);}
       </div>
       <div id="calcPanel">
         <div class="t-card">
-          <div class="empty" id="calcEmpty">
-            <div class="empty-ico">🧮</div>
-            <h3>EIR Calculator</h3>
-            <p>Pick a <strong>month</strong> above to calculate EIR per account. Load both the account CSV and the rate-history CSV via <strong>Load Data</strong>. Leave the account blank and click <strong>Calculate All</strong>, or enter an account number to drill into a single cashflow schedule.</p>
+          <div class="eirc-empty" id="calcEmpty">
+            <div class="eirc-empty-icon"><svg width="28" height="28"><use href="#i-calc"/></svg></div>
+            <div class="eirc-empty-title">Ready to run</div>
+            <div class="eirc-empty-sub" id="calcEmptySub"></div>
           </div>
           <div class="calc-notice hidden" id="calcNotice"></div>
           <div class="calc-body hidden" id="calcBody">
             <div class="calc-view on" id="calcPortfolioView">
               <div class="calc-cov-card hidden" id="calcCoverage"></div>
-              <div class="calc-recon-wrap hidden" id="calcPortReconWrap">
-                <div class="calc-recon-title" id="calcPortReconTitle">Portfolio totals</div>
-                <table class="calc-recon"><thead><tr><th>Metric</th><th>Calculated</th><th>System</th><th>Variance</th><th>%</th></tr></thead><tbody id="calcPortReconBody"></tbody></table>
+              <div class="eirc-summary hidden" id="calcPortReconWrap">
+                <div class="eirc-sec-head"><div class="eirc-sec-title">Summary of results</div></div>
+                <table class="eirc-sum-table"><thead><tr><th>Metric</th><th class="num">System</th><th class="num">Calculated</th><th class="num">Variance</th><th class="num">Variance %</th></tr></thead><tbody id="calcPortReconBody"></tbody></table>
               </div>
               <div class="calc-pg-bar hidden" id="calcPgBar">
                 <span id="calcPgInfo">Page 1 of 1</span>
@@ -517,9 +527,9 @@ thead th.cy .eir-mon{color:var(--ink-2);}
                   <span class="calc-drill-meta" id="calcDrillMeta"></span>
                 </div>
               </div>
-              <div class="calc-recon-wrap">
-                <div class="calc-recon-title">Reconciliation</div>
-                <table class="calc-recon"><thead><tr><th>Metric</th><th>Calculated</th><th>System</th><th>Variance</th><th>%</th></tr></thead><tbody id="calcSingleReconBody"></tbody></table>
+              <div class="eirc-summary">
+                <div class="eirc-sec-head"><div class="eirc-sec-title">Summary of results</div></div>
+                <table class="eirc-sum-table"><thead><tr><th>Metric</th><th class="num">System</th><th class="num">Calculated</th><th class="num">Variance</th><th class="num">Variance %</th></tr></thead><tbody id="calcSingleReconBody"></tbody></table>
               </div>
               <div class="calc-tbl-wrap"><table class="calc-tbl" id="calcCfTable"><thead><tr id="calcCfHead"></tr></thead><tbody id="calcCfBody"></tbody><tfoot id="calcCfFoot"></tfoot></table></div>
             </div>
@@ -1475,7 +1485,16 @@ CALC.view='empty';
 $('calcEmpty').classList.remove('hidden');
 $('calcBody').classList.add('hidden');
 $('calcNotice').classList.add('hidden');
-calcUpdateRunBtn();calcUpdateHint();
+calcUpdateRunBtn();calcUpdateHint();calcUpdateEmptySub();
+}
+function calcUpdateEmptySub(){
+const sub=$('calcEmptySub');if(!sub)return;
+const d=CALC.month?DU.parse(CALC.month):null;
+const month=d?(DU.mn[d.getMonth()]+' '+d.getFullYear()):'the selected month';
+const srcTxt=CALC.method==='derive'?'a re-derived EIR':'the system EIR';
+sub.innerHTML=CALC.scope==='all'
+?`Calculate EIR for all in-scope loan accounts for <b>${month}</b> using ${srcTxt}.`
+:`Enter an account number above, then calculate EIR for <b>${month}</b>.`;
 }
 function calcShowView(view){
 CALC.view=view;
@@ -1534,14 +1553,14 @@ window.calcSetMethod=function(m){
 if(m!=='system'&&m!=='derive')return;
 CALC.method=m;
 document.querySelectorAll('#calcMethodSeg .dash-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.method===m));
-calcUpdateRunBtn();calcUpdateHint();
+calcUpdateRunBtn();calcUpdateHint();calcUpdateEmptySub();
 };
 window.calcSetScope=function(s){
 if(s!=='all'&&s!=='one')return;
 CALC.scope=s;
 document.querySelectorAll('#calcScopeSeg .dash-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.scope===s));
 const inp=$('calcAcc');if(inp){inp.style.display=s==='one'?'':'none';if(s==='one')setTimeout(()=>inp.focus(),0);}
-calcUpdateRunBtn();calcUpdateHint();
+calcUpdateRunBtn();calcUpdateHint();calcUpdateEmptySub();
 };
 function calcUpdateRunBtn(){
 const lbl=$('btnCalcRunLbl');if(!lbl)return;
@@ -1741,7 +1760,6 @@ eta.textContent=remaining<1?'< 1 second remaining':('~'+Math.ceil(remaining)+' s
 function calcRenderPortfolioResults(){
 calcRenderCoverage();
 const rm=CALC.resultMethod||CALC.method;
-$('calcPortReconTitle').textContent=rm==='derive'?'Portfolio totals · Re-derive EIR':'Portfolio totals · System EIR';
 calcRenderRecon('calcPortReconBody',CALC.portfolioTotals,false,rm);
 $('calcPortReconWrap').classList.remove('hidden');
 calcRenderPortfolio();
@@ -1786,14 +1804,19 @@ $('calcCoverage').classList.remove('hidden');
 }
 function calcRenderRecon(bodyId,r,singleModeShowEirRow,methodOverride){
 const deriveRow=(methodOverride||CALC.method)==='derive';
-const rows=[
-['PV of cash flows',_cFmtN(r.pvCalc,2),_cFmtN(r.pvSys,2),_cFmtN(r.pvDiff,2),_cFmtPct(r.pvDiffPct,2)],
-['EIR adjustment',_cFmtN(r.eirAdjCalc,2),_cFmtN(r.eirAdjSys,2),_cFmtN(r.eirDiff,2),_cFmtPct(r.eirDiffPct,2)]
-];
-if(deriveRow&&singleModeShowEirRow){
-rows.push(['EIR rate',_cFmtPct(r.derivedEir,6),_cFmtPct(r.sysEir,6),(r.eirRateDiff>=0?'+':'')+Number(r.eirRateDiff).toFixed(6)+' pp','—']);
+const fmtM=(v,d=2)=>(v==null||isNaN(v))?'—':Number(v/1e6).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d})+' M';
+const fmtMSigned=(v,d=2)=>{if(v==null||isNaN(v))return'—';const n=Number(v/1e6).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});return(v>=0?'+':'')+n+' M';};
+const fmtInt=v=>(v==null||isNaN(v))?'—':Math.round(v).toLocaleString();
+const fmtIntSigned=v=>{if(v==null||isNaN(v))return'—';return(v>=0?'+':'')+Math.round(v).toLocaleString();};
+const rows=[];
+if(deriveRow&&singleModeShowEirRow&&r.sysEir!=null){
+const varBps=(Number(r.derivedEir)-Number(r.sysEir))*100;
+const varPct=Number(r.sysEir)!==0?((Number(r.derivedEir)-Number(r.sysEir))/Number(r.sysEir))*100:null;
+rows.push({metric:'EIR rate',sys:Number(r.sysEir).toLocaleString(undefined,{minimumFractionDigits:3,maximumFractionDigits:3})+'%',calc:Number(r.derivedEir).toLocaleString(undefined,{minimumFractionDigits:3,maximumFractionDigits:3})+'%',variance:(varBps>=0?'+':'')+varBps.toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1})+' bps',variancePct:varPct==null?'—':varPct.toFixed(2)+'%'});
 }
-$(bodyId).innerHTML=rows.map(row=>'<tr>'+row.map(c=>`<td>${c}</td>`).join('')+'</tr>').join('');
+rows.push({metric:'PV of cashflows',sys:fmtM(r.pvSys,2),calc:fmtM(r.pvCalc,2),variance:fmtMSigned(r.pvDiff,2),variancePct:r.pvDiffPct==null||isNaN(r.pvDiffPct)?'—':Number(r.pvDiffPct).toFixed(3)+'%'});
+rows.push({metric:'EIR adjustment to P&L',sys:fmtInt(r.eirAdjSys),calc:fmtInt(r.eirAdjCalc),variance:fmtIntSigned(r.eirDiff),variancePct:r.eirDiffPct==null||isNaN(r.eirDiffPct)?'—':Number(r.eirDiffPct).toFixed(2)+'%'});
+$(bodyId).innerHTML=rows.map(row=>`<tr><td>${row.metric}</td><td class="num mono">${row.sys}</td><td class="num mono">${row.calc}</td><td class="num mono">${row.variance}</td><td class="num mono">${row.variancePct}</td></tr>`).join('');
 }
 const _CF_HEADS=['Period','Start Date','End Date','Rate 1','Rate 2','Days 1','Days 2','Year Fraction 1','Year Fraction 2','Opening Balance','Interest','Principal','Ending Balance','Cashflow Before Disc','Discount Factor','PV'];
 function calcRenderCashflow(cashflow,totalPV){
