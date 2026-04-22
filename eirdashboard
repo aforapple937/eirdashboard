@@ -328,10 +328,14 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .calc-notice{padding:18px 20px;margin:14px;background:#fef3c7;border:1px solid #fcd34d;border-radius:var(--r);color:#78350f;font-size:12.5px;font-weight:500;line-height:1.6;}
 .calc-notice strong{color:#78350f;}
 .calc-body{flex:1;display:flex;flex-direction:column;min-height:0;overflow:hidden;padding:14px;gap:12px;}
-.calc-seg{display:inline-flex;border:1.5px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--surface-2);}
-.calc-seg-btn{padding:5px 12px;border:0;background:transparent;font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-2);cursor:pointer;transition:all 0.12s;}
-.calc-seg-btn:hover{color:var(--text-1);background:#f1f3f5;}
-.calc-seg-btn.on{background:var(--black);color:#fff;}
+.calc-seg{display:inline-flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:3px;}
+.calc-seg-btn{padding:5px 10px;border:0;background:transparent;font-family:var(--font);font-size:12px;font-weight:500;color:var(--text-3);cursor:pointer;border-radius:6px;transition:color 0.12s,background 0.12s;}
+.calc-seg-btn:hover:not(.on){color:var(--text-1);}
+.calc-seg-btn.on{background:var(--black);color:var(--yellow);}
+.calc-acct-in{padding:5px 10px;border:1px solid var(--border);background:var(--surface);color:var(--ink);border-radius:6px;font-size:12px;font-family:var(--mono);outline:0;width:150px;letter-spacing:0.02em;}
+.calc-acct-in:focus{border-color:var(--ink-3);}
+.calc-ctrl-spacer{flex:1 1 auto;}
+#calcView .app-header{margin-bottom:14px;flex-shrink:0;}
 .calc-coverage{display:flex;flex-wrap:wrap;gap:6px 22px;padding:10px 14px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);font-size:11.5px;color:var(--text-2);font-weight:600;flex-shrink:0;}
 .calc-coverage strong{color:var(--text-1);font-family:var(--mono);font-weight:700;margin-left:4px;}
 .calc-coverage a{color:var(--text-1);text-decoration:underline;cursor:pointer;font-weight:600;}
@@ -477,27 +481,39 @@ thead th.cy .eir-mon{color:var(--ink-2);}
     </div>
     <div class="table-area hidden" id="calcView">
       <div class="app-header">
+        <div class="flux-page-head">
+          <div class="flux-page-title">
+            <h1>EIR Calculator</h1>
+          </div>
+          <div class="flux-page-actions">
+            <button class="dash-btn hidden" id="btnCalcExport" onclick="calcExportPortfolio()" title="Export Excel (E)"><svg width="13" height="13"><use href="#i-download"/></svg>Export<span class="dash-kbd">E</span></button>
+            <button class="dash-btn hidden" id="btnCalcSingleExport" onclick="calcExportSingle()" title="Export Excel (E)"><svg width="13" height="13"><use href="#i-download"/></svg>Export<span class="dash-kbd">E</span></button>
+          </div>
+        </div>
         <div class="dash-ctrl" id="calcCtrl">
           <div class="dash-grp">
             <span class="dash-lbl">Month</span>
             <select class="dash-range-sel" id="calcMonth" onchange="calcOnMonthChange()" title="Select a month to calculate"></select>
           </div>
+          <span class="dash-dash">·</span>
           <div class="dash-grp">
-            <span class="dash-lbl">Account</span>
-            <input type="text" id="calcAcc" placeholder="(leave blank for all)" style="padding:5px 10px;border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-1);background:var(--surface-2);outline:none;width:180px;">
+            <span class="dash-lbl">Scope</span>
+            <div class="calc-seg" role="tablist" id="calcScopeSeg">
+              <button class="calc-seg-btn on" data-scope="all" onclick="calcSetScope('all')">All accounts</button>
+              <button class="calc-seg-btn" data-scope="one" onclick="calcSetScope('one')">One account</button>
+            </div>
+            <input type="text" id="calcAcc" class="calc-acct-in" placeholder="Account number" maxlength="20" style="display:none;">
           </div>
+          <span class="dash-dash">·</span>
           <div class="dash-grp">
-            <span class="dash-lbl">Method</span>
-            <div class="calc-seg" role="tablist">
-              <button class="calc-seg-btn on" data-method="system" onclick="calcSetMethod('system')" title="Discount cashflows with the system-provided EIR">System EIR</button>
+            <span class="dash-lbl">EIR source</span>
+            <div class="calc-seg" role="tablist" id="calcMethodSeg">
+              <button class="calc-seg-btn on" data-method="system" onclick="calcSetMethod('system')" title="Discount cashflows with the system-provided EIR">Use system EIR</button>
               <button class="calc-seg-btn" data-method="derive" onclick="calcSetMethod('derive')" title="Goal-seek the EIR that reproduces ledger + allocated cost">Re-derive EIR</button>
             </div>
           </div>
-          <div class="dash-grp" style="margin-left:auto">
-            <button class="dash-btn" id="btnCalcRun" onclick="calcRun()" style="background:var(--black);color:#fff;border-color:var(--black);">Calculate All</button>
-            <button class="dash-btn hidden" id="btnCalcExport" onclick="calcExportPortfolio()" title="Export Excel (E)">↓ Excel <span class="dash-kbd">E</span></button>
-            <button class="dash-btn hidden" id="btnCalcSingleExport" onclick="calcExportSingle()" title="Export Excel (E)">↓ Excel <span class="dash-kbd">E</span></button>
-          </div>
+          <div class="calc-ctrl-spacer"></div>
+          <button class="dash-btn primary" id="btnCalcRun" onclick="calcRun()">Calculate all</button>
         </div>
         <div class="calc-hint" id="calcHint"></div>
       </div>
@@ -1450,7 +1466,7 @@ month:null, accByNum:new Map(), rateByAcc:new Map(), accHeaders:[], rateRows:[],
 portfolio:[], negativeEir:[], excludedFlag:[], excludedHP:[],
 page:1, perPage:100, sort:{field:null,dir:1}, running:false, cancelled:false,
 currentAcc:null, lastResult:null, cameFromPortfolio:false,
-method:'system', resultMethod:null, view:'empty', startedAt:0,
+method:'system', scope:'all', resultMethod:null, view:'empty', startedAt:0,
 _rateIdbCache:new Map()
 };
 function _cParse(s){if(!s)return null;const d=DU.parse(s);if(!d)return null;return new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));}
@@ -1549,18 +1565,29 @@ calcUpdateHint();
 window.calcSetMethod=function(m){
 if(m!=='system'&&m!=='derive')return;
 CALC.method=m;
-document.querySelectorAll('.calc-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.method===m));
+document.querySelectorAll('#calcMethodSeg .calc-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.method===m));
+calcUpdateRunBtn();calcUpdateHint();
+};
+window.calcSetScope=function(s){
+if(s!=='all'&&s!=='one')return;
+CALC.scope=s;
+document.querySelectorAll('#calcScopeSeg .calc-seg-btn').forEach(b=>b.classList.toggle('on',b.dataset.scope===s));
+const inp=$('calcAcc');if(inp){inp.style.display=s==='one'?'':'none';if(s==='one')setTimeout(()=>inp.focus(),0);}
 calcUpdateRunBtn();calcUpdateHint();
 };
 function calcUpdateRunBtn(){
 const btn=$('btnCalcRun');if(!btn)return;
+if(CALC.scope==='one'){
 const acc=($('calcAcc').value||'').trim();
-if(acc){btn.textContent='Calculate '+acc;}
-else{const n=CALC.accByNum.size;btn.textContent=n?`Calculate All (${n.toLocaleString()})`:'Calculate All';}
+btn.textContent=acc?'Calculate '+acc:'Calculate';
+}else{
+const n=CALC.accByNum.size;
+btn.textContent=n?`Calculate all (${n.toLocaleString()})`:'Calculate all';
+}
 }
 function calcUpdateHint(){
 const hint=$('calcHint');if(!hint){return;}
-const acc=($('calcAcc').value||'').trim();
+const acc=(CALC.scope==='one'?($('calcAcc').value||'').trim():'');
 if(!CALC.month||!CALC.accByNum.size){hint.textContent='';return;}
 const methodLbl=CALC.method==='derive'?'Re-derive EIR':'System EIR';
 if(acc){
@@ -1664,8 +1691,11 @@ return{cashflow,pvCalc,pvSys:sysPv,pvDiff,pvDiffPct,eirAdjCalc:eirAdj,eirAdjSys:
 }
 window.calcRun=function(){
 if(!CALC.month||!CALC.accByNum.size){showToast('Pick a month with loaded data first.');return;}
+if(CALC.scope==='one'){
 const acc=($('calcAcc').value||'').trim();
-if(acc){CALC.cameFromPortfolio=false;calcRunSingle(acc);}else{calcRunAll();}
+if(!acc){const inp=$('calcAcc');if(inp)inp.focus();showToast('Enter an account number to calculate.');return;}
+CALC.cameFromPortfolio=false;calcRunSingle(acc);
+}else{calcRunAll();}
 };
 function calcRunSingle(acc){
 if(!CALC.month||!CALC.accByNum.size){showToast('Pick a month with loaded data first.');return;}
@@ -1831,7 +1861,7 @@ CALC.page=1;calcRenderPortfolio();
 };
 window.calcDrillAccount=function(acc){
 CALC.cameFromPortfolio=true;
-$('calcAcc').value=acc;calcUpdateRunBtn();calcRunSingle(acc);
+$('calcAcc').value=acc;calcSetScope('one');calcRunSingle(acc);
 };
 window.calcOpenNegEirModal=function(){$('calcNegEirTbody').innerHTML=CALC.negativeEir.map(a=>`<tr><td>${a}</td></tr>`).join('')||'<tr><td>No accounts.</td></tr>';$('calcNegEirModal').classList.add('open');};
 window.calcOpenExcludedModal=function(kind){
