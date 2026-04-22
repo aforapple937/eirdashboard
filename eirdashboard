@@ -338,7 +338,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 #calcView .app-header{margin-bottom:14px;flex-shrink:0;}
 #calcCtrl{gap:12px 18px;margin-bottom:16px;}
 #calcCtrl .dash-lbl,#calcCtrl .dash-dash{color:var(--text-4);}
-.calc-cov-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0;overflow:hidden;margin-bottom:16px;flex-shrink:0;}
+.calc-cov-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:0;overflow:hidden;flex-shrink:0;}
 .calc-cov-head{padding:14px 16px 12px;border-bottom:1px solid var(--border);}
 .calc-cov-title{font-size:13px;font-weight:500;color:var(--ink);letter-spacing:-0.01em;}
 .calc-cov-stats{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:0;}
@@ -348,20 +348,24 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .calc-cov-bar-fill{height:100%;background:var(--ink);}
 .calc-cov-legend{display:flex;gap:14px;font-size:11.5px;color:var(--ink-2);margin-top:2px;}
 .calc-cov-legend span{display:flex;align-items:center;gap:6px;}
-.calc-cov-legend .calc-cov-leg-calc .dot{width:8px;height:8px;border-radius:50%;background:var(--ink);}
-.calc-cov-legend .calc-cov-leg-exc .dot{width:8px;height:8px;border-radius:50%;background:var(--line);border:1px solid var(--ink-4);}
+.calc-cov-legend .calc-cov-leg-calc .dot{width:8px;height:8px;border-radius:50%;background:var(--ink);display:inline-block;}
+.calc-cov-legend .calc-cov-leg-exc .dot{width:8px;height:8px;border-radius:50%;background:var(--line);border:1px solid var(--ink-4);display:inline-block;box-sizing:border-box;}
 .calc-cov-reasons{padding:0;}
 .calc-cov-reasons-title{font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-3);font-weight:500;padding:14px 16px 8px;}
-.calc-cov-tbl{width:100%;border-collapse:collapse;}
-.calc-cov-tbl th{background:transparent;font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-3);font-weight:500;padding:4px 14px 8px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;}
-.calc-cov-tbl th.num,.calc-cov-tbl td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;}
-.calc-cov-tbl td{padding:10px 14px;border-bottom:1px solid var(--line-2);font-size:12px;color:var(--ink);}
-.calc-cov-tbl tr:last-child td{border-bottom:0;}
-.calc-cov-tbl th:first-child,.calc-cov-tbl td:first-child{padding-left:16px;}
-.calc-cov-tbl th:last-child,.calc-cov-tbl td:last-child{padding-right:16px;}
-.calc-cov-tbl tr:hover td{background:var(--line-2);}
-.calc-cov-tbl a{color:var(--ink);text-decoration:underline;cursor:pointer;}
-.calc-cov-tbl a:hover{color:var(--yellow-dk);}
+.calc-cov-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.calc-cov-tbl thead th{position:static;z-index:auto;background:transparent;font-family:var(--font);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-3);padding:4px 14px 8px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;}
+.calc-cov-tbl thead th.num{text-align:right;font-family:var(--font);font-variant-numeric:normal;}
+.calc-cov-tbl tbody td{padding:10px 14px;border-bottom:1px solid var(--line-2);font-size:12px;color:var(--ink);background:transparent;text-align:left;font-family:var(--font);font-weight:400;font-variant-numeric:normal;white-space:normal;vertical-align:middle;}
+.calc-cov-tbl tbody td.num{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;}
+.calc-cov-tbl tbody tr:last-child td{border-bottom:0;}
+.calc-cov-tbl thead th:first-child,.calc-cov-tbl tbody td:first-child{padding-left:16px;}
+.calc-cov-tbl thead th:last-child,.calc-cov-tbl tbody td:last-child{padding-right:16px;}
+.calc-cov-tbl tbody tr:hover td{background:var(--line-2);}
+.calc-cov-tbl tbody td a{color:var(--ink);text-decoration:underline;cursor:pointer;font-weight:400;}
+.calc-cov-tbl tbody td a:hover{color:var(--yellow-dk);}
+/* In calc view, strip the outer .t-card chrome so Coverage / Summary / Accounts stack as standalone cards (matches design) */
+#calcView .t-card{background:transparent;border:0;border-radius:0;overflow:visible;margin-bottom:0;}
+#calcView .calc-body{padding:0;gap:16px;overflow:visible;}
 .calc-recon-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow);overflow:hidden;flex-shrink:0;}
 .calc-recon-title{padding:10px 16px 8px;font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);border-bottom:1px solid var(--border-soft);}
 .calc-recon{width:100%;border-collapse:collapse;font-size:12.5px;}
