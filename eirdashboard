@@ -183,12 +183,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .files-tbl tr:last-child td{border-bottom:none;}
 .files-tbl tr:hover td{background:#F2F2EC;}
 .files-tbl .f-name{font-weight:500;color:#0A0A0A;text-align:left;}
-.files-tbl .f-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:10px;font-weight:500;background:#F2F2EC;color:#3A3A38;text-transform:uppercase;letter-spacing:0.04em;}
-.files-tbl .f-badge.csv{background:#dcfce7;color:#065f46;}
-.files-tbl .f-badge.json{background:#fef3c7;color:#78350f;}
-.files-tbl .f-badge.acc{background:#dbeafe;color:#1d4ed8;}
-.files-tbl .f-badge.rate{background:#ede9fe;color:#5b21b6;}
-.files-tbl .f-badge.man{background:#ffe4e6;color:#9d174d;}
+.files-tbl .f-type{font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--text-2);text-transform:uppercase;letter-spacing:0.04em;}
 .files-tbl .f-date{font-family:var(--mono);font-size:11.5px;color:var(--text-3);}
 .files-tbl .f-cnt{font-family:var(--mono);font-size:11.5px;color:var(--text-2);}
 .files-act{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;background:var(--surface-2);border:1px solid var(--border);border-radius:6px;color:var(--text-2);font-family:var(--font);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .12s;}
@@ -482,10 +477,10 @@ thead th.cy .eir-mon{color:var(--ink-2);}
       </div>
       <div id="fluxPanel">
         <div class="t-card" id="tCard">
-          <div class="empty" id="emptyState">
-            <div class="empty-ico">📊</div>
-            <h3>No data loaded</h3>
-            <p>Click <strong>Load Data</strong> in the top-right (or press <strong>R</strong>) and select this month's account CSV. Press <strong>U</strong> or click <strong>Manual</strong> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage. Press <strong>?</strong> for the full keyboard cheatsheet.</p>
+          <div class="eirc-empty" id="emptyState">
+            <div class="eirc-empty-icon"><svg width="28" height="28"><use href="#i-trend"/></svg></div>
+            <div class="eirc-empty-title">No data loaded</div>
+            <div class="eirc-empty-sub">Click <b>Load Data</b> in the top-right (or press <b>R</b>) and select this month's account CSV. Press <b>U</b> or click <b>Manual</b> to key in manual adjustments (SORA, AEL, P&amp;L overrides) — they save to browser storage. Press <b>?</b> for the full keyboard cheatsheet.</div>
           </div>
           <div class="t-scroll hidden" id="tScroll">
             <table id="pnlTable">
@@ -723,6 +718,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
         <div class="kbd-row"><span class="desc">Load / reload data</span><span class="keys"><span class="k">R</span></span></div>
         <div class="kbd-row"><span class="desc">Show / hide this panel</span><span class="keys"><span class="k">?</span></span></div>
         <div class="kbd-row"><span class="desc">Close popover / modal</span><span class="keys"><span class="k wide">Esc</span></span></div>
+        <div class="kbd-row"><span class="desc">Export current view</span><span class="keys"><span class="k">E</span></span></div>
       </div>
       <div class="kbd-group">
         <h4>EIR flux</h4>
@@ -732,14 +728,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
         <div class="kbd-row"><span class="desc">Save (in Manual modal)</span><span class="keys"><span class="k">S</span></span></div>
         <div class="kbd-row"><span class="desc">Expand / collapse all rows</span><span class="keys"><span class="k">X</span></span></div>
         <div class="kbd-row"><span class="desc">Copy table as image</span><span class="keys"><span class="k">C</span></span></div>
-        <div class="kbd-row"><span class="desc">Export to Excel</span><span class="keys"><span class="k">E</span></span></div>
-        <div class="kbd-row"><span class="desc">Page in account drill-down</span><span class="keys"><span class="k">←</span><span class="k">→</span></span></div>
-      </div>
-      <div class="kbd-group">
-        <h4>EIR calculator</h4>
-        <div class="kbd-row"><span class="desc">Run calculation (in account field)</span><span class="keys"><span class="k wide">Enter</span></span></div>
-        <div class="kbd-row"><span class="desc">Export current view</span><span class="keys"><span class="k">E</span></span></div>
-        <div class="kbd-row"><span class="desc">Back to portfolio (from single)</span><span class="keys"><span class="k wide">Esc</span></span></div>
+        <div class="kbd-row"><span class="desc">Reset filters</span><span class="keys"><span class="k">F</span></span></div>
       </div>
     </div>
   </div>
@@ -887,9 +876,18 @@ if(e.key==='u'||e.key==='U')openManualModal();
 if(e.key==='x'||e.key==='X')toggleAll();
 if(e.key==='c'||e.key==='C')copyTable();
 if(e.key==='e'||e.key==='E')exportFluxToExcel();
+if(e.key==='f'||e.key==='F')resetFluxFilters();
 if(e.key==='m'||e.key==='M'){$('unitToggle').checked=!$('unitToggle').checked;updateDashboardView();}
 if(e.key==='1')_toggleByName('HL');if(e.key==='2')_toggleByName('HP');if(e.key==='3')_toggleByName('Others');
 });
+window.resetFluxFilters=function(){
+_sel=PRODUCTS.slice();
+document.querySelectorAll('#pills .dash-pill').forEach(el=>el.classList.add('on'));
+_userRange=null;
+_expCB.clear();_expSub.clear();isExpanded=false;
+const t=$('unitToggle');if(t)t.checked=false;
+updateDashboardView();
+};
 function _toggleByName(n){const p=document.querySelector(`.dash-pill[data-p="${n}"]`);if(p)toggleProd(n,p);}
 const PROD_ORDER=PRODUCTS;
 window.toggleProd=function(p,el){
@@ -1045,20 +1043,17 @@ const parts=[];
 if(accRows&&accRows.length){
 accRows.sort((a,b)=>{const da=DU.parse(a.date),db=DU.parse(b.date);return(da?.getTime()||0)-(db?.getTime()||0);});
 for(const r of accRows){
-parts.push(`<tr><td><span class="f-name">${DU.fmtMY(r.date)}</span></td><td><span class="f-badge acc">Accounts</span></td><td class="f-cnt">${(r.rows?.length||0).toLocaleString()} rows</td><td style="text-align:right"><button class="files-act" onclick="deleteStoredMonth('${r.date}')" title="Remove ${DU.fmtMY(r.date)}"><svg width="11" height="11"><use href="#i-trash"/></svg>Remove</button></td></tr>`);
+parts.push(`<tr><td><span class="f-name">Account listing — ${DU.fmtMY(r.date)}</span></td><td><span class="f-type">CSV</span></td><td class="f-cnt">${(r.rows?.length||0).toLocaleString()} rows</td><td style="text-align:right"><button class="files-act" onclick="deleteStoredMonth('${r.date}')" title="Remove ${DU.fmtMY(r.date)}"><svg width="11" height="11"><use href="#i-trash"/></svg>Remove</button></td></tr>`);
 }
 }
 if(rateRows&&rateRows.length){
 rateRows.sort((a,b)=>{const da=DU.parse(a.date),db=DU.parse(b.date);return(da?.getTime()||0)-(db?.getTime()||0);});
 for(const r of rateRows){
-parts.push(`<tr><td><span class="f-name">${DU.fmtMY(r.date)}</span></td><td><span class="f-badge rate">Rate history</span></td><td class="f-cnt">${(r.count||0).toLocaleString()} rows</td><td style="text-align:right"><button class="files-act" onclick="deleteStoredRate('${r.date}')" title="Remove rate history ${DU.fmtMY(r.date)}"><svg width="11" height="11"><use href="#i-trash"/></svg>Remove</button></td></tr>`);
+parts.push(`<tr><td><span class="f-name">Rate history — ${DU.fmtMY(r.date)}</span></td><td><span class="f-type">CSV</span></td><td class="f-cnt">${(r.count||0).toLocaleString()} rows</td><td style="text-align:right"><button class="files-act" onclick="deleteStoredRate('${r.date}')" title="Remove rate history ${DU.fmtMY(r.date)}"><svg width="11" height="11"><use href="#i-trash"/></svg>Remove</button></td></tr>`);
 }
 }
 if(manRows&&manRows.length){
-const fieldSet=new Set();
-manRows.forEach(r=>{const d=r.data||{};if(d['1M SORA - USED']!==undefined||d['1M SORA - ACTUAL']!==undefined)fieldSet.add('SORA');PRODUCTS.forEach(p=>{if(d[p]&&Object.keys(d[p]).length)fieldSet.add(p);});});
-const fields=Array.from(fieldSet).join(', ')||'(empty)';
-parts.push(`<tr><td><span class="f-name">Manual adjustments</span></td><td><span class="f-badge man">Manual</span></td><td class="f-cnt">${fields}</td><td style="text-align:right"><button class="files-act" onclick="deleteAllStoredManual()" title="Remove all manual adjustments"><svg width="11" height="11"><use href="#i-trash"/></svg>Remove</button></td></tr>`);
+parts.push(`<tr><td><span class="f-name">Manual adjustments</span></td><td><span class="f-type">JSON</span></td><td class="f-cnt"></td><td style="text-align:right"><button class="files-act" onclick="deleteAllStoredManual()" title="Remove all manual adjustments"><svg width="11" height="11"><use href="#i-trash"/></svg>Remove</button></td></tr>`);
 }
 rowsEl.innerHTML=parts.join('');
 };
