@@ -321,7 +321,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 #calcView .calc-body{padding:0;gap:16px;overflow:visible;}
 /* Summary of results card (design: eirc-summary) */
 .eirc-summary{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:0;overflow:hidden;flex-shrink:0;}
-.eirc-sec-head{padding:14px 16px 12px;border-bottom:1px solid var(--line);}
+.eirc-sec-head{padding:14px 16px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;}
 .eirc-sec-title{font-size:13px;font-weight:500;color:var(--ink);letter-spacing:-0.01em;font-family:var(--font);}
 .eirc-sum-table{width:100%;border-collapse:collapse;}
 .eirc-sum-table th{background:var(--line-2);font-family:var(--font);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink-3);padding:10px 14px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap;position:static;}
@@ -347,13 +347,10 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .calc-tbl-wrap{flex:1;overflow:auto;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);min-height:0;}
 .calc-tbl{width:100%;min-width:max-content;border-collapse:collapse;font-size:12px;}
 .calc-tbl thead th{position:sticky;top:0;z-index:3;background:var(--black);color:rgba(255,255,255,0.85);font-family:var(--font);font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:8px 11px;text-align:right;white-space:nowrap;}
-.calc-tbl thead th.calc-sticky{position:sticky;left:0;z-index:5;text-align:left;}
 .calc-tbl thead th.calc-sortable{cursor:pointer;}
 .calc-tbl thead th.calc-sortable:hover{background:#1a1a1a;}
 .calc-tbl tbody td{padding:6px 11px;border-bottom:1px solid var(--border-soft);text-align:right;font-family:var(--mono);font-size:11.5px;font-variant-numeric:tabular-nums;white-space:nowrap;background:#fff;}
-.calc-tbl tbody td.calc-sticky{position:sticky;left:0;z-index:2;text-align:left;background:#fff;font-family:var(--font);font-weight:700;}
 .calc-tbl tbody tr:hover td{background:var(--yellow-pale);}
-.calc-tbl tfoot td{padding:8px 11px;font-family:var(--mono);font-size:11.5px;font-weight:700;background:var(--yellow-pale);border-top:2px solid var(--yellow);}
 .calc-tbl tbody td a{color:var(--text-1);font-weight:700;text-decoration:underline;cursor:pointer;}
 .calc-tbl tbody td a:hover{color:var(--yellow-dk);}
 .calc-acct-card{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
@@ -497,10 +494,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
           <div class="flux-page-title">
             <h1>EIR Calculator</h1>
           </div>
-          <div class="flux-page-actions">
-            <button class="dash-btn hidden" id="btnCalcExport" onclick="calcExportPortfolio()" title="Export Excel (E)"><svg width="13" height="13"><use href="#i-download"/></svg>Export<span class="dash-kbd">E</span></button>
-            <button class="dash-btn hidden" id="btnCalcSingleExport" onclick="calcExportSingle()" title="Export Excel (E)"><svg width="13" height="13"><use href="#i-download"/></svg>Export<span class="dash-kbd">E</span></button>
-          </div>
+          <div class="flux-page-actions"></div>
         </div>
         <div class="dash-ctrl" id="calcCtrl">
           <div class="dash-grp">
@@ -545,7 +539,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
                 <table class="eirc-sum-table"><thead><tr><th>Metric</th><th class="num">System</th><th class="num">Calculated</th><th class="num">Variance</th><th class="num">Variance %</th></tr></thead><tbody id="calcPortReconBody"></tbody></table>
               </div>
               <div class="calc-acct-card hidden" id="calcPortCard">
-                <div class="eirc-sec-head"><div class="eirc-sec-title">Calculated accounts</div></div>
+                <div class="eirc-sec-head"><div class="eirc-sec-title">Calculated accounts</div><button class="dash-btn hidden" id="btnCalcExport" onclick="calcExportPortfolio()" title="Export Excel (E)"><svg width="13" height="13"><use href="#i-download"/></svg>Export</button></div>
                 <div class="calc-acct-tbl-wrap" id="calcPortTblWrap"><table class="calc-tbl calc-acct-tbl" id="calcPortTable"><thead id="calcPortThead"></thead><tbody id="calcPortBody"></tbody></table></div>
                 <div class="calc-acct-tbl-foot" id="calcPgBar">
                   <span id="calcPgInfo"></span>
@@ -565,7 +559,10 @@ thead th.cy .eir-mon{color:var(--ink-2);}
                 <div class="eirc-sec-head"><div class="eirc-sec-title">Summary of results</div></div>
                 <table class="eirc-sum-table"><thead><tr><th>Metric</th><th class="num">System</th><th class="num">Calculated</th><th class="num">Variance</th><th class="num">Variance %</th></tr></thead><tbody id="calcSingleReconBody"></tbody></table>
               </div>
-              <div class="calc-tbl-wrap"><table class="calc-tbl" id="calcCfTable"><thead><tr id="calcCfHead"></tr></thead><tbody id="calcCfBody"></tbody><tfoot id="calcCfFoot"></tfoot></table></div>
+              <div class="calc-acct-card" id="calcCfCard">
+                <div class="eirc-sec-head"><div class="eirc-sec-title">Cashflow schedule</div><button class="dash-btn hidden" id="btnCalcSingleExport" onclick="calcExportSingle()" title="Export Excel (E)"><svg width="13" height="13"><use href="#i-download"/></svg>Export</button></div>
+                <div class="calc-acct-tbl-wrap"><table class="calc-tbl calc-acct-tbl" id="calcCfTable"><thead><tr id="calcCfHead"></tr></thead><tbody id="calcCfBody"></tbody></table></div>
+              </div>
             </div>
             <div class="calc-view" id="calcProgView">
               <div class="calc-prog-wrap">
@@ -1864,19 +1861,18 @@ $(bodyId).innerHTML=rows.map(row=>`<tr><td>${row.metric}</td><td class="num mono
 }
 const _CF_HEADS=['Period','Start Date','End Date','Rate 1','Rate 2','Days 1','Days 2','Year Fraction 1','Year Fraction 2','Opening Balance','Interest','Principal','Ending Balance','Cashflow Before Disc','Discount Factor','PV'];
 function calcRenderCashflow(cashflow,totalPV){
-$('calcCfHead').innerHTML=_CF_HEADS.map((h,i)=>`<th class="${i===0?'calc-sticky':''}">${h}</th>`).join('');
+$('calcCfHead').innerHTML=_CF_HEADS.map(h=>`<th>${h}</th>`).join('');
 $('calcCfBody').innerHTML=cashflow.map(r=>`<tr>
-<td class="calc-sticky" style="text-align:center;">${r.period}</td>
-<td>${r.startDate}</td><td>${r.endDate}</td>
-<td>${r.rate1!==''?parseFloat(r.rate1).toFixed(6):''}</td>
-<td>${r.rate2!==''?parseFloat(r.rate2).toFixed(6):''}</td>
-<td>${r.days1||''}</td><td>${r.days2>0?r.days2:''}</td>
-<td>${r.yf1.toFixed(6)}</td><td>${r.yf2>0?r.yf2.toFixed(6):''}</td>
-<td>${_cFmtN(r.opening,2)}</td><td>${_cFmtN(r.interest,2)}</td>
-<td>${_cFmtN(r.principal,2)}</td><td>${_cFmtN(r.ending,2)}</td>
-<td>${_cFmtN(r.cf,2)}</td><td>${r.df.toFixed(6)}</td><td>${_cFmtN(r.pv,2)}</td>
+<td>${r.period}</td>
+<td class="mono">${r.startDate}</td><td class="mono">${r.endDate}</td>
+<td class="mono">${r.rate1!==''?parseFloat(r.rate1).toFixed(6):''}</td>
+<td class="mono">${r.rate2!==''?parseFloat(r.rate2).toFixed(6):''}</td>
+<td class="mono">${r.days1||''}</td><td class="mono">${r.days2>0?r.days2:''}</td>
+<td class="mono">${r.yf1.toFixed(6)}</td><td class="mono">${r.yf2>0?r.yf2.toFixed(6):''}</td>
+<td class="mono">${_cFmtN(r.opening,2)}</td><td class="mono">${_cFmtN(r.interest,2)}</td>
+<td class="mono">${_cFmtN(r.principal,2)}</td><td class="mono">${_cFmtN(r.ending,2)}</td>
+<td class="mono">${_cFmtN(r.cf,2)}</td><td class="mono">${r.df.toFixed(6)}</td><td class="mono">${_cFmtN(r.pv,2)}</td>
 </tr>`).join('');
-$('calcCfFoot').innerHTML=`<tr><td colspan="15" style="text-align:right;">Total PV</td><td>${_cFmtN(totalPV,2)}</td></tr>`;
 }
 function _calcPageButtons(cur,total){
 const set=new Set([1,total,cur-1,cur,cur+1]);
