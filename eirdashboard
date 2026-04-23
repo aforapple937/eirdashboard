@@ -362,10 +362,11 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .calc-tbl tbody td a{color:var(--text-1);font-weight:700;text-decoration:underline;cursor:pointer;}
 .calc-tbl tbody td a:hover{color:var(--yellow-dk);}
 .calc-acct-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.calc-acct-card>.eirc-sec-head{position:sticky;top:0;z-index:4;background:var(--surface);}
 .calc-acct-tbl-wrap{overflow-x:auto;}
 .calc-acct-tbl{background:var(--surface);}
-.calc-acct-tbl thead{position:sticky;top:0;z-index:3;background:var(--surface);}
-.calc-acct-tbl thead th{position:static;background:var(--surface);color:var(--ink-3);font-family:var(--font);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;padding:10px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;z-index:auto;}
+.calc-acct-tbl thead{position:sticky;top:47px;z-index:3;background:var(--line-2);}
+.calc-acct-tbl thead th{position:static;background:var(--line-2);color:var(--ink-3);font-family:var(--font);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;padding:10px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;z-index:auto;}
 .calc-acct-tbl thead th:first-child{text-align:left;padding-left:16px;}
 .calc-acct-tbl thead .calc-group-row th{border-bottom:1px solid var(--line);}
 .calc-acct-tbl thead .calc-group-row th.calc-group-pv,
