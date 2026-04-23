@@ -1816,9 +1816,11 @@ const adjDiff=(adjSys==null||adjCalc==null)?null:r2(adjCalc-adjSys);
 const adjPct=pctFrom(adjDiff,adjSys);
 const rows=[];
 if(deriveRow&&singleModeShowEirRow&&r.sysEir!=null){
-const varBps=(Number(r.derivedEir)-Number(r.sysEir))*100;
-const varPct=Number(r.sysEir)!==0?((Number(r.derivedEir)-Number(r.sysEir))/Number(r.sysEir))*100:null;
-rows.push({metric:'EIR rate',sys:Number(r.sysEir).toLocaleString(undefined,{minimumFractionDigits:3,maximumFractionDigits:3})+'%',calc:Number(r.derivedEir).toLocaleString(undefined,{minimumFractionDigits:3,maximumFractionDigits:3})+'%',variance:(varBps>=0?'+':'')+varBps.toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1})+' bps',variancePct:varPct==null?'—':varPct.toFixed(2)+'%'});
+const sysRt=Math.round(Number(r.sysEir)*10000)/10000;
+const calcRt=Math.round(Number(r.derivedEir)*10000)/10000;
+const diffPct=Math.round((calcRt-sysRt)*10000)/10000;
+const fmt4=v=>v.toLocaleString(undefined,{minimumFractionDigits:4,maximumFractionDigits:4});
+rows.push({metric:'EIR rate',sys:fmt4(sysRt)+'%',calc:fmt4(calcRt)+'%',variance:'',variancePct:(diffPct>=0?'+':'')+fmt4(diffPct)+'%'});
 }
 rows.push({metric:'PV of cashflows',sys:fmt2(pvSys),calc:fmt2(pvCalc),variance:fmt2Signed(pvDiff),variancePct:pvPct==null?'—':pvPct.toFixed(2)+'%'});
 rows.push({metric:'EIR adjustment to P&L',sys:fmt2(adjSys),calc:fmt2(adjCalc),variance:fmt2Signed(adjDiff),variancePct:adjPct==null?'—':adjPct.toFixed(2)+'%'});
