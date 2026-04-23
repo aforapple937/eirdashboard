@@ -262,13 +262,29 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .manual-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:4px;box-shadow:0 0 0 2px rgba(239,68,68,0.15);animation:pulseDot 1.8s ease-in-out infinite;}
 @keyframes pulseDot{0%,100%{opacity:1;}50%{opacity:0.55;}}
 .hidden{display:none!important;}
-/* Keyboard shortcuts cheatsheet */
-.sc-body{padding:14px 18px;display:grid;grid-template-columns:1fr 1fr;gap:18px 28px;}
-.sc-group h4{font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;}
-.sc-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0;font-size:12px;color:var(--text-1);}
-.sc-row+.sc-row{border-top:1px dashed var(--border-soft);}
-.sc-keys{display:inline-flex;gap:4px;}
-.sc-key{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--text-1);background:var(--surface-2);border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:2px 7px;min-width:18px;text-align:center;}
+/* Keyboard shortcuts cheatsheet (design: kbd-*) */
+.kbd-sheet{position:fixed;inset:0;z-index:600;display:none;align-items:center;justify-content:center;}
+.kbd-sheet.open{display:flex;}
+.kbd-sheet .kbd-back{position:absolute;inset:0;background:rgba(15,15,18,0.35);backdrop-filter:blur(3px);}
+.kbd-sheet .kbd-panel{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:12px;width:640px;max-width:calc(100vw - 32px);max-height:calc(100vh - 48px);overflow:auto;box-shadow:0 24px 64px -12px rgba(0,0,0,0.25);}
+.kbd-head{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;background:var(--surface);z-index:1;}
+.kbd-head h3{margin:0;font-size:15px;font-weight:500;letter-spacing:-0.01em;color:var(--ink);}
+.kbd-head .sub{font-size:11px;color:var(--ink-3);margin-top:2px;}
+.kbd-head .sub .k{display:inline-block;font-family:var(--mono);font-size:10.5px;padding:1px 5px;border:1px solid var(--line);border-radius:3px;background:var(--bg);color:var(--ink-2);}
+.kbd-x{border:0;background:none;font-size:22px;line-height:1;color:var(--ink-3);cursor:pointer;padding:0 4px;font-family:inherit;}
+.kbd-x:hover{color:var(--ink);}
+.kbd-body{padding:16px 20px 20px;display:grid;grid-template-columns:1fr 1fr;gap:20px 28px;}
+.kbd-group h4{margin:0 0 10px;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-3);padding-bottom:6px;border-bottom:1px solid var(--line-2);}
+.kbd-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 0;font-size:12.5px;color:var(--ink-2);border-bottom:1px dashed var(--line-2);}
+.kbd-row:last-child{border-bottom:0;}
+.kbd-row .desc{flex:1;min-width:0;}
+.kbd-row .keys{display:flex;gap:4px;flex-shrink:0;}
+.kbd-row .keys .k{font-family:var(--mono);font-size:10.5px;font-weight:500;padding:2px 7px;min-width:22px;text-align:center;background:var(--bg);border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;color:var(--ink-2);line-height:1.4;}
+.kbd-row .keys .k.wide{padding-left:9px;padding-right:9px;}
+.kbd-row .keys .plus{color:var(--ink-4);font-size:10px;align-self:center;padding:0 1px;}
+.kbd-foot{padding:10px 20px;border-top:1px solid var(--line);background:var(--bg);font-size:11px;color:var(--ink-3);display:flex;align-items:center;gap:8px;border-radius:0 0 12px 12px;position:sticky;bottom:0;}
+.kbd-foot .k{font-family:var(--mono);font-size:10.5px;padding:1px 6px;background:var(--surface);border:1px solid var(--line);border-radius:3px;color:var(--ink-2);}
+@media (max-width:720px){.kbd-body{grid-template-columns:1fr;}}
 ::-webkit-scrollbar{width:5px;height:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:99px;}
 /* ═══ CALCULATOR MODULE ═══ */
 #calcView{padding:22px 28px 0;flex-direction:column;}
@@ -345,10 +361,12 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .calc-tbl tfoot td{padding:8px 11px;font-family:var(--mono);font-size:11.5px;font-weight:700;background:var(--yellow-pale);border-top:2px solid var(--yellow);}
 .calc-tbl tbody td a{color:var(--text-1);font-weight:700;text-decoration:underline;cursor:pointer;}
 .calc-tbl tbody td a:hover{color:var(--yellow-dk);}
-.calc-acct-card{flex:1;display:flex;flex-direction:column;min-height:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
-.calc-acct-tbl-wrap{flex:1;overflow:auto;min-height:0;}
+.calc-acct-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;}
+.calc-acct-card>.eirc-sec-head{position:sticky;top:0;z-index:4;background:var(--surface);}
+.calc-acct-tbl-wrap{overflow-x:auto;}
 .calc-acct-tbl{background:var(--surface);}
-.calc-acct-tbl thead th{position:static;background:var(--surface);color:var(--ink-3);font-family:var(--font);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;padding:10px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;z-index:auto;}
+.calc-acct-tbl thead{position:sticky;top:47px;z-index:3;background:var(--line-2);}
+.calc-acct-tbl thead th{position:static;background:var(--line-2);color:var(--ink-3);font-family:var(--font);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;padding:10px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;z-index:auto;}
 .calc-acct-tbl thead th:first-child{text-align:left;padding-left:16px;}
 .calc-acct-tbl thead .calc-group-row th{border-bottom:1px solid var(--line);}
 .calc-acct-tbl thead .calc-group-row th.calc-group-pv,
@@ -377,7 +395,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .calc-prog-eta{font-size:11.5px;color:var(--text-3);font-weight:500;margin-bottom:20px;min-height:15px;}
 .calc-prog-cancel{padding:7px 18px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--r);font-family:var(--font);font-size:11.5px;font-weight:600;color:var(--text-1);cursor:pointer;transition:all 0.12s;}
 .calc-prog-cancel:hover{background:#fff;border-color:var(--black);}
-.calc-view{display:none;flex:1;flex-direction:column;min-height:0;overflow:hidden;gap:12px;}
+.calc-view{display:none;flex:1;flex-direction:column;min-height:0;overflow:auto;gap:12px;}
 .calc-view.on{display:flex;}
 .calc-prog-wrap{flex:1;display:flex;min-height:0;}
 /* ============ KEYBOARD SHORTCUTS FAB ============ */
@@ -408,7 +426,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 <input type="file" id="navFile" accept=".csv,.json" multiple style="display:none">
 <div class="app">
   <aside class="sidebar" id="sidebar">
-    <div class="sb-section-title">Analysis</div>
+    <div class="sb-section-title">Tool</div>
     <nav class="sb-nav">
       <div class="sb-item active" data-mod="flux" onclick="switchModule('flux')"><svg class="sb-icon"><use href="#i-trend"/></svg><span class="sb-label">EIR Flux</span></div>
       <div class="sb-item" data-mod="calc" onclick="switchModule('calc')"><svg class="sb-icon"><use href="#i-calc"/></svg><span class="sb-label">EIR Calculator</span></div>
@@ -532,6 +550,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
                 <table class="eirc-sum-table"><thead><tr><th>Metric</th><th class="num">System</th><th class="num">Calculated</th><th class="num">Variance</th><th class="num">Variance %</th></tr></thead><tbody id="calcPortReconBody"></tbody></table>
               </div>
               <div class="calc-acct-card hidden" id="calcPortCard">
+                <div class="eirc-sec-head"><div class="eirc-sec-title">Calculated accounts</div></div>
                 <div class="calc-acct-tbl-wrap" id="calcPortTblWrap"><table class="calc-tbl calc-acct-tbl" id="calcPortTable"><thead id="calcPortThead"></thead><tbody id="calcPortBody"></tbody></table></div>
                 <div class="calc-acct-tbl-foot" id="calcPgBar">
                   <span id="calcPgInfo"></span>
@@ -688,35 +707,39 @@ thead th.cy .eir-mon{color:var(--ink-2);}
     </div>
   </div>
 </div>
-<div class="m-ov" id="shortcutsModal">
-  <div class="m-box" style="max-width:560px">
-    <div class="m-hd">
-      <h2>Keyboard shortcuts</h2>
-      <div class="m-acts">
-        <button class="m-cl" onclick="closeShortcutsOverlay()">✕</button>
+<div class="kbd-sheet" id="shortcutsModal" role="dialog" aria-modal="true" aria-label="Keyboard shortcuts">
+  <div class="kbd-back" onclick="closeShortcutsOverlay()"></div>
+  <div class="kbd-panel">
+    <div class="kbd-head">
+      <div>
+        <h3>Keyboard shortcuts</h3>
+        <div class="sub">Press <span class="k">?</span> anywhere to toggle this panel</div>
       </div>
+      <button class="kbd-x" onclick="closeShortcutsOverlay()" aria-label="Close">×</button>
     </div>
-    <div class="sc-body">
-      <div class="sc-group">
-        <h4>Views</h4>
-        <div class="sc-row"><span>Toggle HL</span><span class="sc-keys"><span class="sc-key">1</span></span></div>
-        <div class="sc-row"><span>Toggle HP</span><span class="sc-keys"><span class="sc-key">2</span></span></div>
-        <div class="sc-row"><span>Toggle Others</span><span class="sc-keys"><span class="sc-key">3</span></span></div>
-        <div class="sc-row"><span>Toggle units (S$ / Millions)</span><span class="sc-keys"><span class="sc-key">M</span></span></div>
+    <div class="kbd-body">
+      <div class="kbd-group">
+        <h4>Global</h4>
+        <div class="kbd-row"><span class="desc">Load / reload data</span><span class="keys"><span class="k">R</span></span></div>
+        <div class="kbd-row"><span class="desc">Show / hide this panel</span><span class="keys"><span class="k">?</span></span></div>
+        <div class="kbd-row"><span class="desc">Close popover / modal</span><span class="keys"><span class="k wide">Esc</span></span></div>
       </div>
-      <div class="sc-group">
-        <h4>Data</h4>
-        <div class="sc-row"><span>Load CSV / JSON</span><span class="sc-keys"><span class="sc-key">R</span></span></div>
-        <div class="sc-row"><span>Manual adjustments</span><span class="sc-keys"><span class="sc-key">U</span></span></div>
-        <div class="sc-row"><span>Save (in Manual modal)</span><span class="sc-keys"><span class="sc-key">S</span></span></div>
-        <h4 style="margin-top:14px">Table</h4>
-        <div class="sc-row"><span>Expand / collapse all</span><span class="sc-keys"><span class="sc-key">X</span></span></div>
-        <div class="sc-row"><span>Copy table as image</span><span class="sc-keys"><span class="sc-key">C</span></span></div>
-        <div class="sc-row"><span>Export to Excel</span><span class="sc-keys"><span class="sc-key">E</span></span></div>
-        <h4 style="margin-top:14px">Modals</h4>
-        <div class="sc-row"><span>Close any modal</span><span class="sc-keys"><span class="sc-key">Esc</span></span></div>
-        <div class="sc-row"><span>Page in account drill-down</span><span class="sc-keys"><span class="sc-key">←</span><span class="sc-key">→</span></span></div>
-        <div class="sc-row"><span>Show this cheatsheet</span><span class="sc-keys"><span class="sc-key">?</span></span></div>
+      <div class="kbd-group">
+        <h4>EIR flux</h4>
+        <div class="kbd-row"><span class="desc">Toggle HL / HP / Others</span><span class="keys"><span class="k">1</span><span class="k">2</span><span class="k">3</span></span></div>
+        <div class="kbd-row"><span class="desc">Toggle units (S$ / Millions)</span><span class="keys"><span class="k">M</span></span></div>
+        <div class="kbd-row"><span class="desc">Manual adjustments</span><span class="keys"><span class="k">U</span></span></div>
+        <div class="kbd-row"><span class="desc">Save (in Manual modal)</span><span class="keys"><span class="k">S</span></span></div>
+        <div class="kbd-row"><span class="desc">Expand / collapse all rows</span><span class="keys"><span class="k">X</span></span></div>
+        <div class="kbd-row"><span class="desc">Copy table as image</span><span class="keys"><span class="k">C</span></span></div>
+        <div class="kbd-row"><span class="desc">Export to Excel</span><span class="keys"><span class="k">E</span></span></div>
+        <div class="kbd-row"><span class="desc">Page in account drill-down</span><span class="keys"><span class="k">←</span><span class="k">→</span></span></div>
+      </div>
+      <div class="kbd-group">
+        <h4>EIR calculator</h4>
+        <div class="kbd-row"><span class="desc">Run calculation (in account field)</span><span class="keys"><span class="k wide">Enter</span></span></div>
+        <div class="kbd-row"><span class="desc">Export current view</span><span class="keys"><span class="k">E</span></span></div>
+        <div class="kbd-row"><span class="desc">Back to portfolio (from single)</span><span class="keys"><span class="k wide">Esc</span></span></div>
       </div>
     </div>
   </div>
