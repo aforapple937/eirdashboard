@@ -304,8 +304,7 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .calc-cov-tbl thead th:first-child,.calc-cov-tbl tbody td:first-child{padding-left:16px;}
 .calc-cov-tbl thead th:last-child,.calc-cov-tbl tbody td:last-child{padding-right:16px;}
 .calc-cov-tbl tbody tr:hover td{background:var(--line-2);}
-.calc-cov-tbl tbody td a{color:var(--ink);text-decoration:underline;cursor:pointer;font-weight:400;}
-.calc-cov-tbl tbody td a:hover{color:var(--yellow-dk);}
+.calc-cov-tbl tbody tr.calc-cov-row-click{cursor:pointer;}
 /* In calc view, strip the outer .t-card chrome so Coverage / Summary / Accounts stack as standalone cards (matches design) */
 #calcView .t-card{background:transparent;border:0;border-radius:0;overflow:visible;margin-bottom:0;}
 #calcView .calc-body{padding:0;gap:16px;overflow:visible;}
@@ -346,9 +345,19 @@ thead th.cy .eir-mon{color:var(--ink-2);}
 .calc-tbl tfoot td{padding:8px 11px;font-family:var(--mono);font-size:11.5px;font-weight:700;background:var(--yellow-pale);border-top:2px solid var(--yellow);}
 .calc-tbl tbody td a{color:var(--text-1);font-weight:700;text-decoration:underline;cursor:pointer;}
 .calc-tbl tbody td a:hover{color:var(--yellow-dk);}
-.calc-acct-tbl thead .calc-group-row th{border-bottom:1px solid rgba(255,255,255,0.12);}
+.calc-acct-tbl{background:var(--surface);}
+.calc-acct-tbl thead th{position:sticky;top:0;z-index:3;background:var(--surface);color:var(--ink-3);font-family:var(--font);font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:0.08em;padding:10px 14px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap;}
+.calc-acct-tbl thead th.calc-sticky{position:sticky;left:0;z-index:5;text-align:left;}
+.calc-acct-tbl thead .calc-group-row th{border-bottom:1px solid var(--line);}
 .calc-acct-tbl thead .calc-group-row th.calc-group-pv,
-.calc-acct-tbl thead .calc-group-row th.calc-group-adj{text-align:center;background:#1a1a1a;border-left:1px solid rgba(255,255,255,0.12);border-right:1px solid rgba(255,255,255,0.12);font-size:10px;letter-spacing:0.5px;text-transform:none;font-weight:600;color:rgba(255,255,255,0.75);padding:6px 11px;}
+.calc-acct-tbl thead .calc-group-row th.calc-group-adj,
+.calc-acct-tbl thead .calc-group-row th.calc-group-eir{text-align:center;background:var(--line-2);border-left:1px solid var(--line);border-right:1px solid var(--line);font-size:10.5px;letter-spacing:0.06em;text-transform:none;font-weight:500;color:var(--ink-2);padding:8px 14px;}
+.calc-acct-tbl tbody td{padding:10px 14px;border-bottom:1px solid var(--line-2);font-family:var(--font);font-size:12px;color:var(--ink);background:var(--surface);text-align:right;white-space:nowrap;}
+.calc-acct-tbl tbody td.calc-sticky{position:sticky;left:0;z-index:2;text-align:left;background:var(--surface);font-family:var(--font);font-weight:500;}
+.calc-acct-tbl tbody td.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;}
+.calc-acct-tbl tbody tr:hover td{background:var(--line-2);}
+.calc-acct-tbl tbody td a{color:inherit;text-decoration:none;cursor:pointer;font-weight:500;}
+.calc-acct-tbl tbody td a:hover{color:var(--text-1);text-decoration:underline;}
 .calc-pg-bar{display:flex;align-items:center;gap:10px;padding:8px 2px 10px;font-size:11.5px;color:var(--text-2);font-weight:600;flex-shrink:0;}
 .calc-pager{display:flex;gap:3px;margin-left:auto;}
 .calc-pg{padding:4px 9px;font-size:11.5px;border:1px solid var(--border);background:var(--surface);color:var(--text-2);border-radius:5px;cursor:pointer;font-family:var(--font);min-width:26px;font-weight:600;}
@@ -1448,7 +1457,7 @@ tbody.innerHTML=html;
 const CALC={
 month:null, accByNum:new Map(), rateByAcc:new Map(), accHeaders:[], rateRows:[],
 portfolio:[], negativeEir:[], excludedFlag:[], excludedHP:[],
-page:1, perPage:100, running:false, cancelled:false,
+page:1, perPage:50, running:false, cancelled:false,
 currentAcc:null, lastResult:null, cameFromPortfolio:false,
 method:'system', scope:'all', resultMethod:null, view:'empty', startedAt:0,
 _rateIdbCache:new Map()
@@ -1783,9 +1792,9 @@ if(CALC.excludedHP.length)reasons.push({label:'HP accounts',count:CALC.excludedH
 if(rm==='derive'&&CALC.excludedFlag.length)reasons.push({label:'F_EIR_CALCULATION_FLAG ≠ Y',count:CALC.excludedFlag.length,link:null});
 if(CALC.negativeEir.length)reasons.push({label:'EIR &lt; 0',count:CALC.negativeEir.length,link:'calcOpenNegEirModal()'});
 const reasonRows=reasons.map(r=>{
-const lbl=r.link?`<a onclick="${r.link}">${r.label}</a>`:r.label;
 const rpct=total?(r.count/total*100):0;
-return `<tr><td>${lbl}</td><td class="num">${r.count.toLocaleString()}</td><td class="num">${rpct.toFixed(2)}%</td></tr>`;
+const attrs=r.link?` class="calc-cov-row-click" onclick="${r.link}"`:'';
+return `<tr${attrs}><td>${r.label}</td><td class="num">${r.count.toLocaleString()}</td><td class="num">${rpct.toFixed(2)}%</td></tr>`;
 }).join('');
 $('calcCoverage').innerHTML=`
 <div class="calc-cov-head"><div class="calc-cov-title">Coverage</div></div>
@@ -1812,7 +1821,6 @@ function calcRenderRecon(bodyId,r,singleModeShowEirRow,methodOverride){
 const deriveRow=(methodOverride||CALC.method)==='derive';
 const r2=v=>(v==null||isNaN(v))?null:Math.round(Number(v)*100)/100;
 const fmt2=v=>v==null?'—':v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
-const fmt2Signed=v=>v==null?'—':(v>=0?'+':'')+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
 const pctFrom=(diff,sys)=>(diff==null||sys==null||sys===0)?null:(diff/sys)*100;
 const pvSys=r2(r.pvSys),pvCalc=r2(r.pvCalc);
 const pvDiff=(pvSys==null||pvCalc==null)?null:r2(pvCalc-pvSys);
@@ -1826,10 +1834,10 @@ const sysRt=Math.round(Number(r.sysEir)*10000)/10000;
 const calcRt=Math.round(Number(r.derivedEir)*10000)/10000;
 const diffPct=Math.round((calcRt-sysRt)*10000)/10000;
 const fmt4=v=>v.toLocaleString(undefined,{minimumFractionDigits:4,maximumFractionDigits:4});
-rows.push({metric:'EIR rate',sys:fmt4(sysRt)+'%',calc:fmt4(calcRt)+'%',variance:'',variancePct:(diffPct>=0?'+':'')+fmt4(diffPct)+'%'});
+rows.push({metric:'EIR rate',sys:fmt4(sysRt)+'%',calc:fmt4(calcRt)+'%',variance:'',variancePct:fmt4(diffPct)+'%'});
 }
-rows.push({metric:'PV of cashflows',sys:fmt2(pvSys),calc:fmt2(pvCalc),variance:fmt2Signed(pvDiff),variancePct:pvPct==null?'—':pvPct.toFixed(2)+'%'});
-rows.push({metric:'EIR adjustment to P&L',sys:fmt2(adjSys),calc:fmt2(adjCalc),variance:fmt2Signed(adjDiff),variancePct:adjPct==null?'—':adjPct.toFixed(2)+'%'});
+rows.push({metric:'PV of cashflows',sys:fmt2(pvSys),calc:fmt2(pvCalc),variance:fmt2(pvDiff),variancePct:pvPct==null?'—':pvPct.toFixed(2)+'%'});
+rows.push({metric:'EIR adjustment to P&L',sys:fmt2(adjSys),calc:fmt2(adjCalc),variance:fmt2(adjDiff),variancePct:adjPct==null?'—':adjPct.toFixed(2)+'%'});
 $(bodyId).innerHTML=rows.map(row=>`<tr><td>${row.metric}</td><td class="num mono">${row.sys}</td><td class="num mono">${row.calc}</td><td class="num mono">${row.variance}</td><td class="num mono">${row.variancePct}</td></tr>`).join('');
 }
 const _CF_HEADS=['Period','Start Date','End Date','Rate 1','Rate 2','Days 1','Days 2','Year Fraction 1','Year Fraction 2','Opening Balance','Interest','Principal','Ending Balance','Cashflow Before Disc','Discount Factor','PV'];
@@ -1862,32 +1870,46 @@ last=n;
 out.push(`<button class="calc-pg" onclick="calcGoToPage(0,'next')" ${cur>=total?'disabled':''} aria-label="Next page">›</button>`);
 return out.join('');
 }
+function _cFmtEir(v){return(v==null||isNaN(v))?'—':Number(v).toLocaleString(undefined,{minimumFractionDigits:4,maximumFractionDigits:4})+'%';}
+function _cFmtEirVarPct(calc,sys){if(calc==null||sys==null||isNaN(calc)||isNaN(sys)||sys===0)return'—';return((calc-sys)/sys*100).toFixed(2)+'%';}
 function calcRenderPortfolio(){
+const deriveEirOn=(CALC.resultMethod||CALC.method)==='derive';
 const total=CALC.portfolio.length;
 const pages=Math.max(1,Math.ceil(total/CALC.perPage));
 CALC.page=Math.max(1,Math.min(CALC.page,pages));
 const start=(CALC.page-1)*CALC.perPage;
 const end=Math.min(start+CALC.perPage,total);
 const slice=CALC.portfolio.slice(start,end);
+const eirGroup=deriveEirOn?`<th colspan="3" class="calc-group-eir">EIR rate</th>`:'';
+const eirSubs=deriveEirOn?`<th class="num">System</th><th class="num">Calculated</th><th class="num">Var %</th>`:'';
 $('calcPortThead').innerHTML=`<tr class="calc-group-row">`+
 `<th rowspan="2" class="calc-sticky">Account</th>`+
+eirGroup+
 `<th colspan="4" class="calc-group-pv">PV of cashflows</th>`+
 `<th colspan="4" class="calc-group-adj">EIR adjustment to P&amp;L</th>`+
 `</tr><tr>`+
-`<th>System</th><th>Calculated</th><th>Variance</th><th>Var %</th>`+
-`<th>System</th><th>Calculated</th><th>Variance</th><th>Var %</th>`+
+eirSubs+
+`<th class="num">System</th><th class="num">Calculated</th><th class="num">Variance</th><th class="num">Var %</th>`+
+`<th class="num">System</th><th class="num">Calculated</th><th class="num">Variance</th><th class="num">Var %</th>`+
 `</tr>`;
-$('calcPortBody').innerHTML=slice.map(r=>`<tr>`+
+$('calcPortBody').innerHTML=slice.map(r=>{
+const eirCells=deriveEirOn?
+`<td class="mono">${_cFmtEir(r.sysEir)}</td>`+
+`<td class="mono">${_cFmtEir(r.derivedEir)}</td>`+
+`<td class="mono">${_cFmtEirVarPct(r.derivedEir,r.sysEir)}</td>`:'';
+return `<tr>`+
 `<td class="calc-sticky"><a onclick="calcDrillAccount('${r.acc}')">${r.acc}</a></td>`+
-`<td>${_cFmtN(r.pvSys,2)}</td>`+
-`<td>${_cFmtN(r.pvCalc,2)}</td>`+
-`<td>${_cFmtNSigned(r.pvDiff,2)}</td>`+
-`<td>${_cFmtPct(r.pvDiffPct,2)}</td>`+
-`<td>${_cFmtN(r.eirAdjSys,2)}</td>`+
-`<td>${_cFmtN(r.eirAdjCalc,2)}</td>`+
-`<td>${_cFmtNSigned(r.eirDiff,2)}</td>`+
-`<td>${_cFmtPct(r.eirDiffPct,2)}</td>`+
-`</tr>`).join('');
+eirCells+
+`<td class="mono">${_cFmtN(r.pvSys,2)}</td>`+
+`<td class="mono">${_cFmtN(r.pvCalc,2)}</td>`+
+`<td class="mono">${_cFmtNSigned(r.pvDiff,2)}</td>`+
+`<td class="mono">${_cFmtPct(r.pvDiffPct,2)}</td>`+
+`<td class="mono">${_cFmtN(r.eirAdjSys,2)}</td>`+
+`<td class="mono">${_cFmtN(r.eirAdjCalc,2)}</td>`+
+`<td class="mono">${_cFmtNSigned(r.eirDiff,2)}</td>`+
+`<td class="mono">${_cFmtPct(r.eirDiffPct,2)}</td>`+
+`</tr>`;
+}).join('');
 $('calcPgInfo').innerHTML=total?`Showing <b>${(start+1).toLocaleString()}</b>–<b>${end.toLocaleString()}</b> of <b>${total.toLocaleString()}</b>`:'No accounts';
 $('calcPager').innerHTML=_calcPageButtons(CALC.page,pages);
 }
