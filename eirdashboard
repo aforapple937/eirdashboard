@@ -1804,18 +1804,24 @@ $('calcCoverage').classList.remove('hidden');
 }
 function calcRenderRecon(bodyId,r,singleModeShowEirRow,methodOverride){
 const deriveRow=(methodOverride||CALC.method)==='derive';
-const fmtM=(v,d=2)=>(v==null||isNaN(v))?'—':Number(v/1e6).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d})+' M';
-const fmtMSigned=(v,d=2)=>{if(v==null||isNaN(v))return'—';const n=Number(v/1e6).toLocaleString(undefined,{minimumFractionDigits:d,maximumFractionDigits:d});return(v>=0?'+':'')+n+' M';};
-const fmtInt=v=>(v==null||isNaN(v))?'—':Math.round(v).toLocaleString();
-const fmtIntSigned=v=>{if(v==null||isNaN(v))return'—';return(v>=0?'+':'')+Math.round(v).toLocaleString();};
+const r2=v=>(v==null||isNaN(v))?null:Math.round(Number(v)*100)/100;
+const fmt2=v=>v==null?'—':v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt2Signed=v=>v==null?'—':(v>=0?'+':'')+v.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+const pctFrom=(diff,sys)=>(diff==null||sys==null||sys===0)?null:(diff/sys)*100;
+const pvSys=r2(r.pvSys),pvCalc=r2(r.pvCalc);
+const pvDiff=(pvSys==null||pvCalc==null)?null:r2(pvCalc-pvSys);
+const pvPct=pctFrom(pvDiff,pvSys);
+const adjSys=r2(r.eirAdjSys),adjCalc=r2(r.eirAdjCalc);
+const adjDiff=(adjSys==null||adjCalc==null)?null:r2(adjCalc-adjSys);
+const adjPct=pctFrom(adjDiff,adjSys);
 const rows=[];
 if(deriveRow&&singleModeShowEirRow&&r.sysEir!=null){
 const varBps=(Number(r.derivedEir)-Number(r.sysEir))*100;
 const varPct=Number(r.sysEir)!==0?((Number(r.derivedEir)-Number(r.sysEir))/Number(r.sysEir))*100:null;
 rows.push({metric:'EIR rate',sys:Number(r.sysEir).toLocaleString(undefined,{minimumFractionDigits:3,maximumFractionDigits:3})+'%',calc:Number(r.derivedEir).toLocaleString(undefined,{minimumFractionDigits:3,maximumFractionDigits:3})+'%',variance:(varBps>=0?'+':'')+varBps.toLocaleString(undefined,{minimumFractionDigits:1,maximumFractionDigits:1})+' bps',variancePct:varPct==null?'—':varPct.toFixed(2)+'%'});
 }
-rows.push({metric:'PV of cashflows',sys:fmtM(r.pvSys,2),calc:fmtM(r.pvCalc,2),variance:fmtMSigned(r.pvDiff,2),variancePct:r.pvDiffPct==null||isNaN(r.pvDiffPct)?'—':Number(r.pvDiffPct).toFixed(3)+'%'});
-rows.push({metric:'EIR adjustment to P&L',sys:fmtInt(r.eirAdjSys),calc:fmtInt(r.eirAdjCalc),variance:fmtIntSigned(r.eirDiff),variancePct:r.eirDiffPct==null||isNaN(r.eirDiffPct)?'—':Number(r.eirDiffPct).toFixed(2)+'%'});
+rows.push({metric:'PV of cashflows',sys:fmt2(pvSys),calc:fmt2(pvCalc),variance:fmt2Signed(pvDiff),variancePct:pvPct==null?'—':pvPct.toFixed(2)+'%'});
+rows.push({metric:'EIR adjustment to P&L',sys:fmt2(adjSys),calc:fmt2(adjCalc),variance:fmt2Signed(adjDiff),variancePct:adjPct==null?'—':adjPct.toFixed(2)+'%'});
 $(bodyId).innerHTML=rows.map(row=>`<tr><td>${row.metric}</td><td class="num mono">${row.sys}</td><td class="num mono">${row.calc}</td><td class="num mono">${row.variance}</td><td class="num mono">${row.variancePct}</td></tr>`).join('');
 }
 const _CF_HEADS=['Period','Start Date','End Date','Rate 1','Rate 2','Days 1','Days 2','Year Fraction 1','Year Fraction 2','Opening Balance','Interest','Principal','Ending Balance','Cashflow Before Disc','Discount Factor','PV'];
